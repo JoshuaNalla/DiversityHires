@@ -18,20 +18,23 @@
 body {
   margin: 0;
   min-height: 100vh;
+  overflow: hidden;
 }
 
 #root {
   width: 100%;
+  height: 100vh;
 }
 
 .dashboard-container {
   display: flex;
   flex-direction: column;
-  padding: 2rem;
-  gap: 1.5rem;
+  padding: 1rem;
+  gap: 1rem;
   max-width: 1400px;
   margin: 0 auto;
-  min-height: 100vh;
+  height: 100vh;
+  overflow: hidden;
 }
 
 .dashboard-header {
@@ -42,7 +45,7 @@ body {
 
 .dashboard-header h1 {
   font-family: 'Outfit', sans-serif;
-  font-size: 2.5rem;
+  font-size: 2rem;
   font-weight: 700;
   margin: 0;
   background: linear-gradient(135deg, #38bdf8, #818cf8, #c084fc);
@@ -56,7 +59,7 @@ body {
   background: rgba(239, 68, 68, 0.15);
   border: 1px solid rgba(239, 68, 68, 0.3);
   color: #fca5a5;
-  padding: 1rem 1.5rem;
+  padding: 0.75rem 1rem;
   border-radius: 0.75rem;
   font-weight: 500;
   backdrop-filter: blur(8px);
@@ -66,11 +69,11 @@ body {
 .dashboard-grid {
   display: grid;
   grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-  grid-template-rows: minmax(320px, 1fr) minmax(320px, 1fr);
+  grid-template-rows: minmax(0, 0.9fr) minmax(0, 1.1fr);
   grid-template-areas:
     "transcript video"
     "transcript signals";
-  gap: 1.5rem;
+  gap: 1rem;
   flex: 1;
   min-height: 0;
   align-items: stretch;
@@ -93,7 +96,7 @@ body {
 .signals-panel {
   grid-area: signals;
   min-height: 0;
-  overflow-y: auto;
+  overflow: hidden;
 }
 
 /* Glassmorphism Panels */
@@ -103,7 +106,7 @@ body {
   -webkit-backdrop-filter: blur(12px);
   border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 1.25rem;
-  padding: 1.5rem;
+  padding: 1rem;
   box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.2);
   transition: transform 0.3s ease, box-shadow 0.3s ease, border-color 0.3s ease;
   min-height: 0;
@@ -116,8 +119,8 @@ body {
 
 .panel h3 {
   font-family: 'Outfit', sans-serif;
-  margin: 0 0 1.25rem 0;
-  font-size: 1.2rem;
+  margin: 0 0 0.85rem 0;
+  font-size: 1.05rem;
   font-weight: 600;
   color: #f1f5f9;
   display: flex;
@@ -136,14 +139,19 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  min-height: 300px;
+  min-height: 0;
+  padding: 0.75rem;
 }
 
 .video-element {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  max-width: 100%;
+  max-height: 100%;
+  object-fit: contain;
   transform: scaleX(-1);
+  border-radius: 0.75rem;
+  background: #020617;
 }
 
 .status-overlay {
@@ -182,11 +190,11 @@ body {
   flex: 1;
   background: rgba(0, 0, 0, 0.2);
   border-radius: 1rem;
-  padding: 1.25rem;
+  padding: 1rem;
   border: 1px solid rgba(255,255,255,0.03);
-  font-size: 1.05rem;
+  font-size: 0.96rem;
   color: #cbd5e1;
-  line-height: 1.7;
+  line-height: 1.55;
   overflow-y: auto;
   min-height: 0;
   font-weight: 400;
@@ -196,18 +204,18 @@ body {
 .signal-legend {
   display: flex;
   flex-wrap: wrap;
-  gap: 0.75rem;
-  margin-bottom: 1.5rem;
+  gap: 0.45rem;
+  margin-bottom: 0.75rem;
 }
 
 .signal-legend-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 0.85rem;
+  font-size: 0.76rem;
   color: #e2e8f0;
   background: rgba(255, 255, 255, 0.05);
-  padding: 0.4rem 0.8rem;
+  padding: 0.3rem 0.6rem;
   border-radius: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.05);
   transition: background 0.2s;
@@ -231,8 +239,8 @@ body {
 
 .signal-chart {
   position: relative;
-  height: 180px;
-  margin: 1.5rem 0 1.5rem 2.5rem;
+  height: 130px;
+  margin: 0.75rem 0 0.75rem 2rem;
   background: rgba(0, 0, 0, 0.15);
   border-radius: 0.75rem;
   border: 1px solid rgba(255, 255, 255, 0.02);
@@ -262,14 +270,14 @@ body {
 
 .signal-grid {
   position: absolute;
-  left: -2rem;
+  left: -1.6rem;
   top: 0;
   height: 100%;
   padding: 5px 0;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  font-size: 0.75rem;
+  font-size: 0.68rem;
   color: #64748b;
   font-weight: 500;
 }
@@ -278,8 +286,8 @@ body {
 .signal-averages {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(110px, 1fr));
-  gap: 1rem;
-  margin-bottom: 2rem;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
 }
 
 .signal-average-card {
@@ -287,28 +295,24 @@ body {
   flex-direction: column;
   align-items: center;
   background: linear-gradient(145deg, rgba(255, 255, 255, 0.05), rgba(0, 0, 0, 0.2));
-  padding: 1.25rem;
+  padding: 0.75rem;
   border-radius: 1rem;
   border: 1px solid rgba(255, 255, 255, 0.06);
   box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.1);
   transition: transform 0.2s;
 }
 
-.signal-average-card:hover {
-  transform: translateY(-2px);
-}
-
 .signal-average-card span {
-  font-size: 0.7rem;
+  font-size: 0.62rem;
   color: #94a3b8;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   font-weight: 600;
-  margin-bottom: 0.4rem;
+  margin-bottom: 0.25rem;
 }
 
 .signal-average-card strong {
-  font-size: 1.75rem;
+  font-size: 1.15rem;
   font-weight: 700;
   color: #f8fafc;
   font-family: 'Outfit', sans-serif;
@@ -318,24 +322,26 @@ body {
 .signals-detail-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1.5rem;
+  gap: 0.75rem;
 }
 
 .signals-detail-panel {
   background: rgba(0, 0, 0, 0.2);
   border-radius: 1rem;
-  padding: 1.5rem;
+  padding: 0.85rem;
   border: 1px solid rgba(255, 255, 255, 0.03);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .signals-detail-panel h4 {
   font-family: 'Outfit', sans-serif;
-  margin: 0 0 1rem 0;
+  margin: 0 0 0.6rem 0;
   color: #cbd5e1;
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  font-size: 1.05rem;
+  font-size: 0.9rem;
   font-weight: 600;
 }
 
@@ -343,10 +349,10 @@ body {
 .metric-row {
   display: flex;
   justify-content: space-between;
-  padding: 0.5rem 0;
+  padding: 0.35rem 0;
   border-bottom: 1px solid rgba(255,255,255,0.05);
   font-family: 'Inter', monospace;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: #94a3b8;
 }
 
@@ -360,13 +366,13 @@ body {
 }
 
 .au-item {
-  margin-bottom: 0.8rem;
+  margin-bottom: 0.55rem;
 }
 
 .au-label {
   display: flex;
   justify-content: space-between;
-  font-size: 0.85rem;
+  font-size: 0.76rem;
   color: #cbd5e1;
   margin-bottom: 0.25rem;
 }
@@ -393,14 +399,14 @@ body {
 }
 
 .btn {
-  padding: 0.75rem 1.5rem;
+  padding: 0.65rem 1.15rem;
   border-radius: 2rem;
   border: 1px solid rgba(255, 255, 255, 0.1);
   background: linear-gradient(145deg, rgba(59, 130, 246, 0.9), rgba(37, 99, 235, 0.9));
   box-shadow: 0 4px 15px rgba(37, 99, 235, 0.3);
   color: white;
   font-weight: 600;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   cursor: pointer;
   display: flex;
   align-items: center;
@@ -448,6 +454,8 @@ body {
 @media (max-width: 1024px) {
   .dashboard-container {
     padding: 1rem;
+    height: auto;
+    overflow: visible;
   }
 
   .dashboard-grid {
@@ -465,5 +473,13 @@ body {
 
   .signals-detail-grid {
     grid-template-columns: 1fr;
+  }
+
+  body {
+    overflow: auto;
+  }
+
+  #root {
+    height: auto;
   }
 }
