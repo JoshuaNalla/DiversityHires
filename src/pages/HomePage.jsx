@@ -138,42 +138,39 @@ function HomePage() {
             
             {/* Visual Placeholder (Left Side) */}
             <div className="relative order-2 lg:order-1">
-              <div className="aspect-video rounded-2xl overflow-hidden bg-surface-container border-2 border-dashed border-primary/30 shadow-xl relative flex flex-col items-center justify-center group hover:border-primary transition-all cursor-pointer">
+              <div className="aspect-video rounded-2xl overflow-hidden bg-surface-container-highest border border-outline-variant/20 shadow-xl relative flex items-center justify-center">
                 
-                <div className="flex flex-col items-center justify-center relative z-10 transition-transform group-hover:-translate-y-2 group-hover:scale-105 duration-500">
-                  <span className="material-symbols-outlined text-6xl text-primary/60 mb-4 group-hover:text-primary transition-colors">upload_file</span>
-                  <span className="text-on-surface font-bold text-lg mb-2">Drag & Drop Resume</span>
-                  <span className="text-outline text-xs uppercase tracking-widest">PDF, DOCX up to 5MB</span>
+                {/* Visual Placeholder */}
+                <div className="absolute inset-0 flex items-center justify-center bg-[#1c1e33] flex-col">
+                  <span className="material-symbols-outlined text-6xl text-primary/30 mb-2">dashboard_customize</span>
+                  <span className="text-primary font-bold tracking-widest uppercase opacity-50 text-[10px]">
+                    [ CUSTOMIZATION UI PLACEHOLDER ]
+                  </span>
                 </div>
 
                 <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-50"></div>
-                
-                <div className="absolute top-4 left-4 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-2 rounded-lg border border-primary/20 flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-[14px]">autorenew</span>
-                  <span className="text-[10px] font-bold tracking-widest text-[#e0e0fd] uppercase ml-1">Analyzing Profile</span>
-                </div>
               </div>
             </div>
 
             {/* Text Content (Right Side) */}
             <div className="order-1 lg:order-2">
-              <h2 className="text-3xl font-bold mb-6 text-on-background">Upload Resume for Targeted Feedback</h2>
+              <h2 className="text-3xl font-bold mb-6 text-on-background">Customize Your Interview Experience</h2>
               <p className="text-outline text-lg mb-8 leading-relaxed">
-                Before you speak a word, let our AI analyze your track record. Drag and drop your resume to receive contextualized feedback, identify experience gaps, and generate custom interview questions tailored specifically to your background.
+                Tailor every aspect of your mock interview. Tell us where you want to work and what you're applying for, and we'll dynamically construct the perfect high-stakes environment to test your readiness.
               </p>
               <ul className="space-y-6">
                 <li className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-secondary mt-1">document_scanner</span>
+                  <span className="material-symbols-outlined text-secondary mt-1">business</span>
                   <div>
-                    <h4 className="font-semibold text-on-surface">Deep Context Extraction</h4>
-                    <p className="text-sm text-outline">We instantly map your skills to industry standards to anticipate what interviewers will ask.</p>
+                    <h4 className="font-semibold text-on-surface">Target Company & Role</h4>
+                    <p className="text-sm text-outline">Specify your dream company and role seniority. Our AI adjusts the difficulty and culture-fit questions accordingly.</p>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-secondary mt-1">model_training</span>
+                  <span className="material-symbols-outlined text-secondary mt-1">upload_file</span>
                   <div>
-                    <h4 className="font-semibold text-on-surface">Adaptive Interrogation</h4>
-                    <p className="text-sm text-outline">Personas automatically adapt their strictness and inquiries based on your exact resume claims.</p>
+                    <h4 className="font-semibold text-on-surface">Resume Context Extraction</h4>
+                    <p className="text-sm text-outline">Drag and drop your resume. Personas will adapt their inquiries to drill into your specific experience claims and identify background gaps.</p>
                   </div>
                 </li>
               </ul>
@@ -273,7 +270,7 @@ function HomePage() {
               </div>
               <button className="px-8 py-3 bg-on-surface text-surface rounded-lg font-bold hover:bg-primary transition-all flex items-center gap-2">
                 <span className="material-symbols-outlined">tune</span>
-                Launch Customizer
+                Launch Character Customizer
               </button>
             </div>
           </div>
