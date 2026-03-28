@@ -13,11 +13,27 @@ This repository contains the FastAPI backend for **IntervAI**, an AI-driven inte
 
 ## 🚀 Setup & Installation
 
-### 1. Prerequisites
-*   Python 3.10+
-*   MongoDB running locally (default: `mongodb://localhost:27017`)
+### 1. Prerequisites & Tool Installation
 
-### 2. Virtual Environment
+Before you can run the backend, ensure your system has the following core dependencies installed:
+
+*   **Python 3.10+**: Core runtime for our FastAPI application.
+    *   *Mac*: Install via Homebrew (`brew install python@3.11`) or download directly from [python.org](https://www.python.org/downloads/).
+    *   *Windows*: Download the executable from the official site. **Important**: Check the box that says "Add Python to PATH" during installation.
+*   **Docker Desktop**: We use containerization to run the MongoDB database seamlessly (and later, the MediaPipe service) without needing manual database setups.
+    *   Download and install Docker Desktop from [docker.com](https://www.docker.com/products/docker-desktop/).
+    *   Make sure the Docker application is open and running in the background before proceeding.
+*   *(Optional but needed for frontend)* **Node.js**: If you intend to run the Vue/React UI alongside the system locally, you will need Node and npm. Download the LTS version from [nodejs.org](https://nodejs.org/).
+
+### 2. Start the Database (Docker)
+We use Docker Compose to spin up MongoDB (and eventually your teammate's MediaPipe service). Open a terminal in the root of the project and run:
+
+```bash
+docker-compose up -d
+```
+*(This starts MongoDB on `mongodb://localhost:27017` in the background).*
+
+### 3. Virtual Environment
 Navigate to this `backend` directory and create/activate a virtual environment:
 
 ```bash
@@ -26,14 +42,14 @@ python3 -m venv venv
 source venv/bin/activate
 ```
 
-### 3. Install Dependencies
+### 4. Install Dependencies
 Install all required libraries for the Hackathon:
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Environment Variables
+### 5. Environment Variables
 You MUST create a `.env` file in the root of the `backend/` directory. Use the following template and insert your actual API keys:
 
 ```ini
