@@ -1,0 +1,20 @@
+# Environments
+venv/
+env/
+.env
+
+# Pycache
+__pycache__/
+*.py[cod]
+*$py.class
+
+# IDEs
+.idea/
+.vscode/
+
+# Media/Uploads for Hackathon
+backend/uploads/
+*.mp4
+*.mkv
+*.wav
+*.mp3
