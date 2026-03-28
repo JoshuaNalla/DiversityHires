@@ -1,11 +1,95 @@
 <!DOCTYPE html>
-<html lang="en">
+<html class="dark" lang="en">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>DiversityHires</title>
+    <title>Ethereal Prep | The Silent Coach</title>
+    
+    <script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap" rel="stylesheet"/>
+    
+    <script id="tailwind-config">
+      tailwind.config = {
+        darkMode: "class",
+        theme: {
+          extend: {
+            colors: {
+              "tertiary": "#c7c8b2",
+              "inverse-on-surface": "#2d2f44",
+              "background": "#101226",
+              "on-primary-container": "#302730",
+              "outline": "#968e94",
+              "on-secondary": "#3e2c28",
+              "outline-variant": "#4b454a",
+              "primary-fixed-dim": "#d2c2cf",
+              "secondary": "#ddc0ba",
+              "primary-fixed": "#eedeeb",
+              "on-secondary-fixed": "#281814",
+              "surface-tint": "#d2c2cf",
+              "on-background": "#e0e0fd",
+              "on-primary-fixed-variant": "#4e434e",
+              "surface-variant": "#313349",
+              "primary-container": "#9b8d99",
+              "tertiary-container": "#91927e",
+              "on-error": "#690005",
+              "error": "#ffb4ab",
+              "on-primary": "#372d37",
+              "on-error-container": "#ffdad6",
+              "error-container": "#93000a",
+              "on-secondary-container": "#ceb2ac",
+              "on-tertiary-fixed-variant": "#464837",
+              "on-tertiary": "#303222",
+              "on-secondary-fixed-variant": "#56423d",
+              "inverse-surface": "#e0e0fd",
+              "secondary-fixed": "#fadcd5",
+              "on-surface-variant": "#cdc4ca",
+              "secondary-fixed-dim": "#ddc0ba",
+              "surface-container-high": "#26283e",
+              "inverse-primary": "#675b66",
+              "surface-container-lowest": "#0a0c20",
+              "surface": "#101226",
+              "on-tertiary-container": "#292b1c",
+              "tertiary-fixed-dim": "#c7c8b2",
+              "on-primary-fixed": "#221922",
+              "surface-dim": "#101226",
+              "surface-container": "#1c1e33",
+              "primary": "#d2c2cf",
+              "secondary-container": "#594440",
+              "on-tertiary-fixed": "#1b1d0f",
+              "on-surface": "#e0e0fd",
+              "surface-container-highest": "#313349",
+              "surface-container-low": "#181a2e",
+              "tertiary-fixed": "#e4e4cd",
+              "surface-bright": "#36384e"
+            },
+            fontFamily: {
+              "headline": ["Inter"],
+              "body": ["Inter"],
+              "label": ["Inter"]
+            },
+            borderRadius: {"DEFAULT": "0.25rem", "lg": "0.5rem", "xl": "0.75rem", "full": "9999px"},
+          },
+        },
+      }
+    </script>
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 300, 'GRAD' 0, 'opsz' 24;
+        vertical-align: middle;
+      }
+      .glass-card {
+        background: rgba(49, 51, 73, 0.6);
+        backdrop-filter: blur(24px);
+      }
+      body {
+        font-family: 'Inter', sans-serif;
+        background-color: #101226;
+        color: #e0e0fd;
+      }
+    </style>
   </head>
-  <body>
+  <body class="bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container">
     <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
   </body>

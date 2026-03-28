@@ -2,13 +2,14 @@ import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
+import HomePage from './pages/HomePage';
 
 function App() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* Redirect root to login by default */}
-        <Route path="/" element={<Navigate to="/login" replace />} />
+        {/* Main Landing Route */}
+        <Route path="/" element={<HomePage />} />
         
         {/* Auth Routes */}
         <Route path="/login" element={<LoginPage />} />
