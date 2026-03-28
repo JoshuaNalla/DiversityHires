@@ -1,7 +1,40 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const SignupPage = () => {
+    const [fullName, setFullName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('http://localhost:8000/api/auth/register', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: fullName, email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Redirect user to login page after successful signup
+                navigate('/login');
+            } else {
+                setError(data.detail || 'Sign up failed. Please try again.');
+            }
+        } catch (err) {
+            setError('Network error. Is the backend server running?');
+        } finally {
+            setIsLoading(false);
+        }
+    };
     return (
         <div 
             className="bg-[#23253a] min-h-screen flex items-center justify-center p-4"
@@ -19,24 +52,57 @@ const SignupPage = () => {
                 </header>
                 
                 {/* Form Section */}
-                <form action="#" className="space-y-5" data-purpose="sign-up-form" method="POST">
+                <form className="space-y-5" data-purpose="sign-up-form" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm rounded-md p-3">
+                            {error}
+                        </div>
+                    )}
+                    
                     {/* Full Name Field */}
                     <div data-purpose="form-group-name">
                         <label className="block text-sm font-medium text-[#e0e0e0] mb-1.5" htmlFor="fullName">Full Name</label>
-                        <input className="w-full px-4 py-3 bg-[#f6ebe3] text-[#333] placeholder-gray-500 rounded-lg border border-transparent focus:outline-none focus:ring-2 focus:ring-[#8caeb5] focus:border-transparent transition duration-200" id="fullName" name="fullName" placeholder="Full Name" required type="text" />
+                        <input 
+                            className="w-full px-4 py-3 bg-[#f6ebe3] text-[#333] placeholder-gray-500 rounded-lg border border-transparent focus:outline-none focus:ring-2 focus:ring-[#8caeb5] focus:border-transparent transition duration-200" 
+                            id="fullName" 
+                            name="fullName" 
+                            placeholder="Full Name" 
+                            required 
+                            type="text" 
+                            value={fullName}
+                            onChange={(e) => setFullName(e.target.value)}
+                        />
                     </div>
                     
                     {/* Email Field */}
                     <div data-purpose="form-group-email">
                         <label className="block text-sm font-medium text-[#e0e0e0] mb-1.5" htmlFor="email">Email</label>
-                        <input className="w-full px-4 py-3 bg-[#f6ebe3] text-[#333] placeholder-gray-500 rounded-lg border border-transparent focus:outline-none focus:ring-2 focus:ring-[#8caeb5] focus:border-transparent transition duration-200" id="email" name="email" placeholder="Email@gmail.com" required type="email" />
+                        <input 
+                            className="w-full px-4 py-3 bg-[#f6ebe3] text-[#333] placeholder-gray-500 rounded-lg border border-transparent focus:outline-none focus:ring-2 focus:ring-[#8caeb5] focus:border-transparent transition duration-200" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Email@gmail.com" 
+                            required 
+                            type="email" 
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
                     </div>
                     
                     {/* Password Field */}
                     <div data-purpose="form-group-password">
                         <label className="block text-sm font-medium text-[#e0e0e0] mb-1.5" htmlFor="password">Password</label>
                         <div className="relative">
-                            <input className="w-full px-4 py-3 bg-[#f6ebe3] text-[#333] placeholder-gray-500 rounded-lg border border-transparent focus:outline-none focus:ring-2 focus:ring-[#8caeb5] focus:border-transparent transition duration-200 pr-12" id="password" name="password" placeholder="Password" required type="password" />
+                            <input 
+                                className="w-full px-4 py-3 bg-[#f6ebe3] text-[#333] placeholder-gray-500 rounded-lg border border-transparent focus:outline-none focus:ring-2 focus:ring-[#8caeb5] focus:border-transparent transition duration-200 pr-12" 
+                                id="password" 
+                                name="password" 
+                                placeholder="Password" 
+                                required 
+                                type="password" 
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                            />
                             {/* Password Visibility Toggle (Visual Only) */}
                             <button className="absolute inset-y-0 right-0 pr-4 flex items-center text-gray-400 hover:text-gray-600 focus:outline-none" type="button">
                                 <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -48,8 +114,12 @@ const SignupPage = () => {
                     
                     {/* Submit Button */}
                     <div className="pt-2" data-purpose="form-submit">
-                        <button className="w-full bg-[#8caeb5] text-[#fff] font-semibold py-3 px-4 rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#49506c] focus:ring-[#8caeb5] transition duration-200" type="submit">
-                            Create Account
+                        <button 
+                            className="w-full bg-[#8caeb5] text-[#fff] font-semibold py-3 px-4 rounded-lg hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#49506c] focus:ring-[#8caeb5] transition duration-200 disabled:opacity-50" 
+                            type="submit"
+                            disabled={isLoading}
+                        >
+                            {isLoading ? 'Creating...' : 'Create Account'}
                         </button>
                     </div>
                 </form>

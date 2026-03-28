@@ -1,7 +1,41 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 
 const LoginPage = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [isLoading, setIsLoading] = useState(false);
+    const navigate = useNavigate();
+
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setIsLoading(true);
+
+        try {
+            const response = await fetch('http://localhost:8000/api/auth/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username: email, password }),
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                // Save the session ID in local storage for later authenticated requests
+                localStorage.setItem('session_id', data.session_id);
+                // Redirect user to an authenticated dashboard (e.g. index/root)
+                navigate('/');
+            } else {
+                setError(data.detail || 'Login failed. Please check your credentials.');
+            }
+        } catch (err) {
+            setError('Network error. Is the backend server running?');
+        } finally {
+            setIsLoading(false);
+        }
+    };
     return (
         <div 
             className="bg-[#21203A] min-h-screen flex flex-col items-center justify-center p-4 text-[#F5EAEB]" 
@@ -24,24 +58,52 @@ const LoginPage = () => {
                 </div>
                 
                 {/* BEGIN: CredentialsForm */}
-                <form action="#" className="space-y-5" method="POST">
+                <form className="space-y-5" onSubmit={handleSubmit}>
+                    {error && (
+                        <div className="bg-red-500/10 border border-red-500/50 text-red-500 text-sm rounded-md p-3">
+                            {error}
+                        </div>
+                    )}
+                    
                     {/* Email Input */}
                     <div>
                         <label className="block text-sm font-medium mb-1.5 text-[#F5EAEB]/90" htmlFor="email">Email</label>
-                        <input className="w-full px-4 py-3 rounded-md bg-[#F4EAEA] text-gray-900 placeholder-gray-500 border border-[#C2A3A6] focus:ring-2 focus:ring-[#A08E98] focus:border-transparent outline-none transition-shadow text-sm" id="email" name="email" placeholder="Email or email.com" required type="email" />
+                        <input 
+                            className="w-full px-4 py-3 rounded-md bg-[#F4EAEA] text-gray-900 placeholder-gray-500 border border-[#C2A3A6] focus:ring-2 focus:ring-[#A08E98] focus:border-transparent outline-none transition-shadow text-sm" 
+                            id="email" 
+                            name="email" 
+                            placeholder="Email or email.com" 
+                            required 
+                            type="email" 
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
+                        />
                     </div>
                     {/* Password Input */}
                     <div>
                         <label className="block text-sm font-medium mb-1.5 text-[#F5EAEB]/90" htmlFor="password">Password</label>
-                        <input className="w-full px-4 py-3 rounded-md bg-[#F4EAEA] text-gray-900 placeholder-gray-500 border border-[#C2A3A6] focus:ring-2 focus:ring-[#A08E98] focus:border-transparent outline-none transition-shadow text-sm" id="password" name="password" placeholder="Password" required type="password" />
+                        <input 
+                            className="w-full px-4 py-3 rounded-md bg-[#F4EAEA] text-gray-900 placeholder-gray-500 border border-[#C2A3A6] focus:ring-2 focus:ring-[#A08E98] focus:border-transparent outline-none transition-shadow text-sm" 
+                            id="password" 
+                            name="password" 
+                            placeholder="Password" 
+                            required 
+                            type="password" 
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
+                        />
                     </div>
                     {/* Forgot Password Link */}
                     <div className="flex justify-end">
                         <a className="text-sm text-[#C2A3A6] hover:underline underline-offset-4 opacity-90 hover:opacity-100 transition-opacity" href="#!">Forgot Password?</a>
                     </div>
                     {/* Sign In Button */}
-                    <button className="w-full py-3 px-4 bg-[#A08E98] hover:bg-[#8C7C85] text-white font-medium rounded-md transition-colors shadow-sm text-sm tracking-wide" type="submit">
-                        Sign In
+                    <button 
+                        className="w-full py-3 px-4 bg-[#A08E98] hover:bg-[#8C7C85] text-white font-medium rounded-md transition-colors shadow-sm text-sm tracking-wide disabled:opacity-50" 
+                        type="submit"
+                        disabled={isLoading}
+                    >
+                        {isLoading ? 'Signing In...' : 'Sign In'}
                     </button>
                 </form>
                 {/* END: CredentialsForm */}

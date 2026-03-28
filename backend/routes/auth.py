@@ -25,7 +25,9 @@ async def register(user: UserCreate, db=Depends(get_db)):
 
 @router.post("/login")
 async def login(credentials: UserLogin, db=Depends(get_db)):
-    user = await db["users"].find_one({"username": credentials.username})
+    # Query by email if an '@' is present in the "username" field, otherwise look up by username
+    query_field = "email" if "@" in credentials.username else "username"
+    user = await db["users"].find_one({query_field: credentials.username})
     
     if not user or not verify_password(credentials.password, user["hashed_password"]):
         raise HTTPException(status_code=401, detail="Invalid username or password")
