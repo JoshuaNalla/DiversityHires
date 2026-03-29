@@ -1,7 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CreateDemoInterviewModal from '../components/CreateDemoInterviewModal';
+import { getInterviewReports } from '../lib/interviewReports';
 
 const MONTH_NAMES = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -38,6 +39,134 @@ const CompanyLogo = ({ company, size = 'w-8 h-8' }) => {
     );
 };
 
+const DoomsdayClock = ({ interview, countdown, onClick }) => {
+    const urgency = useMemo(() => {
+        if (countdown.days > 5) {
+            return {
+                colorClass: 'text-emerald-400',
+                borderClass: 'border-emerald-400/30',
+                bgClass: 'bg-emerald-950/30',
+                shadowClass: 'shadow-[0_0_15px_rgba(52,211,153,0.15)]',
+                dropShadowClass: 'drop-shadow-[0_0_10px_rgba(52,211,153,0.3)]',
+                msgs: [
+                    "Plenty of time left. Relax and study.",
+                    "Have you updated your resume recently?",
+                    "Good time to review core concepts.",
+                    "Maybe schedule a mock interview soon?"
+                ]
+            };
+        } else if (countdown.days >= 2) {
+            return {
+                colorClass: 'text-amber-400',
+                borderClass: 'border-amber-400/30',
+                bgClass: 'bg-amber-950/30',
+                shadowClass: 'shadow-[0_0_15px_rgba(251,191,36,0.15)]',
+                dropShadowClass: 'drop-shadow-[0_0_10px_rgba(251,191,36,0.3)]',
+                msgs: [
+                    "You should probably hit a mock interview or two.",
+                    "Getting closer. Practice your behavioral questions.",
+                    "Time to sharpen those system design skills.",
+                    "Brush up on algorithms and coding patterns."
+                ]
+            };
+        } else {
+            return {
+                colorClass: 'text-red-400',
+                borderClass: 'border-red-400/30',
+                bgClass: 'bg-red-950/30',
+                shadowClass: 'shadow-[0_0_15px_rgba(248,113,113,0.15)]',
+                dropShadowClass: 'drop-shadow-[0_0_10px_rgba(248,113,113,0.3)]',
+                msgs: [
+                    "Crunch time! Keep your reviews light today.",
+                    "Get a good night's sleep before the big day.",
+                    "You are ready. Just breathe.",
+                    "Remember the STAR method for your stories."
+                ]
+            };
+        }
+    }, [countdown.days]);
+
+    const [msgIdx, setMsgIdx] = useState(0);
+    const [fade, setFade] = useState(true);
+
+    useEffect(() => {
+        const id = setInterval(() => {
+            setFade(false);
+            setTimeout(() => {
+                setMsgIdx(prev => prev + 1);
+                setFade(true);
+            }, 300);
+        }, 4000);
+        return () => clearInterval(id);
+    }, []);
+
+    const dStr = String(countdown.days).padStart(2, '0');
+    const hStr = String(countdown.hours).padStart(2, '0');
+    const mStr = String(countdown.mins).padStart(2, '0');
+    const sStr = String(countdown.secs).padStart(2, '0');
+    
+    const msg = urgency.msgs[msgIdx % urgency.msgs.length];
+
+    const Digit = ({ ch }) => (
+        <div className={`relative inline-flex items-center justify-center w-14 h-20 bg-[#161829] ${urgency.colorClass} text-5xl font-mono font-bold mx-[2px] rounded-lg border ${urgency.borderClass} overflow-hidden ${urgency.shadowClass}`}>
+            <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-black/30 -translate-y-1/2 z-10"></div>
+            <div className="absolute top-0 left-0 right-0 h-1/2 bg-white/5 z-0 pointer-events-none"></div>
+            <span className="relative z-0">{ch}</span>
+        </div>
+    );
+
+    const Colon = () => (
+        <span className={`${urgency.colorClass} opacity-80 text-4xl font-black font-mono mx-1 select-none pb-2 animate-pulse ${urgency.dropShadowClass}`}>:</span>
+    );
+
+    return (
+        <div
+            className="w-full flex flex-col items-center justify-center bg-transparent px-8 py-8 mb-4 cursor-pointer hover:scale-[1.01] transition-all duration-300 relative group"
+            onClick={onClick}
+        >
+            <div className={`flex items-center space-x-3 mb-6 ${urgency.bgClass} border ${urgency.borderClass} px-6 py-2 rounded-full ${urgency.shadowClass}`}>
+                <span className={`material-symbols-outlined ${urgency.colorClass} text-sm`}>event</span>
+                <p className={`${urgency.colorClass} text-xs font-bold tracking-[0.1em] uppercase opacity-90 font-sans`}>
+                    UPCOMING: {interview?.company}
+                </p>
+                <span className={`material-symbols-outlined ${urgency.colorClass} text-sm`}>event</span>
+            </div>
+
+            <div className="flex items-center" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                {dStr.split('').map((c, i) => <Digit key={`d${i}`} ch={c} />)}
+                <Colon />
+                {hStr.split('').map((c, i) => <Digit key={`h${i}`} ch={c} />)}
+                <Colon />
+                {mStr.split('').map((c, i) => <Digit key={`m${i}`} ch={c} />)}
+                <Colon />
+                {sStr.split('').map((c, i) => <Digit key={`s${i}`} ch={c} />)}
+            </div>
+
+            <div className="flex items-center mt-3 font-mono font-medium" style={{ fontVariantNumeric: 'tabular-nums' }}>
+                <span className={`text-[0.65rem] ${urgency.colorClass} opacity-60 uppercase tracking-[0.2em] w-[120px] text-center`}>DAYS</span>
+                <span className="mx-1 w-2"></span>
+                <span className={`text-[0.65rem] ${urgency.colorClass} opacity-60 uppercase tracking-[0.2em] w-[120px] text-center`}>HOURS</span>
+                <span className="mx-1 w-2"></span>
+                <span className={`text-[0.65rem] ${urgency.colorClass} opacity-60 uppercase tracking-[0.2em] w-[120px] text-center`}>MINS</span>
+                <span className="mx-1 w-2"></span>
+                <span className={`text-[0.65rem] ${urgency.colorClass} opacity-60 uppercase tracking-[0.2em] w-[120px] text-center`}>SECS</span>
+            </div>
+
+            <div className="mt-8 h-6 flex justify-center w-full overflow-hidden">
+                <p 
+                    className={`${urgency.colorClass} font-sans text-[0.85rem] font-medium tracking-wide transition-all duration-300`}
+                    style={{ 
+                        opacity: fade ? 0.9 : 0, 
+                        transform: fade ? 'translateY(0)' : 'translateY(4px)'
+                    }}
+                >
+                    {msg}
+                </p>
+            </div>
+        </div>
+    );
+};
+
 const DashboardPage = () => {
     const navigate = useNavigate();
     const userName = (localStorage.getItem('username') || 'User').split(' ')[0];
@@ -57,6 +186,7 @@ const DashboardPage = () => {
 
     // Data Hooks
     const [sessions, setSessions] = useState([]);
+    const [savedReports, setSavedReports] = useState([]);
     
     const fetchSessions = async () => {
         try {
@@ -75,16 +205,72 @@ const DashboardPage = () => {
     useEffect(() => {
         const session = localStorage.getItem('session_id');
         if (!session) navigate('/login');
-        else fetchSessions();
+        else {
+            fetchSessions();
+            setSavedReports(getInterviewReports());
+        }
     }, [navigate]);
 
+    useEffect(() => {
+        const refreshReports = () => setSavedReports(getInterviewReports());
+        window.addEventListener('interview-reports-updated', refreshReports);
+        window.addEventListener('focus', refreshReports);
+        return () => {
+            window.removeEventListener('interview-reports-updated', refreshReports);
+            window.removeEventListener('focus', refreshReports);
+        };
+    }, []);
+
+    // Horizontal scroll capability for Interview Rows
+    useEffect(() => {
+        const handleWheel = (e) => {
+            const c = e.currentTarget;
+            if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) {
+                e.preventDefault();
+                c.scrollLeft += (e.deltaY * 2.5); // Multiply speed slightly
+            }
+        };
+        const upScroll = document.getElementById('upcoming-cards-scroll');
+        const pastScroll = document.getElementById('past-cards-scroll');
+        if (upScroll) upScroll.addEventListener('wheel', handleWheel, { passive: false });
+        if (pastScroll) pastScroll.addEventListener('wheel', handleWheel, { passive: false });
+        
+        return () => {
+            if (upScroll) upScroll.removeEventListener('wheel', handleWheel);
+            if (pastScroll) pastScroll.removeEventListener('wheel', handleWheel);
+        };
+    });
+
     // Data Parsing
-    const PAST_INTERVIEWS = sessions.filter(s => s.status === 'COMPLETED').map(s => ({
+    const backendPastInterviews = sessions.filter(s => s.status === 'COMPLETED').map(s => ({
         id: s._id,
         session: s,
         company: s.company || 'Unknown', role: s.role, type: s.type, date: new Date(s.created_at).toLocaleDateString(),
         daysAgo: Math.floor((Date.now() - new Date(s.created_at)) / 86400000), action: 'Review', icon: 'history'
     }));
+
+    const localReportInterviews = savedReports.map((report) => ({
+        id: report.id,
+        reportId: report.id,
+        company: report.company || 'Mock Interview',
+        role: report.role || 'Interview Practice',
+        type: 'Mock Report',
+        date: new Date(report.endedAt).toLocaleDateString(),
+        daysAgo: Math.floor((Date.now() - new Date(report.endedAt)) / 86400000),
+        action: 'Open report',
+        icon: 'history',
+        summary: report.summary?.snapshot || report.summary?.coachingNote || 'Interview report available.',
+        overallScore: report.summary?.overallScore ?? 0,
+    }));
+
+    const reportIdentitySet = new Set(
+        localReportInterviews.map((entry) => `${entry.company}|${entry.role}|${entry.date}`)
+    );
+
+    const PAST_INTERVIEWS = [
+        ...localReportInterviews,
+        ...backendPastInterviews.filter((entry) => !reportIdentitySet.has(`${entry.company}|${entry.role}|${entry.date}`))
+    ];
     
     const UPCOMING_CARDS = sessions.filter(s => s.status === 'SCHEDULED' || (!s.status && s.is_mock === false)).map(s => {
         const t = new Date(s.scheduled_datetime || s.created_at);
@@ -630,20 +816,20 @@ const DashboardPage = () => {
 
                 {/* Nav links */}
                 <nav className="flex-1 space-y-1 px-2">
-                    <Link
-                        className={`flex items-center text-[#d2c2cf] bg-[#313349] rounded-lg py-3 transition-all duration-150 ease-in-out scale-95 ${sidebarOpen ? 'space-x-3 px-4 mx-2' : 'justify-center px-0 mx-1'}`}
-                        to="#"
+                    <button
+                        onClick={() => setInterviewPage(1)}
+                        className={`w-full flex items-center text-[#d2c2cf] bg-[#313349] rounded-lg py-3 transition-all duration-150 ease-in-out scale-95 ${sidebarOpen ? 'space-x-3 px-4 mx-2' : 'justify-center px-0 mx-1'}`}
                     >
                         <span className="material-symbols-outlined flex-shrink-0">home</span>
                         {sidebarOpen && <span className="font-medium text-sm whitespace-nowrap">Home</span>}
-                    </Link>
-                    <Link
-                        className={`flex items-center text-[#968e94] hover:text-[#e0e0fd] hover:bg-[#26283e] py-3 transition-colors rounded-lg ${sidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'}`}
-                        to="#"
+                    </button>
+                    <button
+                        onClick={() => setInterviewPage(0)}
+                        className={`w-full flex items-center text-[#968e94] hover:text-[#e0e0fd] hover:bg-[#26283e] py-3 transition-colors rounded-lg ${sidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'}`}
                     >
                         <span className="material-symbols-outlined flex-shrink-0">history</span>
                         {sidebarOpen && <span className="font-medium text-sm whitespace-nowrap">Past Interviews</span>}
-                    </Link>
+                    </button>
                     <Link
                         className={`flex items-center text-[#968e94] hover:text-[#e0e0fd] hover:bg-[#26283e] py-3 transition-colors rounded-lg ${sidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'}`}
                         to="#"
@@ -750,58 +936,11 @@ const DashboardPage = () => {
 
                     {/* Urgent Interview Strip — flip-clock countdown */}
                     {UPCOMING_CARDS.length > 0 ? (
-                    <div
-                        className="w-full flex flex-col items-center justify-center bg-[#1a1d2e] rounded-2xl px-8 py-5 mb-6 cursor-pointer hover:bg-[#1e2136] transition-colors"
-                        onClick={() => setSelectedInterview(UPCOMING_CARDS[0])}
-                    >
-                        {/* Company label */}
-                        <div className="flex items-center space-x-3 mb-4">
-                            <CompanyLogo company={UPCOMING_CARDS[0]?.company} size="w-7 h-7" />
-                            <p className="text-[#e8837c] text-sm font-semibold tracking-[0.25em] uppercase">{UPCOMING_CARDS[0]?.company}</p>
-                        </div>
-
-                        {/* Flip-clock digits */}
-                        <div className="flex items-center" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                            {(() => {
-                                const dStr = String(countdown.days).padStart(2, '0');
-                                const hStr = String(countdown.hours).padStart(2, '0');
-                                const mStr = String(countdown.mins).padStart(2, '0');
-                                const sStr = String(countdown.secs).padStart(2, '0');
-
-                                const Digit = ({ ch }) => (
-                                    <span className="inline-flex items-center justify-center w-12 h-16 bg-[#252840] text-[#e8837c] text-4xl font-bold rounded-md border border-[#e8837c]/15 mx-[2px] shadow-lg">
-                                        {ch}
-                                    </span>
-                                );
-                                const Colon = () => (
-                                    <span className="text-[#e8837c] text-4xl font-bold mx-2 select-none">:</span>
-                                );
-
-                                return (
-                                    <>
-                                        {dStr.split('').map((c, i) => <Digit key={`d${i}`} ch={c} />)}
-                                        <Colon />
-                                        {hStr.split('').map((c, i) => <Digit key={`h${i}`} ch={c} />)}
-                                        <Colon />
-                                        {mStr.split('').map((c, i) => <Digit key={`m${i}`} ch={c} />)}
-                                        <Colon />
-                                        {sStr.split('').map((c, i) => <Digit key={`s${i}`} ch={c} />)}
-                                    </>
-                                );
-                            })()}
-                        </div>
-
-                        {/* Labels row */}
-                        <div className="flex items-center mt-2" style={{ fontVariantNumeric: 'tabular-nums' }}>
-                            <span className="text-[0.65rem] text-[#e8837c]/50 uppercase tracking-[0.2em] font-medium" style={{ width: `${2 * 52 + 4}px`, textAlign: 'center' }}>DAYS</span>
-                            <span className="mx-2 w-4"></span>
-                            <span className="text-[0.65rem] text-[#e8837c]/50 uppercase tracking-[0.2em] font-medium" style={{ width: `${2 * 52 + 4}px`, textAlign: 'center' }}>HRS</span>
-                            <span className="mx-2 w-4"></span>
-                            <span className="text-[0.65rem] text-[#e8837c]/50 uppercase tracking-[0.2em] font-medium" style={{ width: `${2 * 52 + 4}px`, textAlign: 'center' }}>MIN</span>
-                            <span className="mx-2 w-4"></span>
-                            <span className="text-[0.65rem] text-[#e8837c]/50 uppercase tracking-[0.2em] font-medium" style={{ width: `${2 * 52 + 4}px`, textAlign: 'center' }}>SEC</span>
-                        </div>
-                    </div>
+                        <DoomsdayClock
+                            interview={UPCOMING_CARDS[0]}
+                            countdown={countdown}
+                            onClick={() => setSelectedInterview(UPCOMING_CARDS[0])}
+                        />
                     ) : (
                         <div className="w-full flex flex-col items-center justify-center bg-[#1a1d2e]/50 border border-outline-variant/10 rounded-2xl px-8 py-10 mb-6 text-center">
                              <div className="w-16 h-16 bg-[#252840] rounded-full flex items-center justify-center text-outline mb-4">
@@ -815,23 +954,21 @@ const DashboardPage = () => {
                     {/* ── Countdown Cards nav ──────────────────────────── */}
                     <div className="flex items-center justify-center gap-4 mb-4">
                         <button
-                            onClick={() => setInterviewPage(p => Math.max(0, p - 1))}
-                            className={`p-1.5 rounded-lg transition-colors ${interviewPage === 0 ? 'text-outline/30 cursor-not-allowed' : 'text-outline hover:bg-surface-bright'}`}
-                            disabled={interviewPage === 0}
-                            title="Previous"
+                            onClick={() => setInterviewPage(0)}
+                            className={`p-1.5 rounded-lg transition-colors ${interviewPage === 0 ? 'text-primary bg-primary/10' : 'text-outline hover:bg-surface-bright'}`}
+                            title="View Past"
                         >
-                            <span className="material-symbols-outlined text-sm">chevron_left</span>
+                            <span className="material-symbols-outlined text-sm">history</span>
                         </button>
-                        <p className="text-[0.6875rem] uppercase tracking-widest text-outline">
-                            {interviewPage === 0 ? 'Past Interviews' : `Upcoming Interviews · ${interviewPage}/2`}
+                        <p className="text-[0.6875rem] uppercase tracking-widest text-outline min-w-[150px] text-center">
+                            {interviewPage === 0 ? 'Past Interviews' : 'Upcoming Interviews'}
                         </p>
                         <button
-                            onClick={() => setInterviewPage(p => Math.min(2, p + 1))}
-                            className={`p-1.5 rounded-lg transition-colors ${interviewPage === 2 ? 'text-outline/30 cursor-not-allowed' : 'text-outline hover:bg-surface-bright'}`}
-                            disabled={interviewPage === 2}
-                            title="Next"
+                            onClick={() => setInterviewPage(1)}
+                            className={`p-1.5 rounded-lg transition-colors ${interviewPage === 1 ? 'text-primary bg-primary/10' : 'text-outline hover:bg-surface-bright'}`}
+                            title="View Upcoming"
                         >
-                            <span className="material-symbols-outlined text-sm">chevron_right</span>
+                            <span className="material-symbols-outlined text-sm">timer</span>
                         </button>
 
                         {/* + button to create new interview */}
@@ -846,40 +983,52 @@ const DashboardPage = () => {
 
                     {interviewPage === 0 ? (
                         /* Past interviews */
-                        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+                        <section id="past-cards-scroll" className="flex overflow-x-auto gap-4 mb-10 pb-4 snap-x no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                            <style>{`#past-cards-scroll::-webkit-scrollbar { display: none; }`}</style>
                             {PAST_INTERVIEWS.map((iv, i) => (
-                                <div key={i} className="relative group overflow-hidden bg-surface-container-high rounded-xl p-4 opacity-70 hover:opacity-100 transition-all duration-300 hover:bg-surface-bright">
+                                <button
+                                    key={i}
+                                    onClick={() => iv.reportId ? navigate(`/reports/${iv.reportId}`) : setSelectedInterview(iv)}
+                                    className="flex-none w-[320px] snap-center relative group overflow-hidden bg-surface-container-high rounded-xl p-6 opacity-70 hover:opacity-100 transition-all duration-300 hover:bg-surface-bright text-left"
+                                >
                                     <div className="flex justify-between items-start mb-2">
                                         <CompanyLogo company={iv.company} />
-                                        <span className="text-[0.6875rem] font-label tracking-widest text-outline">COMPLETED</span>
+                                        <span className="text-[0.6875rem] font-label tracking-widest text-outline">{iv.reportId ? 'REPORT' : 'COMPLETED'}</span>
                                     </div>
-                                    <h3 className="text-lg font-bold text-on-surface">{iv.company}</h3>
-                                    <p className="text-outline text-xs mt-0.5">{iv.role} · {iv.daysAgo}d ago</p>
-                                    <div className="mt-3 flex items-center text-xs text-outline group-hover:text-primary transition-colors">
+                                    <h3 className="text-lg font-bold text-on-surface mt-2">{iv.company}</h3>
+                                    <p className="text-outline text-xs mt-1">{iv.role} · {iv.daysAgo}d ago</p>
+                                    {iv.summary && (
+                                        <p className="text-outline text-xs leading-5 mt-3 line-clamp-3">{iv.summary}</p>
+                                    )}
+                                    {typeof iv.overallScore === 'number' && iv.reportId && (
+                                        <p className="text-primary text-sm font-semibold mt-3">{iv.overallScore}% overall score</p>
+                                    )}
+                                    <div className="mt-4 flex items-center text-xs text-outline group-hover:text-primary transition-colors">
                                         <span>{iv.action}</span>
                                         <span className="material-symbols-outlined text-xs ml-1">arrow_forward</span>
                                     </div>
                                     <div className="absolute -right-4 -bottom-4 opacity-5 group-hover:opacity-10 transition-opacity">
                                         <span className="material-symbols-outlined text-7xl">history</span>
                                     </div>
-                                </div>
+                                </button>
                             ))}
                         </section>
                     ) : (
-                        /* Upcoming cards — page 1 or page 2 */
-                        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
-                            {(interviewPage === 1 ? UPCOMING_CARDS : STACKED_INTERVIEWS).map((card, i) => (
+                        /* Upcoming cards — single horizontal row */
+                        <section id="upcoming-cards-scroll" className="flex overflow-x-auto gap-4 mb-10 pb-4 snap-x no-scrollbar" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+                            <style>{`#upcoming-cards-scroll::-webkit-scrollbar { display: none; }`}</style>
+                            {UPCOMING_CARDS.map((card, i) => (
                                 <div
                                     key={i}
-                                    className="relative group overflow-hidden bg-surface-container-high rounded-xl p-4 transition-all duration-300 hover:bg-surface-bright text-left"
+                                    className="flex-none w-[320px] snap-center relative group overflow-hidden bg-surface-container-high rounded-xl p-6 transition-all duration-300 hover:bg-surface-bright text-left"
                                 >
                                     <button onClick={() => setSelectedInterview(card)} className="w-full text-left">
                                         <div className="flex justify-between items-start mb-2">
                                             <CompanyLogo company={card.company} />
                                             <span className="text-[0.6875rem] font-label tracking-widest text-outline">COUNTDOWN</span>
                                         </div>
-                                        <h3 className="text-lg font-bold text-on-surface">{card.company}</h3>
-                                        <p className="text-secondary text-sm mt-0.5">in {card.days} days</p>
+                                        <h3 className="text-lg font-bold text-on-surface mt-2">{card.company}</h3>
+                                        <p className="text-secondary text-sm mt-1 mb-2">in {card.days} days</p>
                                         <div className="mt-3 flex items-center text-xs text-outline group-hover:text-primary transition-colors">
                                             <span>{card.actionLabel}</span>
                                             <span className="material-symbols-outlined text-xs ml-1">arrow_forward</span>
@@ -888,7 +1037,7 @@ const DashboardPage = () => {
                                             <span className="material-symbols-outlined text-7xl">timer</span>
                                         </div>
                                     </button>
-                                    <div className="mt-4 flex gap-2">
+                                    <div className="mt-5 flex gap-2">
                                         <button
                                             onClick={() => {
                                                 setShowDemoSetup(true);
@@ -902,7 +1051,7 @@ const DashboardPage = () => {
                                             }}
                                             className="flex-1 py-2 bg-primary text-on-primary rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity"
                                         >
-                                            Mock Interview
+                                            Mock
                                         </button>
                                         <button
                                             onClick={() => {
@@ -983,28 +1132,24 @@ const DashboardPage = () => {
                                             key={idx}
                                             onClick={handleCellClick}
                                             className={[
-                                                'p-2 border border-outline-variant/5 flex flex-col items-center text-sm min-h-[72px] transition-colors',
-                                                current ? 'hover:bg-surface-bright cursor-pointer' : '',
-                                                marker ? marker.bgClass : '',
-                                                today ? 'ring-1 ring-inset ring-primary/50' : '',
+                                                'relative p-2 flex flex-col items-center text-sm min-h-[85px] transition-all duration-200',
+                                                current ? 'cursor-pointer' : 'opacity-30 pointer-events-none',
+                                                marker ? 'border border-primary/40 bg-primary/10 hover:bg-primary/20' : 'border border-outline-variant/5 hover:bg-surface-bright',
+                                                today ? 'ring-2 ring-inset ring-primary' : '',
                                             ].join(' ')}
                                         >
                                             <span className={[
-                                                'font-medium leading-none',
-                                                !current ? 'text-outline/25' : '',
-                                                today ? 'text-primary font-bold' : '',
-                                                marker && !today ? marker.textClass : '',
-                                                !marker && !today && current ? 'text-on-surface/70' : '',
+                                                'font-medium leading-none z-10 mb-2',
+                                                today ? 'text-primary font-bold' : (marker ? 'text-primary-container font-black' : 'text-on-surface/70'),
                                             ].join(' ')}>
                                                 {cell.day}
                                             </span>
                                             {marker && (
-                                                <>
-                                                    <div className={`mt-1 w-1.5 h-1.5 rounded-full ${marker.dotClass}`} />
-                                                    <span className={`mt-1 text-[0.5rem] font-semibold leading-none text-center truncate w-full ${marker.textClass}`}>
+                                                <div className="w-full mt-auto bg-primary text-on-primary rounded px-1.5 py-1.5 flex flex-col items-center justify-center shadow-lg transform hover:scale-105 transition-transform">
+                                                    <span className="text-[0.65rem] font-bold leading-none text-center truncate w-full uppercase tracking-wider drop-shadow-md">
                                                         {marker.company}
                                                     </span>
-                                                </>
+                                                </div>
                                             )}
                                         </div>
                                     );

@@ -8,11 +8,25 @@ class UserCreate(BaseModel):
     email: EmailStr
     password: str
 
+class ResumeDocument(BaseModel):
+    id: str
+    filename: str
+    upload_date: datetime = Field(default_factory=datetime.utcnow)
+    category: str = "General"
+    file_id: Optional[str] = None
+
+class UserProfile(BaseModel):
+    first_name: str = ""
+    last_name: str = ""
+    target_roles: List[str] = []
+    resumes: List[ResumeDocument] = []
+
 class UserInDB(BaseModel):
     id: str = Field(alias="_id")
     username: str
     email: EmailStr
     hashed_password: str
+    profile: UserProfile = Field(default_factory=UserProfile)
 
 class UserLogin(BaseModel):
     username: str

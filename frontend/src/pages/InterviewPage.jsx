@@ -4,6 +4,7 @@ import { Mic, MicOff, Send, Play, Loader2, Volume2, Square, ChevronLeft, Chevron
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import FaceEmotionReader from '../components/FaceEmotionReader';
+import { saveInterviewReport } from '../lib/interviewReports';
 
 // Global singleton for audio to ensure only one plays at a time
 let globalAudio = null;
@@ -101,7 +102,9 @@ export default function InterviewPage() {
   const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
-  const [timeLeftMs, setTimeLeftMs] = useState(0);
+  const [timeLeftMs, setTimeLeftMs] = useState(null);
+  const [isTimerInitialized, setIsTimerInitialized] = useState(false);
+  const [speechErrorMsg, setSpeechErrorMsg] = useState('');
 
   // UX State
   const [isHardwareCheck, setIsHardwareCheck] = useState(false);
@@ -118,6 +121,11 @@ export default function InterviewPage() {
   const hasStartedAPI = useRef(false);
   const timerIntervalRef = useRef(null);
   const timerEndAtRef = useRef(null);
+  const interviewStartedAtRef = useRef(null);
+  const analyticsSnapshotRef = useRef({ metrics: null, signalHistory: [], signalAverages: {} });
+  const hasFinalizedRef = useRef(false);
+  const shouldKeepListeningRef = useRef(false);
+  const restartTimeoutRef = useRef(null);
 
   // Voice Metrics
   const [speechMetrics, setSpeechMetrics] = useState({ wpm: 0, fillers: 0 });
@@ -161,6 +169,11 @@ export default function InterviewPage() {
         clearInterval(timerIntervalRef.current);
         timerIntervalRef.current = null;
       }
+      if (restartTimeoutRef.current) {
+        clearTimeout(restartTimeoutRef.current);
+        restartTimeoutRef.current = null;
+      }
+      shouldKeepListeningRef.current = false;
     };
   }, []);
 
@@ -172,7 +185,9 @@ export default function InterviewPage() {
       // Initialize countdown timer based on mockConfig.duration (minutes)
       const durationMins = mockConfig?.duration || 45;
       const endAt = Date.now() + durationMins * 60 * 1000;
+      interviewStartedAtRef.current = new Date().toISOString();
       timerEndAtRef.current = endAt;
+      setIsTimerInitialized(true);
       setTimeLeftMs(endAt - Date.now());
       timerIntervalRef.current = setInterval(() => {
         const remaining = (timerEndAtRef.current || Date.now()) - Date.now();
@@ -181,19 +196,29 @@ export default function InterviewPage() {
     }
   }, [isHardwareReady]);
 
+  useEffect(() => {
+    if (isHardwareReady && isTimerInitialized && timeLeftMs === 0 && !hasFinalizedRef.current) {
+      finalizeInterview('time_up');
+    }
+  }, [isHardwareReady, isTimerInitialized, timeLeftMs]);
+
   const handleHardwareReady = useCallback(() => setIsHardwareReady(true), []);
 
   const executeStartAPI = async () => {
     setIsLoading(true);
     try {
+      const sessionId = localStorage.getItem('session_id');
       const response = await axios.post('http://localhost:8000/api/interview/start-interview', {
         summary: resumeSummary || null,
         mock_config: mockConfig || {}
+      }, {
+        headers: sessionId ? { 'X-Session-ID': sessionId } : {}
       });
       setQuestionPhase(response.data.question, response.data.audio);
     } catch (error) {
       console.error(error);
-      alert('Failed to connect to AI server. Please check backend.');
+      const detail = error?.response?.data?.detail || error?.response?.data?.error || error?.message;
+      alert(`Failed to start interview: ${detail}`);
     } finally {
       setIsLoading(false);
     }
@@ -207,6 +232,10 @@ export default function InterviewPage() {
       recognition.continuous = true;
       recognition.interimResults = true;
       recognition.lang = 'en-US';
+      recognition.onstart = () => {
+        setSpeechErrorMsg('');
+        setIsListening(true);
+      };
 
       recognition.onresult = (event) => {
         let currentInterim = '';
@@ -231,22 +260,62 @@ export default function InterviewPage() {
 
       recognition.onerror = (e) => {
         console.error('Speech error', e);
+        const isFatal = ['not-allowed', 'service-not-allowed', 'audio-capture'].includes(e.error);
+        if (isFatal) {
+          setSpeechErrorMsg(`Microphone error: ${e.error}`);
+        } else if (e.error === 'no-speech') {
+          setSpeechErrorMsg('Listening... start speaking when you are ready.');
+        }
+        if (isFatal) {
+          shouldKeepListeningRef.current = false;
+          setIsListening(false);
+        }
+      };
+      recognition.onend = () => {
+        if (shouldKeepListeningRef.current && !hasFinalizedRef.current) {
+          setIsListening(true);
+          restartTimeoutRef.current = setTimeout(() => {
+            try {
+              recognition.start();
+              setIsListening(true);
+            } catch (err) {
+              console.warn('Speech restart blocked', err);
+              setIsListening(false);
+            }
+          }, 500);
+          return;
+        }
         setIsListening(false);
       };
-      recognition.onend = () => setIsListening(false);
       recognitionRef.current = recognition;
+    } else {
+      setSpeechErrorMsg('Speech recognition is not supported in this browser. Please use Chrome.');
     }
   }, []);
 
   const toggleListen = () => {
+    if (!recognitionRef.current) {
+      setSpeechErrorMsg('Speech recognition is not available in this browser. Please use Chrome.');
+      return;
+    }
     if (isListening) {
+      shouldKeepListeningRef.current = false;
       recognitionRef.current?.stop();
       setIsListening(false);
     } else {
       recordingStartTimeRef.current = Date.now();
       setSpeechMetrics({ wpm: 0, fillers: 0 });
-      recognitionRef.current?.start();
-      setIsListening(true);
+      setSpeechErrorMsg('');
+      shouldKeepListeningRef.current = true;
+      try {
+        recognitionRef.current?.start();
+        setIsListening(true);
+      } catch (err) {
+        console.error('Failed to start speech recognition', err);
+        shouldKeepListeningRef.current = false;
+        setSpeechErrorMsg('Unable to start microphone recognition in this browser.');
+        setIsListening(false);
+      }
     }
   };
 
@@ -255,6 +324,7 @@ export default function InterviewPage() {
 
     // Stop recording if active
     if (isListening) {
+      shouldKeepListeningRef.current = false;
       recognitionRef.current?.stop();
       setIsListening(false);
     }
@@ -270,15 +340,19 @@ export default function InterviewPage() {
     setIsLoading(true);
 
     try {
+      const sessionId = localStorage.getItem('session_id');
       const response = await axios.post('http://localhost:8000/api/interview/next-question', {
         summary: resumeSummary,
         // Send history with the newest user answer
         history: [...chatHistory, { role: 'candidate', text: answer }]
+      }, {
+        headers: sessionId ? { 'X-Session-ID': sessionId } : {}
       });
       setQuestionPhase(response.data.question, response.data.audio);
     } catch (error) {
       console.error("API Error", error);
-      alert('Connection sequence interrupted. Removing last input.');
+      const detail = error?.response?.data?.detail || error?.response?.data?.error || error?.message;
+      alert(`Connection sequence interrupted: ${detail}. Removing last input.`);
       // Graceful Rollback: Update Zustand store to remove the failed user item via direct access if needed
       useStore.setState((state) => ({
         chatHistory: state.chatHistory.slice(0, -1)
@@ -287,6 +361,49 @@ export default function InterviewPage() {
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const finalizeInterview = async (endingReason = 'manual_end') => {
+    if (hasFinalizedRef.current) return;
+    hasFinalizedRef.current = true;
+
+    if (globalAudio) globalAudio.pause();
+    if (isListening) {
+      shouldKeepListeningRef.current = false;
+      try {
+        recognitionRef.current?.stop();
+      } catch (e) {
+        console.warn(e);
+      }
+      setIsListening(false);
+    }
+
+    if (timerIntervalRef.current) {
+      clearInterval(timerIntervalRef.current);
+      timerIntervalRef.current = null;
+    }
+
+    const report = saveInterviewReport({
+      chatHistory,
+      mockConfig,
+      signalHistory: analyticsSnapshotRef.current.signalHistory,
+      startedAt: interviewStartedAtRef.current,
+      endedAt: new Date().toISOString(),
+      endingReason,
+    });
+
+    await persistSessionOnEnd({ action: 'COMPLETE', chatHistory, mockConfig });
+
+    useStore.setState({
+      resumeSummary: null,
+      isInterviewActive: false,
+      chatHistory: [],
+      currentQuestion: '',
+      currentAudioUrl: null
+    });
+
+    setIsEndModalOpen(false);
+    navigate(`/reports/${report.id}`);
   };
 
 
@@ -321,6 +438,13 @@ export default function InterviewPage() {
   // Phase 3: Active Side-by-Side Interview Layout (Awaiting Camera Auth -> API)
   return (
     <div className="h-screen w-full flex bg-[#0a0c20] overflow-hidden relative">
+      {isHardwareReady && (
+        <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50">
+          <div className={`text-sm font-mono px-4 py-2 rounded-full border shadow-xl ${timeLeftMs === 0 ? 'text-red-300 border-red-500/30 bg-red-500/10' : 'text-indigo-200 border-indigo-500/30 bg-[#101226]/95'}`}>
+            {formatTime(timeLeftMs ?? (mockConfig?.duration || 45) * 60 * 1000)} remaining
+          </div>
+        </div>
+      )}
 
       {/* Hide Tracker Toggle - Top Right */}
       {isHardwareReady && (
@@ -389,7 +513,7 @@ export default function InterviewPage() {
                     Session: {mockConfig?.role || 'SWE'} @ {mockConfig?.company || 'our company'}
                   </span>
                   <span className={`text-xs font-mono px-2 py-1 rounded-md border ${timeLeftMs === 0 ? 'text-red-300 border-red-500/30 bg-red-500/10' : 'text-indigo-300 border-indigo-500/30 bg-indigo-500/10'}`}>
-                    {formatTime(timeLeftMs)} / {String(mockConfig?.duration || 45).padStart(2,'0')}:00
+                    {formatTime(timeLeftMs ?? (mockConfig?.duration || 45) * 60 * 1000)} / {String(mockConfig?.duration || 45).padStart(2,'0')}:00
                   </span>
                 </div>
                 {chatHistory.length === 0 && !isLoading && (
@@ -421,6 +545,9 @@ export default function InterviewPage() {
                     </div>
                   )}
                 </div>
+                {speechErrorMsg && (
+                  <p className="text-xs text-amber-300 px-1">{speechErrorMsg}</p>
+                )}
                 <textarea
                   ref={textareaRef}
                   value={transcript}
@@ -464,7 +591,12 @@ export default function InterviewPage() {
       {/* RIGHT: Video and Emotion Hub */}
       <div className={`transition-all duration-500 overflow-hidden relative bg-[#0a0c20] flex flex-col ${isAnalyzerOpen ? 'flex-1' : 'w-0'}`}>
         <div className="flex-1 p-6 relative w-full h-full min-w-[500px]">
-          <FaceEmotionReader onReady={handleHardwareReady} />
+          <FaceEmotionReader
+            onReady={handleHardwareReady}
+            onAnalyticsChange={(snapshot) => {
+              analyticsSnapshotRef.current = snapshot;
+            }}
+          />
         </div>
       </div>
 
@@ -479,23 +611,10 @@ export default function InterviewPage() {
             </p>
             <div className="space-y-3">
               <button
-                onClick={async () => {
-                  if (globalAudio) globalAudio.pause();
-                  if (isListening) toggleListen();
-                  await persistSessionOnEnd({ action: 'COMPLETE', chatHistory, mockConfig });
-                  useStore.setState({
-                    resumeSummary: null,
-                    isInterviewActive: false,
-                    chatHistory: [],
-                    currentQuestion: '',
-                    currentAudioUrl: null
-                  });
-                  setIsEndModalOpen(false);
-                  navigate('/dashboard');
-                }}
+                onClick={() => finalizeInterview('manual_end')}
                 className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold"
               >
-                End gracefully and save to Previous Interviews
+                End interview and open final report
               </button>
               <button
                 onClick={async () => {
@@ -590,4 +709,3 @@ async function persistSessionOnEnd({ action, chatHistory, mockConfig }) {
     return false;
   }
 }
-

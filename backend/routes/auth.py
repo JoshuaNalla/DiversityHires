@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, Header
 from entities.models import UserCreate, UserLogin, UserInDB
 from database.mongodb import get_db
 from auth.security import get_password_hash, verify_password
@@ -36,3 +36,29 @@ async def login(credentials: UserLogin, db=Depends(get_db)):
     # Frontend will save this and return in X-Session-ID header
     session_id = str(user["_id"]) # In a real app we'd map this securely
     return {"message": "Login successful", "session_id": session_id}
+
+from bson import ObjectId
+
+@router.get("/profile")
+async def get_profile(db=Depends(get_db), session_id: str = Header(..., alias="X-Session-ID")):
+    try:
+        user = await db["users"].find_one({"_id": ObjectId(session_id)})
+    except Exception:
+        raise HTTPException(status_code=401, detail="Invalid session format")
+    
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+        
+    profile = user.get("profile", {
+        "first_name": "", 
+        "last_name": "", 
+        "target_roles": ["Software Engineer"], 
+        "resumes": []
+    })
+    
+    return {
+        "success": True,
+        "username": user.get("username", ""),
+        "email": user.get("email", ""),
+        "profile": profile
+    }

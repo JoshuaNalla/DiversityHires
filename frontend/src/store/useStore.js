@@ -22,11 +22,11 @@ export const useStore = create((set) => ({
   setQuestionPhase: (text, audioUrl) => set((state) => ({ 
     currentQuestion: text, 
     currentAudioUrl: audioUrl,
-    chatHistory: [...state.chatHistory, { role: 'interviewer', text, audioUrl }]
+    chatHistory: [...state.chatHistory, { role: 'interviewer', text, audioUrl, timestamp: new Date().toISOString() }]
   })),
   
   addUserResponse: (text) => set((state) => ({
-      chatHistory: [...state.chatHistory, { role: 'candidate', text }]
+      chatHistory: [...state.chatHistory, { role: 'candidate', text, timestamp: new Date().toISOString() }]
   })),
 
   setIsRecording: (isRecording) => set({ isRecording })

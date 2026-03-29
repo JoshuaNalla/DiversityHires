@@ -5,6 +5,8 @@ import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
 import InterviewPage from './pages/InterviewPage';
+import ProfilePage from './pages/ProfilePage';
+import InterviewReportPage from './pages/InterviewReportPage';
 
 function App() {
   return (
@@ -20,6 +22,8 @@ function App() {
         {/* Auth Required Routes */}
         <Route path="/dashboard" element={<DashboardPage />} />
         <Route path="/interview" element={<InterviewPage />} />
+        <Route path="/reports/:reportId" element={<InterviewReportPage />} />
+        <Route path="/profile" element={<ProfilePage />} />
       </Routes>
     </BrowserRouter>
   );

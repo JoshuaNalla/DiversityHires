@@ -1,15 +1,9 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { Camera, Square, Activity, Eye, TrendingUp, ChevronDown, ChevronUp } from 'lucide-react';
 import '../index.css';
+import { SIGNAL_CONFIG } from '../lib/interviewReports';
 
 const CONFIDENCE_HISTORY_LIMIT = 30;
-const SIGNAL_CONFIG = [
-  { key: 'confidence', label: 'Confidence', color: '#22d3ee' },
-  { key: 'engagement', label: 'Engagement', color: '#a3e635' },
-  { key: 'positivity', label: 'Positivity', color: '#f59e0b' },
-  { key: 'happiness', label: 'Happiness', color: '#fb7185' },
-  { key: 'stress', label: 'Stress', color: '#c084fc' },
-];
 
 function clamp(value, min = 0, max = 1) {
   return Math.min(max, Math.max(min, value));
@@ -144,7 +138,7 @@ function buildMetricPath(history, metricKey, width, height) {
     .join(' ');
 }
 
-export default function FaceEmotionReader({ onReady }) {
+export default function FaceEmotionReader({ onReady, onAnalyticsChange }) {
   const videoRef = useRef(null);
   const canvasRef = useRef(null);
   const streamRef = useRef(null); // Reference for safe unmount cleanup
@@ -161,7 +155,7 @@ export default function FaceEmotionReader({ onReady }) {
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
         video: { width: { ideal: 640 }, height: { ideal: 480 } },
-        audio: true
+        audio: false
       });
       streamRef.current = stream; // Securely cache stream for unmount stopping
       if (videoRef.current) {
@@ -198,6 +192,7 @@ export default function FaceEmotionReader({ onReady }) {
 
   const captureAndAnalyze = useCallback(async () => {
     if (!videoRef.current || !canvasRef.current || !isRecording) return;
+    if (videoRef.current.readyState < 2 || !videoRef.current.videoWidth || !videoRef.current.videoHeight) return;
     
     // Draw current video frame to canvas
     const canvas = canvasRef.current;
@@ -217,6 +212,10 @@ export default function FaceEmotionReader({ onReady }) {
           method: 'POST',
           body: formData
         });
+        if (!response.ok) {
+          console.warn('Backend analysis failed with status', response.status);
+          return;
+        }
         const data = await response.json();
         
         if (data && data.success) {
@@ -252,6 +251,16 @@ export default function FaceEmotionReader({ onReady }) {
       : null;
     return acc;
   }, {});
+
+  useEffect(() => {
+    if (onAnalyticsChange) {
+      onAnalyticsChange({
+        metrics,
+        signalHistory,
+        signalAverages,
+      });
+    }
+  }, [metrics, onAnalyticsChange, signalAverages, signalHistory]);
 
   // Display Action Units (Now MediaPipe Blendshapes)
   const renderAUs = () => {
@@ -414,5 +423,3 @@ export default function FaceEmotionReader({ onReady }) {
     </div>
   );
 }
-
-
