@@ -8,15 +8,15 @@ import SignupModal from '../components/SignupModal';
 function HomePage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
   const [isSignupOpen, setIsSignupOpen] = useState(false);
-  const characters = [
-    { name: 'Ali', type: 'The Stress Tester', desc: 'Strict, analytical, and relentless. Ali is designed to push your technical boundaries and see how you handle intense pressure.', color: '#991B1B', avatarColor: '#FCA5A5' },
-    { name: 'Martin', type: 'The Chill Mentor', desc: 'Relaxed and conversational. Martin provides a safe, low-stakes environment perfect for casually practicing your behavioral answers.', color: '#1E3A8A', avatarColor: '#60A5FA' },
-    { name: 'Kaleb', type: 'The Curveball', desc: 'Eccentric and unpredictable. Kaleb will ask bizarre theoretical questions to test your critical thinking and adaptability on the fly.', color: '#047857', avatarColor: '#6EE7B7' },
-    { name: 'Sara', type: 'The HR Specialist', desc: 'Focuses deeply on culture-fit and behavioral nuances. Sara analyzes your tone and empathy to ensure you project the right vibe.', color: '#6B21A8', avatarColor: '#D8B4FE' },
-    { name: 'Customizer', type: 'Build Your Own', desc: 'Dial in the exact aggressiveness, expertise, and company-culture you want to practice against.', color: '#374151', avatarColor: '#9CA3AF' }
-  ];
-
   const [activeIndex, setActiveIndex] = useState(0);
+
+  const characters = [
+    { name: 'Ali', type: 'The Stress Tester', desc: 'Strict, analytical, and relentless. Ali is designed to push your technical boundaries and see how you handle intense pressure.', bgColor: '#2d0a0a', avatarColor: '#fca5a5', accent: '#ef4444' },
+    { name: 'Martin', type: 'The Chill Mentor', desc: 'Relaxed and conversational. Martin provides a safe, low-stakes environment perfect for casually practicing your behavioral answers.', bgColor: '#061430', avatarColor: '#93c5fd', accent: '#3b82f6' },
+    { name: 'Kaleb', type: 'The Curveball', desc: 'Eccentric and unpredictable. Kaleb will ask bizarre theoretical questions to test your critical thinking and adaptability on the fly.', bgColor: '#031a0e', avatarColor: '#86efac', accent: '#22c55e' },
+    { name: 'Sara', type: 'The HR Specialist', desc: 'Focuses deeply on culture-fit and behavioral nuances. Sara analyzes your tone and empathy to ensure you project the right vibe.', bgColor: '#170d30', avatarColor: '#d8b4fe', accent: '#a855f7' },
+    { name: 'Customizer', type: 'Build Your Own', desc: 'Dial in the exact aggressiveness, expertise, and company-culture you want to practice against.', bgColor: '#0d1422', avatarColor: '#94a3b8', accent: '#6366f1' },
+  ];
 
   const scroll = (direction) => {
     if (direction === 'left') {
@@ -26,267 +26,363 @@ function HomePage() {
     }
   };
 
-  return (
-    <div className="bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container min-h-screen font-body overflow-x-hidden">
+  const companies = [
+    { name: 'Google', icon: 'bi-google', color: '#4285F4', bg: '#fff' },
+    { name: 'Amazon', icon: 'bi-amazon', color: '#FF9900', bg: '#111' },
+    { name: 'Apple', icon: 'bi-apple', color: '#1d1d1f', bg: '#f5f5f7' },
+    { name: 'Meta', icon: 'bi-meta', color: '#0082FB', bg: '#fff' },
+    { name: 'Microsoft', icon: 'bi-microsoft', color: '#00a4ef', bg: '#fff' },
+    { name: 'Nvidia', icon: 'bi-nvidia', color: '#76b900', bg: '#000' },
+    { name: 'Stripe', icon: 'bi-stripe', color: '#6772E5', bg: '#fff' },
+    { name: 'Uber', icon: null, letter: 'U', color: '#fff', bg: '#000' },
+  ];
 
-      {/* TopNavBar */}
-      <nav className="fixed top-0 w-full z-50 bg-[#101226]/80 backdrop-blur-xl border-b border-outline-variant/10">
-        <div className="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
-          <div className="text-xl font-semibold tracking-tighter text-[#e0e0fd] cursor-pointer" onClick={() => window.location.href = '/'}>Ethereal Prep</div>
-          <div className="hidden md:flex items-center gap-8">
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#practice">Practice</a>
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#resume">Resume</a>
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#personas">Personas</a>
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#pricing">Pricing</a>
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#about">About</a>
+  return (
+    <div className="bg-background text-on-surface min-h-screen font-body overflow-x-hidden">
+
+      {/* ── Navigation ─────────────────────────────────────────── */}
+      <nav className="fixed top-0 w-full z-50 bg-background/80 backdrop-blur-xl border-b border-outline-variant/20">
+        <div className="flex justify-between items-center max-w-7xl mx-auto px-8 h-[72px]">
+          <div
+            className="text-xl font-bold tracking-tight cursor-pointer select-none"
+            style={{ background: 'linear-gradient(135deg, #6366f1, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            onClick={() => window.location.href = '/'}
+          >
+            Ethereal Prep
           </div>
-          <div className="flex items-center gap-4">
-            <button className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors px-4 py-2" onClick={() => setIsLoginOpen(true)}>Log In</button>
-            <button className="bg-primary text-on-primary px-6 py-2 rounded-lg font-medium text-sm transition-transform scale-95 active:scale-90" onClick={() => setIsSignupOpen(true)}>Sign Up</button>
+
+          <div className="hidden md:flex items-center bg-surface-container-low border border-outline-variant/20 rounded-full px-2 py-1.5 gap-1">
+            {['Practice', 'Resume', 'Personas', 'Pricing', 'About'].map((item) => (
+              <a
+                key={item}
+                className="text-sm text-on-surface-variant hover:text-on-surface transition-colors px-4 py-1.5 rounded-full hover:bg-surface-container"
+                href={`#${item.toLowerCase()}`}
+              >
+                {item}
+              </a>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-3">
+            <button
+              className="text-sm text-on-surface-variant hover:text-on-surface transition-colors px-4 py-2 rounded-lg hover:bg-surface-container"
+              onClick={() => setIsLoginOpen(true)}
+            >
+              Log In
+            </button>
+            <button
+              className="btn-primary text-sm px-5 py-2.5"
+              onClick={() => setIsSignupOpen(true)}
+            >
+              Get Started
+            </button>
           </div>
         </div>
       </nav>
 
-      <main className="pt-20">
-        {/* Hero Section */}
-        <section className="relative min-h-[921px] flex items-center justify-center overflow-hidden px-8">
-          <div className="absolute inset-0 z-0">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-primary/5 rounded-full blur-[120px]"></div>
-            <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px]"></div>
+      <main className="pt-[72px]">
+
+        {/* ── Hero ───────────────────────────────────────────────── */}
+        <section className="relative min-h-screen flex items-center justify-center overflow-hidden px-8 py-24">
+          {/* Gradient orbs */}
+          <div className="absolute inset-0 z-0 overflow-hidden">
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-[60%] w-[900px] h-[900px] rounded-full opacity-[0.12]" style={{ background: 'radial-gradient(circle, #6366f1 0%, transparent 65%)' }} />
+            <div className="absolute top-1/4 left-1/5 w-[500px] h-[500px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #a78bfa 0%, transparent 70%)' }} />
+            <div className="absolute bottom-1/4 right-1/5 w-[400px] h-[400px] rounded-full opacity-[0.07]" style={{ background: 'radial-gradient(circle, #22d3ee 0%, transparent 70%)' }} />
+            {/* Dot grid */}
+            <div className="absolute inset-0 opacity-[0.15]" style={{ backgroundImage: 'radial-gradient(circle at 1px 1px, rgba(255,255,255,0.12) 1px, transparent 0)', backgroundSize: '40px 40px' }} />
           </div>
-          <div className="relative z-10 max-w-4xl text-center">
-            <span className="inline-block px-4 py-1.5 mb-6 rounded-full border border-outline-variant/20 bg-surface-container-low text-secondary text-[10px] uppercase tracking-[0.2em] font-medium">
+
+          <div className="relative z-10 max-w-5xl mx-auto text-center">
+            <div className="inline-flex items-center gap-2 px-4 py-2 mb-8 rounded-full border border-primary/20 bg-primary/5 text-xs uppercase tracking-[0.2em] font-semibold text-primary">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
               Powered by OpenFace & Gemini
-            </span>
-            <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-on-background leading-[1.1]">
-              Advance your <br /><span className="text-primary">interview prep</span>
+            </div>
+
+            <h1 className="text-6xl md:text-8xl font-black tracking-tighter mb-6 leading-[0.92]">
+              <span className="text-on-background">Master every</span>
+              <br />
+              <span style={{ background: 'linear-gradient(135deg, #6366f1 0%, #a78bfa 45%, #22d3ee 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                interview
+              </span>
             </h1>
-            <p className="text-lg md:text-xl text-outline mb-10 max-w-2xl mx-auto leading-relaxed">
-              Experience a sanctuary of focused preparation. Leverage deep AI insights to master your micro-expressions and refine your professional narrative.
+
+            <p className="text-lg md:text-xl text-on-surface-variant mb-12 max-w-2xl mx-auto leading-relaxed">
+              AI-powered mock interviews with real-time emotion analysis. Understand your micro-expressions, refine your narrative, and walk in with total confidence.
             </p>
+
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="w-full sm:w-auto px-10 py-4 bg-primary text-on-primary rounded-lg font-semibold text-lg hover:brightness-110 transition-all shadow-xl shadow-primary/10" onClick={() => setIsSignupOpen(true)}>Get Started</button>
-              <button className="w-full sm:w-auto px-10 py-4 border border-outline-variant/30 text-on-surface rounded-lg font-medium text-lg hover:bg-surface-container-low transition-all">Watch Demo</button>
+              <button
+                className="btn-primary w-full sm:w-auto px-10 py-4 text-base"
+                onClick={() => setIsSignupOpen(true)}
+              >
+                Start for free
+              </button>
+              <button className="w-full sm:w-auto px-10 py-4 rounded-xl border border-outline-variant/40 text-on-surface-variant hover:text-on-surface hover:border-outline-variant/70 hover:bg-surface-container-low transition-all text-base font-medium">
+                Watch Demo
+              </button>
+            </div>
+
+            {/* Social proof */}
+            <div className="mt-14 flex items-center justify-center gap-3 text-sm text-on-surface-variant">
+              <div className="flex -space-x-2">
+                {['#6366f1', '#22d3ee', '#a78bfa', '#f472b6'].map((c, i) => (
+                  <div key={i} className="w-8 h-8 rounded-full border-2 border-background flex items-center justify-center text-[10px] font-bold" style={{ background: `${c}30`, color: c }} >
+                    {String.fromCharCode(65 + i)}
+                  </div>
+                ))}
+              </div>
+              <span>Join <strong className="text-on-surface">2,400+</strong> candidates practicing daily</span>
             </div>
           </div>
         </section>
 
-        {/* Company Logos Strip */}
-        <section className="py-12 px-8 border-y border-outline-variant/10 bg-surface-container-lowest">
-          <div className="max-w-5xl mx-auto">
-            <p className="text-center text-[0.65rem] uppercase tracking-[0.25em] text-outline mb-8">Prep for top companies</p>
-            <div className="flex flex-wrap items-center justify-center gap-8">
-              {[
-                { name: 'Google',    icon: 'bi-google',    color: '#4285F4', bg: '#fff' },
-                { name: 'Amazon',    icon: 'bi-amazon',    color: '#FF9900', bg: '#111' },
-                { name: 'Apple',     icon: 'bi-apple',     color: '#1d1d1f', bg: '#fff' },
-                { name: 'Meta',      icon: 'bi-meta',      color: '#0082FB', bg: '#fff' },
-                { name: 'Microsoft', icon: 'bi-microsoft', color: '#00a4ef', bg: '#fff' },
-                { name: 'Nvidia',    icon: 'bi-nvidia',    color: '#76b900', bg: '#000' },
-                { name: 'Stripe',    icon: 'bi-stripe',    color: '#6772E5', bg: '#fff' },
-                { name: 'Uber',      icon: null, letter: 'U', color: '#fff',    bg: '#000' },
-              ].map(({ name, icon, letter, color, bg }) => (
-                <div key={name} className="flex flex-col items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
-                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: bg }}>
-                    {icon
-                      ? <i className={`bi ${icon} text-xl`} style={{ color }} />
-                      : <span className="text-sm font-bold" style={{ color }}>{letter}</span>
-                    }
-                  </div>
-                  <span className="text-[0.6rem] uppercase tracking-widest text-outline">{name}</span>
+        {/* ── Company Logos ───────────────────────────────────────── */}
+        <section className="py-16 px-8 border-y border-outline-variant/15 bg-surface-container-lowest">
+          <p className="text-center text-[0.65rem] uppercase tracking-[0.3em] text-outline mb-10 font-semibold">Prepare for top-tier companies</p>
+          <div className="flex flex-wrap items-center justify-center gap-6 max-w-4xl mx-auto">
+            {companies.map(({ name, icon, letter, color, bg }) => (
+              <div key={name} className="flex flex-col items-center gap-2 group">
+                <div
+                  className="w-11 h-11 rounded-xl flex items-center justify-center transition-all group-hover:scale-110 group-hover:shadow-lg group-hover:shadow-black/30"
+                  style={{ background: bg }}
+                >
+                  {icon
+                    ? <i className={`bi ${icon} text-xl`} style={{ color }} />
+                    : <span className="text-sm font-bold" style={{ color }}>{letter}</span>
+                  }
                 </div>
-              ))}
-            </div>
+                <span className="text-[0.6rem] uppercase tracking-widest text-outline group-hover:text-on-surface-variant transition-colors">{name}</span>
+              </div>
+            ))}
           </div>
         </section>
 
-        {/* AI Interpreter Section */}
-        <section id="practice" className="py-32 px-8 bg-surface-container-low">
-          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
+        {/* ── AI Emotion Section ────────────────────────────────── */}
+        <section id="practice" className="py-32 px-8">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
             <div>
-              <h2 className="text-3xl font-bold mb-6 text-on-background">Video based AI Emotion Interpreter</h2>
-              <p className="text-outline text-lg mb-8 leading-relaxed">
-                Our proprietary OpenFace implementation decodes subtle micro-expressions in real-time. Understand the silent signals you send—confidence, hesitation, or engagement—and learn to align your physical presence with your verbal expertise.
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-full bg-secondary/10 border border-secondary/20 text-secondary text-xs font-semibold tracking-wide">
+                <span className="material-symbols-outlined text-sm">face_retouching_natural</span>
+                Emotion Intelligence
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-on-background leading-[1.05]">
+                Real-time emotion<br />analysis
+              </h2>
+              <p className="text-on-surface-variant text-lg mb-10 leading-relaxed">
+                Our OpenFace implementation decodes micro-expressions in real-time. Understand the silent signals you send — confidence, hesitation, engagement — and learn to align your physical presence with your expertise.
               </p>
-              <ul className="space-y-6">
-                <li className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-secondary mt-1">biotech</span>
-                  <div>
-                    <h4 className="font-semibold text-on-surface">Precision Tracking</h4>
-                    <p className="text-sm text-outline">Mapping 68 facial landmarks to detect stress and authenticity levels.</p>
+              <div className="space-y-5">
+                {[
+                  { icon: 'biotech', title: 'Precision Tracking', desc: '68 facial landmark detection for authentic stress and confidence measurement.', color: 'secondary' },
+                  { icon: 'psychology', title: 'Sentiment Analysis', desc: 'Gemini-powered deep contextual understanding of your verbal responses.', color: 'secondary' },
+                  { icon: 'insights', title: 'Actionable Feedback', desc: 'Get specific, timestamped insights to improve between sessions.', color: 'secondary' },
+                ].map(item => (
+                  <div key={item.title} className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-secondary/10 border border-secondary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="material-symbols-outlined text-secondary text-base">{item.icon}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-on-surface mb-1">{item.title}</h4>
+                      <p className="text-sm text-on-surface-variant leading-relaxed">{item.desc}</p>
+                    </div>
                   </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-secondary mt-1">analytics</span>
-                  <div>
-                    <h4 className="font-semibold text-on-surface">Sentiment Analysis</h4>
-                    <p className="text-sm text-outline">Powered by Gemini for deep contextual understanding of your responses.</p>
-                  </div>
-                </li>
-              </ul>
+                ))}
+              </div>
             </div>
 
             <div className="relative">
-              <div className="aspect-video rounded-2xl overflow-hidden bg-surface-container-highest border border-outline-variant/20 shadow-2xl relative flex items-center justify-center">
-
-                {/* Visual Placeholder (Replaced Image) */}
-                <div className="absolute inset-0 flex items-center justify-center bg-[#1c1e33] flex-col">
-                  <span className="material-symbols-outlined text-6xl text-primary/30 mb-2">videocam</span>
-                  <span className="text-primary font-bold tracking-widest uppercase opacity-50 text-[10px]">
-                    [ VIDEO AI VISUALIZATION PLACEHOLDER ]
-                  </span>
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-surface-container border border-outline-variant/20 shadow-2xl shadow-black/50 relative">
+                <div className="absolute inset-0 flex items-center justify-center bg-surface-container flex-col">
+                  <span className="material-symbols-outlined text-7xl text-primary/15 mb-2">videocam</span>
+                  <span className="text-primary/25 font-bold tracking-widest uppercase text-[10px]">Video AI Visualization</span>
                 </div>
+                <div className="absolute inset-0 bg-gradient-to-t from-background/90 via-transparent to-transparent" />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
-
-                {/* UI Elements Over Placeholder */}
-                <div className="absolute top-4 right-4 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-primary/20">
+                {/* Live indicator */}
+                <div className="absolute top-4 right-4 bg-background/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-outline-variant/30">
                   <div className="flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-error animate-pulse"></span>
-                    <span className="text-[10px] font-bold tracking-widest text-[#e0e0fd] uppercase">Live Analysis</span>
+                    <span className="w-2 h-2 rounded-full bg-error animate-pulse" />
+                    <span className="text-[10px] font-bold tracking-widest text-on-surface uppercase">Live</span>
                   </div>
                 </div>
 
-                <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
-                  <div className="space-y-1">
-                    <div className="text-[10px] uppercase tracking-tighter text-secondary">Confidence Score</div>
-                    <div className="text-2xl font-bold text-[#e0e0fd]">92%</div>
-                  </div>
-                  <div className="flex gap-1 h-12 items-end">
-                    <div className="w-1 bg-primary h-[20%] rounded-full"></div>
-                    <div className="w-1 bg-primary h-[40%] rounded-full"></div>
-                    <div className="w-1 bg-primary h-[80%] rounded-full"></div>
-                    <div className="w-1 bg-primary h-[60%] rounded-full"></div>
-                    <div className="w-1 bg-primary h-[90%] rounded-full"></div>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Resume Analysis Section */}
-        <section id="resume" className="py-32 px-8 bg-background">
-          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
-
-            {/* Visual Placeholder (Left Side) */}
-            <div className="relative order-2 lg:order-1">
-              <div className="aspect-video rounded-2xl overflow-hidden bg-surface-container-highest border border-outline-variant/20 shadow-xl relative flex items-center justify-center">
-
-                {/* Visual Placeholder */}
-                <div className="absolute inset-0 flex items-center justify-center bg-[#1c1e33] flex-col">
-                  <span className="material-symbols-outlined text-6xl text-primary/30 mb-2">dashboard_customize</span>
-                  <span className="text-primary font-bold tracking-widest uppercase opacity-50 text-[10px]">
-                    [ CUSTOMIZATION UI PLACEHOLDER ]
-                  </span>
-                </div>
-
-                <div className="absolute inset-0 bg-gradient-to-tr from-primary/5 to-transparent opacity-50"></div>
-              </div>
-            </div>
-
-            {/* Text Content (Right Side) */}
-            <div className="order-1 lg:order-2">
-              <h2 className="text-3xl font-bold mb-6 text-on-background">Customize Your Interview Experience</h2>
-              <p className="text-outline text-lg mb-8 leading-relaxed">
-                Tailor every aspect of your mock interview. Tell us where you want to work and what you're applying for, and we'll dynamically construct the perfect high-stakes environment to test your readiness.
-              </p>
-              <ul className="space-y-6">
-                <li className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-secondary mt-1">business</span>
-                  <div>
-                    <h4 className="font-semibold text-on-surface">Target Company & Role</h4>
-                    <p className="text-sm text-outline">Specify your dream company and role seniority. Our AI adjusts the difficulty and culture-fit questions accordingly.</p>
-                    <div className="flex items-center gap-2 mt-3">
-                      {[
-                        { icon: 'bi-google',    color: '#4285F4', bg: '#fff' },
-                        { icon: 'bi-amazon',    color: '#FF9900', bg: '#111' },
-                        { icon: 'bi-meta',      color: '#0082FB', bg: '#fff' },
-                        { icon: 'bi-microsoft', color: '#00a4ef', bg: '#fff' },
-                        { icon: 'bi-apple',     color: '#1d1d1f', bg: '#fff' },
-                      ].map(({ icon, color, bg }) => (
-                        <div key={icon} className="w-7 h-7 rounded-lg flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity" style={{ background: bg }}>
-                          <i className={`bi ${icon} text-sm`} style={{ color }} />
-                        </div>
-                      ))}
-                      <span className="text-xs text-outline">+ more</span>
+                {/* Stats overlay */}
+                <div className="absolute bottom-4 left-4 right-4">
+                  <div className="bg-background/85 backdrop-blur-xl rounded-xl p-4 border border-outline-variant/20">
+                    <div className="flex items-end justify-between">
+                      <div>
+                        <div className="text-xs text-on-surface-variant uppercase tracking-wider mb-1">Confidence</div>
+                        <div className="text-3xl font-black text-on-surface">92%</div>
+                      </div>
+                      <div className="flex gap-1.5 h-12 items-end">
+                        {[25, 45, 80, 65, 90, 55, 75].map((h, i) => (
+                          <div key={i} className="w-2 rounded-full" style={{ height: `${h}%`, background: 'linear-gradient(to top, #6366f1, #a78bfa)' }} />
+                        ))}
+                      </div>
+                    </div>
+                    <div className="mt-3 w-full bg-surface-container h-1.5 rounded-full overflow-hidden">
+                      <div className="h-full rounded-full w-[92%]" style={{ background: 'linear-gradient(to right, #6366f1, #22d3ee)' }} />
                     </div>
                   </div>
-                </li>
-                <li className="flex items-start gap-4">
-                  <span className="material-symbols-outlined text-secondary mt-1">upload_file</span>
-                  <div>
-                    <h4 className="font-semibold text-on-surface">Resume Context Extraction</h4>
-                    <p className="text-sm text-outline">Drag and drop your resume. Personas will adapt their inquiries to drill into your specific experience claims and identify background gaps.</p>
-                  </div>
-                </li>
-              </ul>
-            </div>
+                </div>
+              </div>
 
+              {/* Floating emotion badge */}
+              <div className="absolute -left-6 top-1/3 bg-surface-container-high border border-outline-variant/30 rounded-xl p-4 shadow-2xl shadow-black/50 w-48 backdrop-blur-xl">
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="w-2 h-2 rounded-full bg-secondary" />
+                  <span className="text-[10px] font-bold text-on-surface-variant uppercase tracking-wider">Detected</span>
+                </div>
+                <div className="text-sm font-bold text-on-surface">Confident</div>
+                <div className="text-xs text-on-surface-variant mt-0.5">Slight tension in jaw</div>
+              </div>
+            </div>
           </div>
         </section>
 
-        {/* Personas Section (Carousel logic kept from previous, styling adapted to Ethereal theme) */}
-        <section id="personas" className="py-32 px-8">
-          <div className="max-w-7xl mx-auto">
-            <div className="mb-16">
-              <h2 className="text-3xl font-bold mb-4 text-on-background">Choose from a variety of personalities</h2>
-              <p className="text-outline max-w-xl">Every company has a different vibe. Train against diverse personas to ensure you are never caught off guard.</p>
+        {/* ── Resume Section ────────────────────────────────────── */}
+        <section id="resume" className="py-32 px-8 bg-surface-container-lowest">
+          <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-16 items-center">
+            {/* Visual */}
+            <div className="relative order-2 lg:order-1">
+              <div className="aspect-[4/3] rounded-2xl overflow-hidden bg-surface-container border border-outline-variant/20 shadow-2xl shadow-black/50 relative">
+                <div className="absolute inset-0 flex items-center justify-center bg-surface-container flex-col">
+                  <span className="material-symbols-outlined text-7xl text-primary/15 mb-2">dashboard_customize</span>
+                  <span className="text-primary/25 font-bold tracking-widest uppercase text-[10px]">Customization UI</span>
+                </div>
+                <div className="absolute inset-0" style={{ background: 'linear-gradient(135deg, rgba(99,102,241,0.06) 0%, transparent 60%)' }} />
+              </div>
+
+              {/* Floating tags */}
+              <div className="absolute bottom-6 -right-4 bg-surface-container-high border border-outline-variant/30 rounded-xl px-4 py-2.5 shadow-xl backdrop-blur-xl">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-[#4285F4]" />
+                  <span className="text-xs font-semibold text-on-surface">Google • L5 SWE</span>
+                </div>
+              </div>
+              <div className="absolute top-6 -right-4 bg-surface-container-high border border-outline-variant/30 rounded-xl px-4 py-2.5 shadow-xl backdrop-blur-xl">
+                <div className="flex items-center gap-2">
+                  <div className="w-2 h-2 rounded-full bg-primary" />
+                  <span className="text-xs font-semibold text-on-surface">System Design</span>
+                </div>
+              </div>
             </div>
 
-            {/* MUI Carousel integrated into Tailwind Layout */}
-            <Box
-              sx={{
-                position: 'relative',
-                width: '100%',
-                height: '480px',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center',
-                overflow: 'hidden',
-                py: 4
-              }}
-            >
+            {/* Text */}
+            <div className="order-1 lg:order-2">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold tracking-wide">
+                <span className="material-symbols-outlined text-sm">tune</span>
+                Customization
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6 text-on-background leading-[1.05]">
+                Tailored to your<br />exact target
+              </h2>
+              <p className="text-on-surface-variant text-lg mb-10 leading-relaxed">
+                Tell us where you want to work and what you're applying for. We'll dynamically construct the perfect high-stakes environment that mirrors that company's culture.
+              </p>
+              <div className="space-y-5">
+                {[
+                  { icon: 'business', title: 'Target Company & Role', desc: 'Specify your dream company and seniority. Our AI adjusts difficulty and culture-fit questions accordingly.' },
+                  { icon: 'upload_file', title: 'Resume Context', desc: 'Drag in your resume. Personas drill into your specific experience claims and surface background gaps.' },
+                ].map(item => (
+                  <div key={item.title} className="flex items-start gap-4">
+                    <div className="w-10 h-10 rounded-xl bg-primary/10 border border-primary/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+                      <span className="material-symbols-outlined text-primary text-base">{item.icon}</span>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-on-surface mb-1">{item.title}</h4>
+                      <p className="text-sm text-on-surface-variant leading-relaxed">{item.desc}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+              <div className="flex items-center gap-2 mt-6">
+                {[
+                  { icon: 'bi-google', color: '#4285F4', bg: '#fff' },
+                  { icon: 'bi-amazon', color: '#FF9900', bg: '#111' },
+                  { icon: 'bi-meta', color: '#0082FB', bg: '#fff' },
+                  { icon: 'bi-microsoft', color: '#00a4ef', bg: '#fff' },
+                  { icon: 'bi-apple', color: '#1d1d1f', bg: '#f5f5f7' },
+                ].map(({ icon, color, bg }) => (
+                  <div key={icon} className="w-8 h-8 rounded-lg flex items-center justify-center hover:scale-110 transition-transform shadow-md" style={{ background: bg }}>
+                    <i className={`bi ${icon} text-sm`} style={{ color }} />
+                  </div>
+                ))}
+                <span className="text-xs text-outline ml-1">+ more</span>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* ── Personas Section ──────────────────────────────────── */}
+        <section id="personas" className="py-32 px-8">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-full bg-tertiary/10 border border-tertiary/20 text-tertiary text-xs font-semibold tracking-wide">
+                <span className="material-symbols-outlined text-sm">psychology</span>
+                AI Personas
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4 text-on-background">
+                Train against diverse<br />personalities
+              </h2>
+              <p className="text-on-surface-variant max-w-xl mx-auto">Every company has a different vibe. Practice with interviewers who challenge you in fundamentally different ways.</p>
+            </div>
+
+            <Box sx={{ position: 'relative', width: '100%', height: '460px', display: 'flex', justifyContent: 'center', alignItems: 'center', overflow: 'hidden', py: 4 }}>
               {characters.map((char, index) => {
                 let offset = index - activeIndex;
                 if (offset > 2) offset -= characters.length;
                 if (offset < -2) offset += characters.length;
-
                 const isVisible = Math.abs(offset) <= 2;
                 if (!isVisible) return null;
-
                 return (
                   <Card
                     key={index}
                     onClick={() => setActiveIndex(index)}
                     sx={{
                       position: 'absolute',
-                      backgroundColor: '#1c1e33', // surface-container from generic config
-                      border: offset === 0 ? '2px solid #d2c2cf' : '1px solid #4b454a', // primary vs outline-variant
-                      borderRadius: '16px',
-                      width: '300px',
-                      height: '420px',
+                      background: offset === 0
+                        ? `linear-gradient(160deg, ${char.bgColor} 0%, #101829 100%)`
+                        : '#0c1220',
+                      border: offset === 0 ? `1px solid ${char.accent}35` : '1px solid #1e293b',
+                      borderRadius: '20px',
+                      width: '280px',
+                      height: '380px',
                       display: 'flex',
                       flexDirection: 'column',
                       transition: 'all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1)',
-                      transform: `translateX(${offset * 300}px) scale(${offset === 0 ? 1 : 0.85})`,
-                      opacity: offset === 0 ? 1 : 0.4,
+                      transform: `translateX(${offset * 290}px) scale(${offset === 0 ? 1 : 0.82})`,
+                      opacity: offset === 0 ? 1 : 0.3,
                       zIndex: 10 - Math.abs(offset),
                       cursor: offset === 0 ? 'default' : 'pointer',
                       pointerEvents: 'auto',
-                      boxShadow: offset === 0 ? '0 20px 40px -10px rgba(0,0,0,0.5)' : 'none'
+                      boxShadow: offset === 0 ? `0 30px 60px -15px ${char.accent}20` : 'none',
                     }}
                   >
-                    <Box sx={{ display: 'flex', justifyContent: 'center', pt: 4, pb: 2 }}>
-                      <Avatar sx={{ width: 100, height: 100, backgroundColor: char.color, color: char.avatarColor }} />
+                    <Box sx={{ display: 'flex', justifyContent: 'center', pt: 5, pb: 2 }}>
+                      <Avatar sx={{
+                        width: 80,
+                        height: 80,
+                        background: `linear-gradient(135deg, ${char.bgColor}, ${char.accent}50)`,
+                        border: `2px solid ${char.accent}30`,
+                        fontSize: '2rem',
+                        fontWeight: 900,
+                        fontFamily: 'Inter',
+                        color: char.avatarColor,
+                      }}>
+                        {char.name[0]}
+                      </Avatar>
                     </Box>
-
-                    <Box sx={{ height: '1px', backgroundColor: '#4b454a', width: '100%', mb: 2 }} />
-
+                    <Box sx={{ height: '1px', background: 'rgba(255,255,255,0.04)', width: '100%', mb: 2 }} />
                     <CardContent sx={{ textAlign: 'center', p: 3, pt: 1, overflowY: 'auto' }}>
-                      <Typography variant="h5" sx={{ fontWeight: '900', color: '#e0e0fd', mb: 0.5, fontFamily: 'Inter' }}>{char.name}</Typography>
-                      <Typography variant="subtitle2" sx={{ color: char.avatarColor, fontWeight: 'bold', mb: 2, letterSpacing: '0.1em', fontFamily: 'Inter' }}>{char.type}</Typography>
-                      <Typography variant="body2" sx={{ color: '#968e94', lineHeight: 1.6, fontFamily: 'Inter' }}>
+                      <Typography variant="h5" sx={{ fontWeight: 800, color: '#e2e8f0', mb: 0.5, fontFamily: 'Inter', letterSpacing: '-0.02em' }}>
+                        {char.name}
+                      </Typography>
+                      <Typography variant="subtitle2" sx={{ color: char.avatarColor, fontWeight: 600, mb: 2, letterSpacing: '0.08em', fontSize: '0.65rem', textTransform: 'uppercase', fontFamily: 'Inter' }}>
+                        {char.type}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: '#94a3b8', lineHeight: 1.75, fontFamily: 'Inter', fontSize: '0.825rem' }}>
                         {char.desc}
                       </Typography>
                     </CardContent>
@@ -295,132 +391,168 @@ function HomePage() {
               })}
             </Box>
 
-            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4, mt: 4 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 2, mt: 4 }}>
               <IconButton
                 onClick={() => scroll('left')}
-                sx={{ color: '#d2c2cf', border: '1px solid #4b454a', '&:hover': { backgroundColor: 'rgba(210, 194, 207, 0.1)' } }}
+                sx={{ color: '#6366f1', border: '1px solid rgba(99,102,241,0.2)', background: 'rgba(99,102,241,0.05)', '&:hover': { background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)' } }}
               >
-                <ArrowBackIosNewIcon />
+                <ArrowBackIosNewIcon fontSize="small" />
               </IconButton>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                {characters.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setActiveIndex(i)}
+                    style={{
+                      height: '6px',
+                      borderRadius: '9999px',
+                      border: 'none',
+                      padding: 0,
+                      transition: 'all 0.3s ease',
+                      width: i === activeIndex ? '24px' : '6px',
+                      background: i === activeIndex ? '#6366f1' : 'rgba(99,102,241,0.2)',
+                      cursor: 'pointer',
+                    }}
+                  />
+                ))}
+              </div>
               <IconButton
                 onClick={() => scroll('right')}
-                sx={{ color: '#d2c2cf', border: '1px solid #4b454a', '&:hover': { backgroundColor: 'rgba(210, 194, 207, 0.1)' } }}
+                sx={{ color: '#6366f1', border: '1px solid rgba(99,102,241,0.2)', background: 'rgba(99,102,241,0.05)', '&:hover': { background: 'rgba(99,102,241,0.15)', border: '1px solid rgba(99,102,241,0.4)' } }}
               >
-                <ArrowForwardIosIcon />
+                <ArrowForwardIosIcon fontSize="small" />
               </IconButton>
             </Box>
 
-            <div className="mt-16 p-12 rounded-3xl bg-gradient-to-r from-surface-container-low to-surface-container-highest flex flex-col md:flex-row items-center justify-between gap-8 border border-outline-variant/10">
-              <div className="max-w-md">
-                <h3 className="text-2xl font-bold mb-2 text-on-background">Build Your Own</h3>
-                <p className="text-outline">Customize traits, industry focus, and questioning style to mirror your specific dream company.</p>
+            {/* Build Your Own CTA */}
+            <div className="mt-16 p-10 rounded-3xl border border-outline-variant/20 bg-surface-container-low relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+              <div className="absolute inset-0 opacity-30 pointer-events-none" style={{ background: 'radial-gradient(ellipse at top left, rgba(99,102,241,0.15), transparent 60%)' }} />
+              <div className="relative max-w-md">
+                <h3 className="text-2xl font-bold mb-2 text-on-background">Build Your Own Persona</h3>
+                <p className="text-on-surface-variant text-sm leading-relaxed">Customize traits, industry focus, and questioning style to mirror your specific dream company's interview culture.</p>
               </div>
-              <button className="px-8 py-3 bg-on-surface text-surface rounded-lg font-bold hover:bg-primary transition-all flex items-center gap-2">
-                <span className="material-symbols-outlined">tune</span>
+              <button className="relative btn-primary px-8 py-3.5 flex items-center gap-2 whitespace-nowrap text-sm">
+                <span className="material-symbols-outlined text-base">tune</span>
                 Launch Character Customizer
               </button>
             </div>
           </div>
         </section>
 
-        {/* Pricing Section */}
-        <section id="pricing" className="py-32 px-8 bg-surface-container-lowest border-t border-outline-variant/10">
+        {/* ── Pricing ───────────────────────────────────────────── */}
+        <section id="pricing" className="py-32 px-8 bg-surface-container-lowest">
           <div className="max-w-4xl mx-auto">
             <div className="text-center mb-16">
-              <h2 className="text-4xl font-bold mb-4 text-on-background">The Right Path for Your Journey</h2>
-              <p className="text-outline">Invest in your career growth with flexible options.</p>
+              <div className="inline-flex items-center gap-2 px-3 py-1.5 mb-6 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold tracking-wide">
+                <span className="material-symbols-outlined text-sm">workspace_premium</span>
+                Pricing
+              </div>
+              <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-4 text-on-background">
+                Invest in your career
+              </h2>
+              <p className="text-on-surface-variant">Flexible options for every stage of your journey.</p>
             </div>
 
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Free Plan */}
-              <div className="p-10 rounded-2xl bg-surface border border-outline-variant/10 flex flex-col h-full">
-                <h3 className="text-xl font-bold mb-2 text-on-background">Free</h3>
-                <div className="text-3xl font-bold mb-6 text-on-background">$0<span className="text-sm text-outline font-normal">/mo</span></div>
-
-                <ul className="space-y-4 mb-10 flex-grow text-on-surface">
-                  <li className="flex items-center gap-3 text-sm">
-                    <span className="material-symbols-outlined text-secondary text-lg">check_circle</span>
-                    2 Mock interviews per month
-                  </li>
-                  <li className="flex items-center gap-3 text-sm">
-                    <span className="material-symbols-outlined text-secondary text-lg">check_circle</span>
-                    Standard persona access
-                  </li>
-                  <li className="flex items-center gap-3 text-sm">
-                    <span className="material-symbols-outlined text-secondary text-lg">check_circle</span>
-                    Basic text feedback
-                  </li>
+            <div className="grid md:grid-cols-2 gap-6">
+              {/* Free */}
+              <div className="p-8 rounded-2xl bg-surface-container border border-outline-variant/20 flex flex-col">
+                <div className="mb-6">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-on-surface-variant mb-4">Free</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black text-on-background">$0</span>
+                    <span className="text-on-surface-variant text-sm">/month</span>
+                  </div>
+                </div>
+                <ul className="space-y-3.5 mb-8 flex-grow">
+                  {[
+                    '2 mock interviews per month',
+                    'Standard persona access',
+                    'Basic text feedback',
+                  ].map(f => (
+                    <li key={f} className="flex items-center gap-3 text-sm text-on-surface-variant">
+                      <div className="w-5 h-5 rounded-full bg-surface-container-high border border-outline-variant/40 flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-outline" style={{ fontSize: '12px' }}>check</span>
+                      </div>
+                      {f}
+                    </li>
+                  ))}
                 </ul>
-                <button className="w-full py-4 border border-outline-variant/30 text-on-surface rounded-lg font-bold hover:bg-surface-container transition-all">Start Practicing</button>
+                <button className="w-full py-3.5 rounded-xl border border-outline-variant/40 text-on-surface-variant hover:text-on-surface hover:border-outline-variant/70 hover:bg-surface-container-high transition-all font-semibold text-sm">
+                  Start practicing
+                </button>
               </div>
 
-              {/* Pro Plan */}
-              <div className="p-10 rounded-2xl bg-surface-container-highest border-2 border-primary/20 flex flex-col h-full relative overflow-hidden">
-                <div className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold px-4 py-1 rounded-bl-lg uppercase tracking-widest">Recommended</div>
-                <h3 className="text-xl font-bold mb-2 text-on-background">Pro Plan</h3>
-                <div className="text-3xl font-bold mb-6 text-on-background">$14.99<span className="text-sm text-outline font-normal">/mo</span></div>
-
-                <ul className="space-y-4 mb-10 flex-grow text-on-surface">
-                  <li className="flex items-center gap-3 text-sm">
-                    <span className="material-symbols-outlined text-primary text-lg" data-weight="fill">check_circle</span>
-                    Unlimited Mock interviews
-                  </li>
-                  <li className="flex items-center gap-3 text-sm">
-                    <span className="material-symbols-outlined text-primary text-lg" data-weight="fill">check_circle</span>
-                    OpenFace emotion tracking
-                  </li>
-                  <li className="flex items-center gap-3 text-sm">
-                    <span className="material-symbols-outlined text-primary text-lg" data-weight="fill">check_circle</span>
-                    Deep Gemini AI insights
-                  </li>
-                  <li className="flex items-center gap-3 text-sm">
-                    <span className="material-symbols-outlined text-primary text-lg" data-weight="fill">check_circle</span>
-                    Custom persona builder
-                  </li>
-                  <li className="flex items-center gap-3 text-sm">
-                    <span className="material-symbols-outlined text-primary text-lg" data-weight="fill">check_circle</span>
-                    Transcript analysis & sharing
-                  </li>
+              {/* Pro */}
+              <div className="relative p-8 rounded-2xl flex flex-col overflow-hidden" style={{ background: 'linear-gradient(160deg, #131d3a 0%, #0c1220 100%)', border: '1px solid rgba(99,102,241,0.25)' }}>
+                <div className="absolute inset-0 pointer-events-none" style={{ background: 'radial-gradient(ellipse at top right, rgba(99,102,241,0.15), transparent 60%)' }} />
+                <div className="absolute top-5 right-5 bg-primary text-on-primary text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-widest">
+                  Most Popular
+                </div>
+                <div className="relative mb-6">
+                  <h3 className="text-xs font-bold uppercase tracking-widest text-primary mb-4">Pro</h3>
+                  <div className="flex items-baseline gap-1">
+                    <span className="text-5xl font-black text-on-background">$14</span>
+                    <span className="text-on-surface-variant text-xl font-bold">.99</span>
+                    <span className="text-on-surface-variant text-sm">/month</span>
+                  </div>
+                </div>
+                <ul className="space-y-3.5 mb-8 flex-grow relative">
+                  {[
+                    'Unlimited mock interviews',
+                    'OpenFace emotion tracking',
+                    'Deep Gemini AI insights',
+                    'Custom persona builder',
+                    'Transcript analysis & sharing',
+                    'Priority support',
+                  ].map(f => (
+                    <li key={f} className="flex items-center gap-3 text-sm text-on-surface">
+                      <div className="w-5 h-5 rounded-full bg-primary/15 border border-primary/30 flex items-center justify-center flex-shrink-0">
+                        <span className="material-symbols-outlined text-primary" style={{ fontSize: '12px' }}>check</span>
+                      </div>
+                      {f}
+                    </li>
+                  ))}
                 </ul>
-                <button className="w-full py-4 bg-primary text-on-primary rounded-lg font-bold hover:brightness-110 transition-all shadow-lg shadow-primary/20">Go Pro Now</button>
+                <button className="relative btn-primary w-full py-3.5 text-sm font-bold">
+                  Get Pro now
+                </button>
               </div>
             </div>
           </div>
         </section>
+
       </main>
 
-      {/* Footer */}
-      <footer id="about" className="w-full py-12 border-t border-outline-variant/20 bg-background">
-        <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-8 gap-6">
-          <div className="flex flex-col gap-2 items-center md:items-start">
-            <div className="text-lg font-bold text-on-background">Ethereal Prep</div>
-            <p className="font-['Inter'] text-[10px] uppercase tracking-[0.05rem] text-outline">© 2024 Ethereal Prep. The Silent Coach for your career journey.</p>
+      {/* ── Footer ──────────────────────────────────────────────── */}
+      <footer id="about" className="py-16 border-t border-outline-variant/20 bg-background">
+        <div className="max-w-7xl mx-auto px-8 flex flex-col md:flex-row justify-between items-center gap-6">
+          <div>
+            <div
+              className="text-lg font-bold mb-1.5"
+              style={{ background: 'linear-gradient(135deg, #6366f1, #a78bfa)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
+            >
+              Ethereal Prep
+            </div>
+            <p className="text-[0.65rem] uppercase tracking-wider text-outline">© 2024 Ethereal Prep · The Silent Coach for your career journey.</p>
           </div>
-          <div className="flex gap-8">
-            <a className="font-['Inter'] text-[10px] uppercase tracking-[0.05rem] text-outline hover:text-secondary transition-colors" href="#">Privacy Policy</a>
-            <a className="font-['Inter'] text-[10px] uppercase tracking-[0.05rem] text-outline hover:text-secondary transition-colors" href="#">Terms of Service</a>
-            <a className="font-['Inter'] text-[10px] uppercase tracking-[0.05rem] text-outline hover:text-secondary transition-colors" href="#">Contact</a>
-            <a className="font-['Inter'] text-[10px] uppercase tracking-[0.05rem] text-outline hover:text-secondary transition-colors" href="#">Careers</a>
+          <div className="flex gap-6">
+            {['Privacy Policy', 'Terms of Service', 'Contact', 'Careers'].map(link => (
+              <a key={link} className="text-xs text-outline hover:text-on-surface-variant transition-colors" href="#">{link}</a>
+            ))}
           </div>
         </div>
       </footer>
 
       {isLoginOpen && (
-        <LoginModal 
-          onClose={() => setIsLoginOpen(false)} 
-          onSwitchToSignup={() => {
-            setIsLoginOpen(false);
-            setIsSignupOpen(true);
-          }} 
+        <LoginModal
+          onClose={() => setIsLoginOpen(false)}
+          onSwitchToSignup={() => { setIsLoginOpen(false); setIsSignupOpen(true); }}
         />
       )}
       {isSignupOpen && (
-        <SignupModal 
-          onClose={() => setIsSignupOpen(false)} 
-          onSwitchToLogin={() => {
-            setIsSignupOpen(false);
-            setIsLoginOpen(true);
-          }} 
+        <SignupModal
+          onClose={() => setIsSignupOpen(false)}
+          onSwitchToLogin={() => { setIsSignupOpen(false); setIsLoginOpen(true); }}
         />
       )}
     </div>
