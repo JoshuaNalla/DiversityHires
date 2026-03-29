@@ -2,8 +2,12 @@ import React, { useState } from 'react';
 import { Box, Typography, Card, CardContent, IconButton, Avatar } from '@mui/material';
 import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
+import LoginModal from '../components/LoginModal';
+import SignupModal from '../components/SignupModal';
 
 function HomePage() {
+  const [isLoginOpen, setIsLoginOpen] = useState(false);
+  const [isSignupOpen, setIsSignupOpen] = useState(false);
   const characters = [
     { name: 'Ali', type: 'The Stress Tester', desc: 'Strict, analytical, and relentless. Ali is designed to push your technical boundaries and see how you handle intense pressure.', color: '#991B1B', avatarColor: '#FCA5A5' },
     { name: 'Martin', type: 'The Chill Mentor', desc: 'Relaxed and conversational. Martin provides a safe, low-stakes environment perfect for casually practicing your behavioral answers.', color: '#1E3A8A', avatarColor: '#60A5FA' },
@@ -24,7 +28,7 @@ function HomePage() {
 
   return (
     <div className="bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container min-h-screen font-body overflow-x-hidden">
-      
+
       {/* TopNavBar */}
       <nav className="fixed top-0 w-full z-50 bg-[#101226]/80 backdrop-blur-xl border-b border-outline-variant/10">
         <div className="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
@@ -37,8 +41,8 @@ function HomePage() {
             <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#about">About</a>
           </div>
           <div className="flex items-center gap-4">
-            <button className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors px-4 py-2" onClick={() => window.location.href = '/login'}>Log In</button>
-            <button className="bg-primary text-on-primary px-6 py-2 rounded-lg font-medium text-sm transition-transform scale-95 active:scale-90" onClick={() => window.location.href = '/signup'}>Get Started</button>
+            <button className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors px-4 py-2" onClick={() => setIsLoginOpen(true)}>Log In</button>
+            <button className="bg-primary text-on-primary px-6 py-2 rounded-lg font-medium text-sm transition-transform scale-95 active:scale-90" onClick={() => setIsSignupOpen(true)}>Sign Up</button>
           </div>
         </div>
       </nav>
@@ -55,13 +59,13 @@ function HomePage() {
               Powered by OpenFace & Gemini
             </span>
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-on-background leading-[1.1]">
-              Advance your <br/><span className="text-primary">interview prep</span>
+              Advance your <br /><span className="text-primary">interview prep</span>
             </h1>
             <p className="text-lg md:text-xl text-outline mb-10 max-w-2xl mx-auto leading-relaxed">
               Experience a sanctuary of focused preparation. Leverage deep AI insights to master your micro-expressions and refine your professional narrative.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="w-full sm:w-auto px-10 py-4 bg-primary text-on-primary rounded-lg font-semibold text-lg hover:brightness-110 transition-all shadow-xl shadow-primary/10">Get Started</button>
+              <button className="w-full sm:w-auto px-10 py-4 bg-primary text-on-primary rounded-lg font-semibold text-lg hover:brightness-110 transition-all shadow-xl shadow-primary/10" onClick={() => setIsSignupOpen(true)}>Get Started</button>
               <button className="w-full sm:w-auto px-10 py-4 border border-outline-variant/30 text-on-surface rounded-lg font-medium text-lg hover:bg-surface-container-low transition-all">Watch Demo</button>
             </div>
           </div>
@@ -92,10 +96,10 @@ function HomePage() {
                 </li>
               </ul>
             </div>
-            
+
             <div className="relative">
               <div className="aspect-video rounded-2xl overflow-hidden bg-surface-container-highest border border-outline-variant/20 shadow-2xl relative flex items-center justify-center">
-                
+
                 {/* Visual Placeholder (Replaced Image) */}
                 <div className="absolute inset-0 flex items-center justify-center bg-[#1c1e33] flex-col">
                   <span className="material-symbols-outlined text-6xl text-primary/30 mb-2">videocam</span>
@@ -105,7 +109,7 @@ function HomePage() {
                 </div>
 
                 <div className="absolute inset-0 bg-gradient-to-t from-background/80 to-transparent"></div>
-                
+
                 {/* UI Elements Over Placeholder */}
                 <div className="absolute top-4 right-4 bg-surface-container-lowest/80 backdrop-blur-md px-3 py-1.5 rounded-lg border border-primary/20">
                   <div className="flex items-center gap-2">
@@ -113,7 +117,7 @@ function HomePage() {
                     <span className="text-[10px] font-bold tracking-widest text-[#e0e0fd] uppercase">Live Analysis</span>
                   </div>
                 </div>
-                
+
                 <div className="absolute bottom-6 left-6 right-6 flex justify-between items-end">
                   <div className="space-y-1">
                     <div className="text-[10px] uppercase tracking-tighter text-secondary">Confidence Score</div>
@@ -135,11 +139,11 @@ function HomePage() {
         {/* Resume Analysis Section */}
         <section id="resume" className="py-32 px-8 bg-background">
           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
-            
+
             {/* Visual Placeholder (Left Side) */}
             <div className="relative order-2 lg:order-1">
               <div className="aspect-video rounded-2xl overflow-hidden bg-surface-container-highest border border-outline-variant/20 shadow-xl relative flex items-center justify-center">
-                
+
                 {/* Visual Placeholder */}
                 <div className="absolute inset-0 flex items-center justify-center bg-[#1c1e33] flex-col">
                   <span className="material-symbols-outlined text-6xl text-primary/30 mb-2">dashboard_customize</span>
@@ -175,7 +179,7 @@ function HomePage() {
                 </li>
               </ul>
             </div>
-            
+
           </div>
         </section>
 
@@ -186,7 +190,7 @@ function HomePage() {
               <h2 className="text-3xl font-bold mb-4 text-on-background">Choose from a variety of personalities</h2>
               <p className="text-outline max-w-xl">Every company has a different vibe. Train against diverse personas to ensure you are never caught off guard.</p>
             </div>
-            
+
             {/* MUI Carousel integrated into Tailwind Layout */}
             <Box
               sx={{
@@ -283,13 +287,13 @@ function HomePage() {
               <h2 className="text-4xl font-bold mb-4 text-on-background">The Right Path for Your Journey</h2>
               <p className="text-outline">Invest in your career growth with flexible options.</p>
             </div>
-            
+
             <div className="grid md:grid-cols-2 gap-8">
               {/* Free Plan */}
               <div className="p-10 rounded-2xl bg-surface border border-outline-variant/10 flex flex-col h-full">
                 <h3 className="text-xl font-bold mb-2 text-on-background">Free</h3>
                 <div className="text-3xl font-bold mb-6 text-on-background">$0<span className="text-sm text-outline font-normal">/mo</span></div>
-                
+
                 <ul className="space-y-4 mb-10 flex-grow text-on-surface">
                   <li className="flex items-center gap-3 text-sm">
                     <span className="material-symbols-outlined text-secondary text-lg">check_circle</span>
@@ -306,13 +310,13 @@ function HomePage() {
                 </ul>
                 <button className="w-full py-4 border border-outline-variant/30 text-on-surface rounded-lg font-bold hover:bg-surface-container transition-all">Start Practicing</button>
               </div>
-              
+
               {/* Pro Plan */}
               <div className="p-10 rounded-2xl bg-surface-container-highest border-2 border-primary/20 flex flex-col h-full relative overflow-hidden">
                 <div className="absolute top-0 right-0 bg-primary text-on-primary text-[10px] font-bold px-4 py-1 rounded-bl-lg uppercase tracking-widest">Recommended</div>
                 <h3 className="text-xl font-bold mb-2 text-on-background">Pro Plan</h3>
                 <div className="text-3xl font-bold mb-6 text-on-background">$14.99<span className="text-sm text-outline font-normal">/mo</span></div>
-                
+
                 <ul className="space-y-4 mb-10 flex-grow text-on-surface">
                   <li className="flex items-center gap-3 text-sm">
                     <span className="material-symbols-outlined text-primary text-lg" data-weight="fill">check_circle</span>
@@ -357,6 +361,25 @@ function HomePage() {
           </div>
         </div>
       </footer>
+
+      {isLoginOpen && (
+        <LoginModal 
+          onClose={() => setIsLoginOpen(false)} 
+          onSwitchToSignup={() => {
+            setIsLoginOpen(false);
+            setIsSignupOpen(true);
+          }} 
+        />
+      )}
+      {isSignupOpen && (
+        <SignupModal 
+          onClose={() => setIsSignupOpen(false)} 
+          onSwitchToLogin={() => {
+            setIsSignupOpen(false);
+            setIsLoginOpen(true);
+          }} 
+        />
+      )}
     </div>
   );
 }

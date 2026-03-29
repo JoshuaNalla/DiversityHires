@@ -2,46 +2,66 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 
 const MONTH_NAMES = [
-    'January','February','March','April','May','June',
-    'July','August','September','October','November','December',
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December',
 ];
 
 const INTERVIEW_MARKERS = [
-    { year: 2026, month: 3, day: 2,  dotClass: 'bg-red-500',   bgClass: 'bg-red-500/10',   textClass: 'text-red-400'   },
-    { year: 2026, month: 3, day: 14, dotClass: 'bg-primary',   bgClass: 'bg-primary/10',   textClass: 'text-primary'   },
-    { year: 2026, month: 3, day: 22, dotClass: 'bg-secondary', bgClass: 'bg-secondary/10', textClass: 'text-secondary' },
+    // Upcoming interviews (April 2026)
+    { year: 2026, month: 3, day: 2,  company: 'Amazon',    dotClass: 'bg-red-500',       bgClass: 'bg-red-500/10',       textClass: 'text-red-400' },
+    { year: 2026, month: 3, day: 14, company: 'Google',    dotClass: 'bg-primary',       bgClass: 'bg-primary/10',       textClass: 'text-primary' },
+    { year: 2026, month: 3, day: 22, company: 'Meta',      dotClass: 'bg-secondary',     bgClass: 'bg-secondary/10',     textClass: 'text-secondary' },
+    { year: 2026, month: 3, day: 26, company: 'Microsoft', dotClass: 'bg-sky-400',       bgClass: 'bg-sky-400/10',       textClass: 'text-sky-400' },
+    // Stacked interviews (May 2026)
+    { year: 2026, month: 4, day: 3,  company: 'Apple',     dotClass: 'bg-zinc-300',      bgClass: 'bg-zinc-300/10',      textClass: 'text-zinc-300' },
+    { year: 2026, month: 4, day: 10, company: 'Netflix',   dotClass: 'bg-red-400',       bgClass: 'bg-red-400/10',       textClass: 'text-red-400' },
 ];
 
 const STACKED_INTERVIEWS = [
-    { company: 'Microsoft', role: 'SDE II',  days: 28, icon: 'window'      },
-    { company: 'Apple',     role: 'iOS Eng', days: 35, icon: 'smartphone'  },
-    { company: 'Netflix',   role: 'Sr. Eng', days: 42, icon: 'play_circle' },
+    {
+        company: 'Microsoft', role: 'SDE II', days: 28, icon: 'window',
+        date: 'April 26, 2026', time: '10:00 AM', type: 'Technical',
+        iconColor: 'text-sky-400', tagColor: 'bg-sky-500/10 text-sky-400',
+        actionLabel: 'Review system design',
+    },
+    {
+        company: 'Apple', role: 'iOS Eng', days: 35, icon: 'smartphone',
+        date: 'May 3, 2026', time: '1:00 PM', type: 'On-site',
+        iconColor: 'text-zinc-300', tagColor: 'bg-zinc-500/10 text-zinc-300',
+        actionLabel: 'Practice Swift patterns',
+    },
+    {
+        company: 'Netflix', role: 'Sr. Eng', days: 42, icon: 'play_circle',
+        date: 'May 10, 2026', time: '3:30 PM', type: 'System Design',
+        iconColor: 'text-red-400', tagColor: 'bg-red-500/10 text-red-400',
+        actionLabel: 'Distributed systems prep',
+    },
 ];
 
 const PAST_INTERVIEWS = [
-    { company: 'Stripe',  role: 'Backend Eng', daysAgo: 5,  icon: 'payments',       action: 'View feedback', iconColor: 'text-emerald-400' },
-    { company: 'Shopify', role: 'Full Stack',  daysAgo: 12, icon: 'storefront',     action: 'Review notes',  iconColor: 'text-sky-400'     },
-    { company: 'Uber',    role: 'SWE L5',      daysAgo: 20, icon: 'directions_car', action: 'See analysis',  iconColor: 'text-amber-400'   },
+    { company: 'Stripe', role: 'Backend Eng', daysAgo: 5, icon: 'payments', action: 'View feedback', iconColor: 'text-emerald-400' },
+    { company: 'Shopify', role: 'Full Stack', daysAgo: 12, icon: 'storefront', action: 'Review notes', iconColor: 'text-sky-400' },
+    { company: 'Uber', role: 'SWE L5', daysAgo: 20, icon: 'directions_car', action: 'See analysis', iconColor: 'text-amber-400' },
 ];
 
 // Data for clickable countdown cards & the urgent strip
 const UPCOMING_CARDS = [
     {
-        company: 'Amazon',  role: 'L5 SDE',
-        date: 'April 2, 2026',   time: '11:30 AM', type: 'Virtual On-site',
-        icon: 'token',  iconColor: 'text-primary',           tagColor: 'bg-primary/10 text-primary',
-        days: 4,  actionLabel: 'Review behavioral prep',
+        company: 'Amazon', role: 'L5 SDE',
+        date: 'April 2, 2026', time: '11:30 AM', type: 'Virtual On-site',
+        icon: 'token', iconColor: 'text-primary', tagColor: 'bg-primary/10 text-primary',
+        days: 4, actionLabel: 'Review behavioral prep',
     },
     {
-        company: 'Google',  role: 'Product Design',
-        date: 'April 14, 2026',  time: '2:30 PM',  type: 'System Design',
-        icon: 'search', iconColor: 'text-secondary',          tagColor: 'bg-secondary/10 text-secondary',
+        company: 'Google', role: 'Product Design',
+        date: 'April 14, 2026', time: '2:30 PM', type: 'System Design',
+        icon: 'search', iconColor: 'text-secondary', tagColor: 'bg-secondary/10 text-secondary',
         days: 12, actionLabel: 'System design focus',
     },
     {
-        company: 'Meta',    role: 'Reality Labs',
-        date: 'April 22, 2026',  time: '11:15 AM', type: 'Behavioral',
-        icon: 'public', iconColor: 'text-primary-container',  tagColor: 'bg-primary-container/10 text-primary-container',
+        company: 'Meta', role: 'Reality Labs',
+        date: 'April 22, 2026', time: '11:15 AM', type: 'Behavioral',
+        icon: 'public', iconColor: 'text-primary-container', tagColor: 'bg-primary-container/10 text-primary-container',
         days: 21, actionLabel: 'Product sense drills',
     },
 ];
@@ -50,12 +70,13 @@ const DashboardPage = () => {
     const navigate = useNavigate();
 
     // ── UI state ────────────────────────────────────────────────────────────
-    const [sidebarOpen,       setSidebarOpen]       = useState(true);
-    const [isMenuOpen,        setIsMenuOpen]        = useState(false);
-    const [showPast,          setShowPast]          = useState(false);
+    const [sidebarOpen, setSidebarOpen] = useState(true);
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [showPast, setShowPast] = useState(false);
     const [selectedInterview, setSelectedInterview] = useState(null);   // detail popup
-    const [isModalOpen,       setIsModalOpen]       = useState(false);  // create popup
+    const [isModalOpen, setIsModalOpen] = useState(false);  // create popup
     const [newInterview,      setNewInterview]      = useState({ title: '', date: '', time: '', company: '', type: 'Behavioral' });
+    const [deckHovered,       setDeckHovered]       = useState(false);
 
     // Multilingual greetings
     const greetings = ['Hello', 'Hola', 'Bonjour', 'Hallo', 'Ciao', 'Olá', 'Привет', 'こんにちは', '안녕하세요', 'مرحبا', 'Namaste', 'Habari', 'Salam', 'Sawubona'];
@@ -65,10 +86,10 @@ const DashboardPage = () => {
     const dropdownRef = useRef(null);
 
     // Today snapshot
-    const todayObj   = new Date();
-    const todayYear  = todayObj.getFullYear();
+    const todayObj = new Date();
+    const todayYear = todayObj.getFullYear();
     const todayMonth = todayObj.getMonth();
-    const todayDay   = todayObj.getDate();
+    const todayDay = todayObj.getDate();
 
     const [calendarDate, setCalendarDate] = useState(() => new Date(todayYear, todayMonth, 1));
 
@@ -85,10 +106,10 @@ const DashboardPage = () => {
         const tick = () => {
             const diff = Math.max(0, target - Date.now());
             setCountdown({
-                days:  Math.floor(diff / 86400000),
+                days: Math.floor(diff / 86400000),
                 hours: Math.floor((diff % 86400000) / 3600000),
-                mins:  Math.floor((diff % 3600000) / 60000),
-                secs:  Math.floor((diff % 60000) / 1000),
+                mins: Math.floor((diff % 3600000) / 60000),
+                secs: Math.floor((diff % 60000) / 1000),
             });
         };
         tick();
@@ -139,12 +160,12 @@ const DashboardPage = () => {
     };
 
     // ── Calendar computation ────────────────────────────────────────────────
-    const calYear            = calendarDate.getFullYear();
-    const calMonth           = calendarDate.getMonth();
-    const firstDayOfWeek     = new Date(calYear, calMonth, 1).getDay();
-    const daysInCalMonth     = new Date(calYear, calMonth + 1, 0).getDate();
+    const calYear = calendarDate.getFullYear();
+    const calMonth = calendarDate.getMonth();
+    const firstDayOfWeek = new Date(calYear, calMonth, 1).getDay();
+    const daysInCalMonth = new Date(calYear, calMonth + 1, 0).getDate();
     const daysInPrevCalMonth = new Date(calYear, calMonth, 0).getDate();
-    const totalCells         = Math.ceil((firstDayOfWeek + daysInCalMonth) / 7) * 7;
+    const totalCells = Math.ceil((firstDayOfWeek + daysInCalMonth) / 7) * 7;
 
     const calendarCells = [];
     for (let i = firstDayOfWeek - 1; i >= 0; i--)
@@ -169,8 +190,8 @@ const DashboardPage = () => {
     const labelCls = "block text-xs text-outline mb-1.5 tracking-wide uppercase";
 
     // Sidebar derived widths
-    const sidebarW  = sidebarOpen ? 'w-64'     : 'w-[60px]';
-    const mainML    = sidebarOpen ? 'ml-64'    : 'ml-[60px]';
+    const sidebarW = sidebarOpen ? 'w-64' : 'w-[60px]';
+    const mainML = sidebarOpen ? 'ml-64' : 'ml-[60px]';
 
     return (
         <div className="bg-background text-on-surface antialiased min-h-screen">
@@ -593,39 +614,79 @@ const DashboardPage = () => {
                                 </button>
                             ))}
 
-                            {/* Stacked Pile — D, E, F */}
-                            <div className="relative group" style={{ isolation: 'isolate' }}>
+                            {/* Stacked Deck — D, E, F — fans out on hover */}
+                            <div
+                                className="relative overflow-visible"
+                                style={{ isolation: 'isolate' }}
+                                onMouseEnter={() => setDeckHovered(true)}
+                                onMouseLeave={() => setDeckHovered(false)}
+                            >
                                 {/* Blur backdrop on hover */}
-                                <div className="absolute -inset-3 rounded-2xl bg-black/25 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300 -z-10 pointer-events-none" />
-                                {/* Back card */}
-                                <div className="absolute inset-0 rounded-xl bg-surface-container transition-all duration-300 ease-out translate-x-2 translate-y-2 group-hover:translate-x-14 group-hover:-translate-y-3 group-hover:rotate-[10deg] group-hover:scale-95 opacity-50 group-hover:opacity-80" />
-                                {/* Middle card */}
-                                <div className="absolute inset-0 rounded-xl bg-surface-container-high transition-all duration-300 ease-out translate-x-1 translate-y-1 group-hover:translate-x-7 group-hover:-translate-y-1.5 group-hover:rotate-[5deg] group-hover:scale-[0.97] opacity-70 group-hover:opacity-90" />
-                                {/* Front card */}
-                                <div className="relative bg-surface-container-high rounded-xl p-4 overflow-hidden transition-all duration-300 group-hover:scale-[1.02]">
-                                    <div className="flex justify-between items-start mb-2">
-                                        <div className="w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center text-outline">
-                                            <span className="material-symbols-outlined text-sm">layers</span>
-                                        </div>
-                                        <span className="text-[0.6875rem] font-label tracking-widest text-outline">+{STACKED_INTERVIEWS.length} MORE</span>
-                                    </div>
-                                    <div className="space-y-1.5 mt-1">
-                                        {STACKED_INTERVIEWS.map((iv, i) => (
-                                            <div key={i} className="flex justify-between items-center">
-                                                <span className="text-sm text-on-surface font-medium">{iv.company}</span>
-                                                <span className="text-xs text-outline">in {iv.days}d</span>
+                                <div
+                                    className="absolute rounded-2xl pointer-events-none transition-opacity duration-300"
+                                    style={{
+                                        inset: '-16px',
+                                        background: 'rgba(0,0,0,0.25)',
+                                        backdropFilter: 'blur(6px)',
+                                        WebkitBackdropFilter: 'blur(6px)',
+                                        opacity: deckHovered ? 1 : 0,
+                                        zIndex: 0,
+                                    }}
+                                />
+
+                                {/* Each card in the deck — back cards rendered first */}
+                                {[...STACKED_INTERVIEWS].reverse().map((card, reverseIdx) => {
+                                    const total = STACKED_INTERVIEWS.length;
+                                    const i = total - 1 - reverseIdx; // 0 = front, 1 = middle, 2 = back
+                                    // Stacked: 0px, 10px, 20px peek; Fanned: 0%, 110%, 220%
+                                    const stackedScale = [1, 0.95, 0.90][i];
+                                    const stackedOpacity = [1, 0.7, 0.5][i];
+                                    const stackedY = `${i * 10}px`;
+                                    const fannedY = `${i * 110}%`;
+
+                                    return (
+                                        <button
+                                            key={`deck-${i}`}
+                                            className={`${i === 0 ? 'relative' : 'absolute top-0 left-0 right-0'} bg-surface-container-high rounded-xl p-4 overflow-hidden text-left cursor-pointer transition-all duration-300 ease-out`}
+                                            style={{
+                                                transform: deckHovered
+                                                    ? `translateY(${fannedY}) scale(1)`
+                                                    : `translateY(${stackedY}) scale(${stackedScale})`,
+                                                opacity: deckHovered ? 1 : stackedOpacity,
+                                                zIndex: deckHovered ? total - i : total - i,
+                                                transitionDelay: `${i * 60}ms`,
+                                                boxShadow: deckHovered
+                                                    ? '0 8px 30px rgba(0,0,0,0.35)'
+                                                    : '0 2px 8px rgba(0,0,0,0.15)',
+                                            }}
+                                            onClick={(e) => { e.stopPropagation(); setSelectedInterview(card); }}
+                                        >
+                                            <div className="flex justify-between items-start mb-2">
+                                                <div className={`w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center ${card.iconColor}`}>
+                                                    <span className="material-symbols-outlined text-sm">{card.icon}</span>
+                                                </div>
+                                                <span className="text-[0.6875rem] font-label tracking-widest text-outline">
+                                                    {i === 0 && !deckHovered ? `+${total} MORE` : 'COUNTDOWN'}
+                                                </span>
                                             </div>
-                                        ))}
-                                    </div>
-                                    <div className="mt-3 text-xs text-outline/50 italic">Hover to preview</div>
-                                    <div className="absolute -right-4 -bottom-4 opacity-5">
-                                        <span className="material-symbols-outlined text-7xl">stacks</span>
-                                    </div>
-                                </div>
-                                {/* '+' revealed on hover */}
+                                            <h3 className="text-lg font-bold text-on-surface">{card.company}</h3>
+                                            <p className="text-secondary text-sm mt-0.5">in {card.days} days</p>
+                                            <div className="mt-3 flex items-center text-xs text-outline transition-colors" style={{ color: deckHovered ? 'var(--md-sys-color-primary)' : undefined }}>
+                                                <span>{card.actionLabel}</span>
+                                                <span className="material-symbols-outlined text-xs ml-1">arrow_forward</span>
+                                            </div>
+                                            <div className="absolute -right-4 -bottom-4 opacity-5">
+                                                <span className="material-symbols-outlined text-7xl">timer</span>
+                                            </div>
+                                        </button>
+                                    );
+                                })}
+
+                                {/* '+' button revealed on hover */}
                                 <button
                                     onClick={(e) => { e.stopPropagation(); openCreateModal(); }}
-                                    className="absolute top-3 right-3 w-7 h-7 bg-primary rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 hover:scale-110 shadow-lg"
+                                    className="absolute top-3 right-3 w-7 h-7 bg-primary rounded-full flex items-center justify-center transition-opacity duration-300 hover:scale-110 shadow-lg"
+                                    style={{ zIndex: 20, opacity: deckHovered ? 1 : 0 }}
                                     title="Add new interview"
                                 >
                                     <span className="material-symbols-outlined text-on-primary" style={{ fontSize: '16px' }}>add</span>
@@ -667,13 +728,13 @@ const DashboardPage = () => {
                             </div>
 
                             <div className="grid grid-cols-7 gap-px text-center text-[0.6875rem] font-bold text-outline tracking-wider uppercase mb-3">
-                                {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d => <div key={d}>{d}</div>)}
+                                {['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].map(d => <div key={d}>{d}</div>)}
                             </div>
 
                             <div className="grid grid-cols-7 gap-px">
                                 {calendarCells.map((cell, idx) => {
-                                    const marker  = getMarker(cell);
-                                    const today   = isToday(cell);
+                                    const marker = getMarker(cell);
+                                    const today = isToday(cell);
                                     const current = cell.type === 'current';
                                     return (
                                         <div
@@ -681,15 +742,15 @@ const DashboardPage = () => {
                                             className={[
                                                 'p-3 border border-outline-variant/5 flex flex-col items-center text-sm min-h-[72px] transition-colors',
                                                 current ? 'hover:bg-surface-bright cursor-pointer' : '',
-                                                marker  ? marker.bgClass : '',
-                                                today   ? 'ring-1 ring-inset ring-primary/50' : '',
+                                                marker ? marker.bgClass : '',
+                                                today ? 'ring-1 ring-inset ring-primary/50' : '',
                                             ].join(' ')}
                                         >
                                             <span className={[
                                                 'font-medium leading-none',
-                                                !current          ? 'text-outline/25' : '',
-                                                today             ? 'text-primary font-bold' : '',
-                                                marker && !today  ? marker.textClass : '',
+                                                !current ? 'text-outline/25' : '',
+                                                today ? 'text-primary font-bold' : '',
+                                                marker && !today ? marker.textClass : '',
                                                 !marker && !today && current ? 'text-on-surface/70' : '',
                                             ].join(' ')}>
                                                 {cell.day}
