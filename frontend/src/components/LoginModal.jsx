@@ -24,6 +24,7 @@ const LoginModal = ({ onClose, onSwitchToSignup }) => {
 
             if (response.ok) {
                 localStorage.setItem('session_id', data.session_id);
+                if (data.username) localStorage.setItem('username', data.username);
                 navigate('/dashboard');
             } else {
                 setError(data.detail || 'Login failed. Please check your credentials.');

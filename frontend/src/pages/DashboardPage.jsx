@@ -9,13 +9,13 @@ const MONTH_NAMES = [
 
 const INTERVIEW_MARKERS = [
     // Upcoming interviews (April 2026)
-    { year: 2026, month: 3, day: 2,  company: 'Amazon',    dotClass: 'bg-red-500',       bgClass: 'bg-red-500/10',       textClass: 'text-red-400' },
-    { year: 2026, month: 3, day: 14, company: 'Google',    dotClass: 'bg-primary',       bgClass: 'bg-primary/10',       textClass: 'text-primary' },
-    { year: 2026, month: 3, day: 22, company: 'Meta',      dotClass: 'bg-secondary',     bgClass: 'bg-secondary/10',     textClass: 'text-secondary' },
-    { year: 2026, month: 3, day: 26, company: 'Microsoft', dotClass: 'bg-sky-400',       bgClass: 'bg-sky-400/10',       textClass: 'text-sky-400' },
+    { year: 2026, month: 3, day: 2, company: 'Amazon', dotClass: 'bg-red-500', bgClass: 'bg-red-500/10', textClass: 'text-red-400' },
+    { year: 2026, month: 3, day: 14, company: 'Google', dotClass: 'bg-primary', bgClass: 'bg-primary/10', textClass: 'text-primary' },
+    { year: 2026, month: 3, day: 22, company: 'Meta', dotClass: 'bg-secondary', bgClass: 'bg-secondary/10', textClass: 'text-secondary' },
+    { year: 2026, month: 3, day: 26, company: 'Microsoft', dotClass: 'bg-sky-400', bgClass: 'bg-sky-400/10', textClass: 'text-sky-400' },
     // Stacked interviews (May 2026)
-    { year: 2026, month: 4, day: 3,  company: 'Apple',     dotClass: 'bg-zinc-300',      bgClass: 'bg-zinc-300/10',      textClass: 'text-zinc-300' },
-    { year: 2026, month: 4, day: 10, company: 'Netflix',   dotClass: 'bg-red-400',       bgClass: 'bg-red-400/10',       textClass: 'text-red-400' },
+    { year: 2026, month: 4, day: 3, company: 'Apple', dotClass: 'bg-zinc-300', bgClass: 'bg-zinc-300/10', textClass: 'text-zinc-300' },
+    { year: 2026, month: 4, day: 10, company: 'Nvidia', dotClass: 'bg-green-400', bgClass: 'bg-green-400/10', textClass: 'text-green-400' },
 ];
 
 const STACKED_INTERVIEWS = [
@@ -24,25 +24,70 @@ const STACKED_INTERVIEWS = [
         date: 'April 26, 2026', time: '10:00 AM', type: 'Technical',
         iconColor: 'text-sky-400', tagColor: 'bg-sky-500/10 text-sky-400',
         actionLabel: 'Review system design',
+        jobDescription: 'As an SDE II at Microsoft, you will design and build scalable backend services powering Azure cloud infrastructure. You will collaborate with cross-functional teams to ship high-impact features used by millions of enterprise customers worldwide. The role emphasizes distributed systems expertise, code quality, and mentoring junior engineers.',
+        interviewers: [
+            { name: 'David Kim', bio: 'Principal Engineer on the Azure Core team with 12 years at Microsoft. Specializes in distributed storage systems and consensus protocols.' },
+            { name: 'Priya Nair', bio: 'Senior Engineering Manager overseeing the Azure Compute group. Previously led teams at Amazon Web Services before joining Microsoft in 2019.' },
+            { name: 'Tom Brzeski', bio: 'Staff Software Engineer focused on reliability engineering. Co-authored several internal design standards for fault-tolerant microservices.' },
+        ],
     },
     {
         company: 'Apple', role: 'iOS Eng', days: 35, icon: 'smartphone',
         date: 'May 3, 2026', time: '1:00 PM', type: 'On-site',
         iconColor: 'text-zinc-300', tagColor: 'bg-zinc-500/10 text-zinc-300',
         actionLabel: 'Practice Swift patterns',
+        jobDescription: 'Apple is seeking a passionate iOS Engineer to join the Human Interface team building next-generation UIKit and SwiftUI frameworks. You will work directly with hardware teams to optimize rendering pipelines and deliver smooth 120 Hz experiences on iPhone and iPad. Deep knowledge of Swift concurrency and Metal is highly valued.',
+        interviewers: [
+            { name: 'Sarah Okonkwo', bio: 'Engineering lead for UIKit at Apple with over a decade of experience shipping flagship iOS features. Holds multiple patents in GPU-accelerated UI rendering.' },
+            { name: 'Marcus Chen', bio: 'Senior Swift compiler engineer who contributes to the open-source Swift project. Known for his deep dives into async/await internals.' },
+        ],
     },
     {
-        company: 'Netflix', role: 'Sr. Eng', days: 42, icon: 'play_circle',
+        company: 'Nvidia', role: 'Sr. GPU Eng', days: 42, icon: 'memory',
         date: 'May 10, 2026', time: '3:30 PM', type: 'System Design',
-        iconColor: 'text-red-400', tagColor: 'bg-red-500/10 text-red-400',
-        actionLabel: 'Distributed systems prep',
+        iconColor: 'text-green-400', tagColor: 'bg-green-500/10 text-green-400',
+        actionLabel: 'GPU architecture prep',
+        jobDescription: 'Nvidia is hiring a Senior GPU Engineer to architect and optimize CUDA kernels for next-generation AI training accelerators. You will partner with silicon architects to co-design memory hierarchies and interconnect topologies that push the boundaries of transformer model training. Experience with cuDNN, NCCL, and mixed-precision arithmetic is essential.',
+        interviewers: [
+            { name: 'Elena Vasquez', bio: 'Principal Research Scientist at Nvidia working on GPU memory architecture. She holds a PhD from MIT in computer architecture and has authored 20+ papers on accelerator design.' },
+            { name: 'Raj Menon', bio: 'Director of CUDA Platform Engineering with 15 years at Nvidia. Raj led the CUDA 12 launch and oversees the developer tools ecosystem globally.' },
+            { name: 'Chris Howell', bio: 'Staff Engineer on the Deep Learning Frameworks team. Focuses on performance profiling and kernel fusion techniques for large language models.' },
+        ],
     },
 ];
 
 const PAST_INTERVIEWS = [
-    { company: 'Stripe', role: 'Backend Eng', daysAgo: 5, icon: 'payments', action: 'View feedback', iconColor: 'text-emerald-400' },
-    { company: 'Shopify', role: 'Full Stack', daysAgo: 12, icon: 'storefront', action: 'Review notes', iconColor: 'text-sky-400' },
-    { company: 'Uber', role: 'SWE L5', daysAgo: 20, icon: 'directions_car', action: 'See analysis', iconColor: 'text-amber-400' },
+    {
+        company: 'Uber', role: 'SWE L5', daysAgo: 20, icon: 'directions_car', action: 'See analysis', iconColor: 'text-amber-400',
+        date: 'March 9, 2026', time: '10:00 AM', type: 'Technical', days: -20,
+        tagColor: 'bg-amber-500/10 text-amber-400',
+        jobDescription: 'The SWE L5 role at Uber sits within the Maps & Navigation platform, responsible for real-time routing algorithms serving millions of trips daily. You will own entire subsystems end-to-end, from data ingestion pipelines to driver-facing mobile APIs. Strong knowledge of geospatial data structures and low-latency system design is required.',
+        interviewers: [
+            { name: 'Anya Petrova', bio: 'Staff Engineer on Uber Maps with expertise in computational geometry. She previously worked at Google Maps before moving to Uber in 2021.' },
+            { name: 'James Oduya', bio: 'Engineering Manager for the Core Routing team. James has driven several platform migrations and champions inclusive engineering practices at Uber.' },
+        ],
+    },
+    {
+        company: 'Shopify', role: 'Full Stack', daysAgo: 12, icon: 'storefront', action: 'Review notes', iconColor: 'text-sky-400',
+        date: 'March 17, 2026', time: '2:00 PM', type: 'Behavioral', days: -12,
+        tagColor: 'bg-sky-500/10 text-sky-400',
+        jobDescription: 'Shopify is looking for a Full Stack Engineer to join the Checkout Experience team, one of the highest-traffic surfaces on the internet during peak commerce events. You will build Ruby on Rails APIs and React storefronts that enable merchants worldwide to customize their checkout flows. A passion for developer experience and platform reliability is essential.',
+        interviewers: [
+            { name: 'Lena Garbutt', bio: 'Senior Product Engineer at Shopify who has shipped the Checkout extensibility platform. She is a Ruby core contributor and advocates for open-source tooling.' },
+            { name: 'Wei Zhang', bio: 'Tech Lead for the Storefront Renderer team. Wei focuses on WebAssembly and edge-rendering strategies to cut checkout latency globally.' },
+            { name: 'Omar Haddad', bio: 'Staff Engineer specializing in payment integrations. Omar coordinates across 40+ payment gateway partners and leads compliance architecture reviews.' },
+        ],
+    },
+    {
+        company: 'Stripe', role: 'Backend Eng', daysAgo: 5, icon: 'payments', action: 'View feedback', iconColor: 'text-emerald-400',
+        date: 'March 24, 2026', time: '11:00 AM', type: 'System Design', days: -5,
+        tagColor: 'bg-emerald-500/10 text-emerald-400',
+        jobDescription: 'Stripe is hiring a Backend Engineer to work on the Payments Infrastructure team, building the core ledger and settlement systems that process billions of dollars in transactions annually. You will design fault-tolerant distributed systems with a focus on financial consistency, auditability, and sub-millisecond reconciliation. Experience with event-driven architectures and strong consistency guarantees is a must.',
+        interviewers: [
+            { name: 'Nina Bhatia', bio: 'Principal Engineer at Stripe focused on the global ledger. Nina has a background in formal verification and applies rigorous correctness reasoning to financial systems.' },
+            { name: 'Connor Walsh', bio: 'Engineering Manager overseeing Stripe\'s settlement infrastructure. He joined from Jane Street where he worked on high-frequency trading systems.' },
+        ],
+    },
 ];
 
 // Data for clickable countdown cards & the urgent strip
@@ -52,34 +97,80 @@ const UPCOMING_CARDS = [
         date: 'April 2, 2026', time: '11:30 AM', type: 'Virtual On-site',
         icon: 'token', iconColor: 'text-primary', tagColor: 'bg-primary/10 text-primary',
         days: 4, actionLabel: 'Review behavioral prep',
+        jobDescription: 'Amazon is seeking an L5 Software Development Engineer to join the AWS Lambda team, focusing on the serverless compute runtime that powers millions of customer functions globally. You will lead design and delivery of features that improve cold-start latency, resource isolation, and developer experience for Lambda. Ownership mentality, bar-raising technical judgment, and alignment with Amazon Leadership Principles are central to success in this role.',
+        interviewers: [
+            { name: 'Fatima Al-Hassan', bio: 'Senior Principal Engineer on AWS Lambda with 9 years at Amazon. She leads technical direction for the execution environment and is a two-time Amazon Bar Raiser.' },
+            { name: 'Derek Simmons', bio: 'Senior Engineering Manager for Serverless Compute. Derek oversees a 40-person org and previously built supply chain optimization systems at Amazon Logistics.' },
+            { name: 'Ayasha Redcloud', bio: 'Staff SDE specializing in container security and micro-VM technology. She contributed to the open-source Firecracker VMM project that underlies Lambda.' },
+        ],
     },
     {
         company: 'Google', role: 'Product Design',
         date: 'April 14, 2026', time: '2:30 PM', type: 'System Design',
         icon: 'search', iconColor: 'text-secondary', tagColor: 'bg-secondary/10 text-secondary',
         days: 12, actionLabel: 'System design focus',
+        jobDescription: 'Google is hiring a Product Designer for the Search Experience team, where you will shape the visual language and interaction patterns for Google Search across web, mobile, and emerging surfaces. You will conduct user research, prototype rapidly, and partner closely with engineers to ship designs that reach billions of users. A deep understanding of accessibility standards and inclusive design practices is expected.',
+        interviewers: [
+            { name: 'Sophie Nguyen', bio: 'Principal UX Designer at Google with 11 years shaping core Search and Lens experiences. She holds an MA in Interaction Design from the Royal College of Art.' },
+            { name: 'Kwame Asante', bio: 'Senior UX Research Lead specializing in global user studies. Kwame manages research partnerships across Africa, Southeast Asia, and Latin America to ensure designs work for everyone.' },
+        ],
     },
     {
         company: 'Meta', role: 'Reality Labs',
         date: 'April 22, 2026', time: '11:15 AM', type: 'Behavioral',
         icon: 'public', iconColor: 'text-primary-container', tagColor: 'bg-primary-container/10 text-primary-container',
         days: 21, actionLabel: 'Product sense drills',
+        jobDescription: 'Meta Reality Labs is looking for a Product Manager to drive the roadmap for Quest OS social features, enabling meaningful connections inside virtual and mixed-reality environments. You will synthesize insights from hardware, software, and research teams to define a coherent product vision and ship experiences that redefine human presence at a distance. Strong analytical thinking, cross-functional influence, and a genuine passion for immersive technology are essential.',
+        interviewers: [
+            { name: 'Isabelle Moreau', bio: 'Director of Product at Reality Labs overseeing social presence and avatars. She joined Meta from Oculus in 2020 and has shipped three major Quest OS releases.' },
+            { name: 'Tariq Osei', bio: 'Research Scientist focusing on social perception in VR. Tariq\'s work on nonverbal communication cues in avatars has been published at ACM CHI and IEEE VR.' },
+            { name: 'Mia Johansson', bio: 'Technical Program Manager who coordinates hardware-software alignment across Quest headset generations. She ensures cross-org dependencies are resolved well ahead of launch deadlines.' },
+        ],
     },
 ];
 
+const COMPANY_ICONS = {
+    Amazon: { icon: 'bi-amazon', color: '#FF9900', bg: '#111' },
+    Google: { icon: 'bi-google', color: '#4285F4', bg: '#fff' },
+    Meta: { icon: 'bi-meta', color: '#0082FB', bg: '#fff' },
+    Microsoft: { icon: 'bi-microsoft', color: '#00a4ef', bg: '#fff' },
+    Apple: { icon: 'bi-apple', color: '#1d1d1f', bg: '#fff' },
+    Nvidia: { icon: 'bi-nvidia', color: '#76b900', bg: '#000' },
+    Stripe: { icon: 'bi-stripe', color: '#6772E5', bg: '#fff' },
+    Shopify: { letter: 'S', color: '#fff', bg: '#96BF48' },
+    Uber: { letter: 'U', color: '#fff', bg: '#000' },
+};
+
+const CompanyLogo = ({ company, size = 'w-8 h-8' }) => {
+    const cfg = COMPANY_ICONS[company];
+    if (!cfg) return null;
+    return (
+        <div
+            className={`${size} rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden`}
+            style={{ background: cfg.bg }}
+        >
+            {cfg.icon
+                ? <i className={`bi ${cfg.icon} text-lg`} style={{ color: cfg.color }} />
+                : <span className="text-xs font-bold" style={{ color: cfg.color }}>{cfg.letter}</span>
+            }
+        </div>
+    );
+};
+
 const DashboardPage = () => {
     const navigate = useNavigate();
+    const userName = (localStorage.getItem('username') || 'User').split(' ')[0];
 
     // ── UI state ────────────────────────────────────────────────────────────
     const [sidebarOpen, setSidebarOpen] = useState(true);
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [showPast, setShowPast] = useState(false);
+    const [interviewPage, setInterviewPage] = useState(1); // 0=past, 1=upcoming pg1, 2=upcoming pg2
     const [selectedInterview, setSelectedInterview] = useState(null);   // detail popup
     const [isModalOpen, setIsModalOpen] = useState(false);  // create popup
     const [isDemoInterview, setIsDemoInterview] = useState(false);
     const [showDemoSetup, setShowDemoSetup] = useState(false);
-    const [newInterview,      setNewInterview]      = useState({ title: '', date: '', time: '', company: '', type: 'Behavioral' });
-    const [deckHovered,       setDeckHovered]       = useState(false);
+    const [newInterview, setNewInterview] = useState({ title: '', date: '', time: '', company: '', type: 'Behavioral' });
 
     // Multilingual greetings
     const greetings = ['Hello', 'Hola', 'Bonjour', 'Hallo', 'Ciao', 'Olá', 'Привет', 'こんにちは', '안녕하세요', 'مرحبا', 'Namaste', 'Habari', 'Salam', 'Sawubona'];
@@ -145,7 +236,8 @@ const DashboardPage = () => {
 
     const handleSignOut = () => {
         localStorage.removeItem('session_id');
-        navigate('/login');
+        localStorage.removeItem('username');
+        navigate('/');
     };
 
     const navigateCalendar = (dir) => {
@@ -227,9 +319,12 @@ const DashboardPage = () => {
                                 <span className="material-symbols-outlined text-xs">{selectedInterview.icon}</span>
                                 <span>{selectedInterview.type}</span>
                             </div>
-                            <h2 className="text-5xl font-bold text-on-surface tracking-tight">
-                                {selectedInterview.company}
-                            </h2>
+                            <div className="flex items-center space-x-4">
+                                <CompanyLogo company={selectedInterview.company} size="w-14 h-14" />
+                                <h2 className="text-5xl font-bold text-on-surface tracking-tight">
+                                    {selectedInterview.company}
+                                </h2>
+                            </div>
                             <p className="text-xl text-outline mt-2">{selectedInterview.role}</p>
                         </div>
 
@@ -257,6 +352,38 @@ const DashboardPage = () => {
                                 </div>
                             </div>
                         </div>
+
+                        {/* Job Description */}
+                        {selectedInterview.jobDescription && (
+                            <div className="px-12 py-8 border-b border-outline-variant/10">
+                                <p className={labelCls}>Job Description</p>
+                                <p className="text-sm text-on-surface/80 leading-relaxed mt-2">
+                                    {selectedInterview.jobDescription}
+                                </p>
+                            </div>
+                        )}
+
+                        {/* Interviewers */}
+                        {selectedInterview.interviewers && selectedInterview.interviewers.length > 0 && (
+                            <div className="px-12 py-8 border-b border-outline-variant/10">
+                                <p className={labelCls}>Your Interviewers</p>
+                                <div className="mt-4 flex flex-col space-y-4">
+                                    {selectedInterview.interviewers.map((interviewer, idx) => (
+                                        <div key={idx} className="flex items-start space-x-4">
+                                            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                                                <span className="text-sm font-bold text-primary">
+                                                    {interviewer.name.charAt(0)}
+                                                </span>
+                                            </div>
+                                            <div>
+                                                <p className="text-sm font-semibold text-on-surface">{interviewer.name}</p>
+                                                <p className="text-xs text-outline leading-relaxed mt-0.5">{interviewer.bio}</p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
 
                         {/* Actions */}
                         <div className="px-12 py-8 flex items-center space-x-4">
@@ -340,7 +467,7 @@ const DashboardPage = () => {
                                     <option>HR</option>
                                 </select>
                             </div>
-                            
+
                             {/* AI Demo Toggle */}
                             <div className="flex items-center justify-between bg-primary/10 border border-primary/20 p-4 rounded-xl mt-4 text-left">
                                 <div className="flex items-center space-x-3">
@@ -363,7 +490,7 @@ const DashboardPage = () => {
                                 className="flex-1 py-2.5 border border-outline-variant/20 rounded-lg text-sm text-outline hover:bg-surface-bright transition-colors">
                                 Cancel
                             </button>
-                            <button 
+                            <button
                                 onClick={() => {
                                     setIsModalOpen(false);
                                     if (isDemoInterview) setShowDemoSetup(true);
@@ -458,7 +585,7 @@ const DashboardPage = () => {
                         >
                             {greetings[greetingIndex]}
                         </span>
-                        , Alex
+                        , {userName}
                     </h2>
                     {/* Spacer */}
                     <div className="flex-1"></div>
@@ -515,12 +642,14 @@ const DashboardPage = () => {
 
                     {/* Urgent Interview Strip — flip-clock countdown */}
                     <div
-                        className="w-full flex flex-col items-center justify-center min-h-[15vh] bg-[#1a1d2e] rounded-2xl px-8 py-8 mb-8 cursor-pointer hover:bg-[#1e2136] transition-colors"
+                        className="w-full flex flex-col items-center justify-center bg-[#1a1d2e] rounded-2xl px-8 py-5 mb-6 cursor-pointer hover:bg-[#1e2136] transition-colors"
                         onClick={() => setSelectedInterview(UPCOMING_CARDS[0])}
                     >
-                        {/* Labels */}
-                        <p className="text-[#e8837c] text-xs font-semibold tracking-[0.35em] uppercase mb-1">— Time is running out —</p>
-                        <p className="text-[#e8837c]/60 text-xs font-semibold tracking-[0.35em] uppercase mb-5">— Interview —</p>
+                        {/* Company label */}
+                        <div className="flex items-center space-x-3 mb-4">
+                            <CompanyLogo company="Amazon" size="w-7 h-7" />
+                            <p className="text-[#e8837c] text-sm font-semibold tracking-[0.25em] uppercase">Amazon</p>
+                        </div>
 
                         {/* Flip-clock digits */}
                         <div className="flex items-center" style={{ fontVariantNumeric: 'tabular-nums' }}>
@@ -563,51 +692,47 @@ const DashboardPage = () => {
                             <span className="mx-2 w-4"></span>
                             <span className="text-[0.65rem] text-[#e8837c]/50 uppercase tracking-[0.2em] font-medium" style={{ width: `${2 * 52 + 4}px`, textAlign: 'center' }}>SEC</span>
                         </div>
-
-                        {/* Red line */}
-                        <div className="w-64 h-px bg-[#e8837c]/40 mt-5 mb-4"></div>
-
-                        {/* Change event button */}
-                        <button
-                            className="px-6 py-2 border border-[#e8837c]/30 rounded-md text-[#e8837c]/70 text-xs font-semibold tracking-[0.2em] uppercase hover:bg-[#e8837c]/10 transition-colors"
-                            onClick={(e) => { e.stopPropagation(); }}
-                        >
-                            Change Event
-                        </button>
                     </div>
 
                     {/* ── Countdown Cards nav ──────────────────────────── */}
-                    <div className="flex items-center justify-between mb-4">
+                    <div className="flex items-center justify-center gap-4 mb-4">
+                        <button
+                            onClick={() => setInterviewPage(p => Math.max(0, p - 1))}
+                            className={`p-1.5 rounded-lg transition-colors ${interviewPage === 0 ? 'text-outline/30 cursor-not-allowed' : 'text-outline hover:bg-surface-bright'}`}
+                            disabled={interviewPage === 0}
+                            title="Previous"
+                        >
+                            <span className="material-symbols-outlined text-sm">chevron_left</span>
+                        </button>
                         <p className="text-[0.6875rem] uppercase tracking-widest text-outline">
-                            {showPast ? 'Past Interviews' : 'Upcoming Interviews'}
+                            {interviewPage === 0 ? 'Past Interviews' : `Upcoming Interviews · ${interviewPage}/2`}
                         </p>
-                        <div className="flex items-center space-x-1">
-                            <button
-                                onClick={() => setShowPast(true)}
-                                className={`p-1.5 rounded-lg transition-colors ${showPast ? 'bg-surface-bright text-primary' : 'text-outline hover:bg-surface-bright'}`}
-                                title="Past interviews"
-                            >
-                                <span className="material-symbols-outlined text-sm">chevron_left</span>
-                            </button>
-                            <button
-                                onClick={() => setShowPast(false)}
-                                className={`p-1.5 rounded-lg transition-colors ${!showPast ? 'bg-surface-bright text-primary' : 'text-outline hover:bg-surface-bright'}`}
-                                title="Upcoming interviews"
-                            >
-                                <span className="material-symbols-outlined text-sm">chevron_right</span>
-                            </button>
-                        </div>
+                        <button
+                            onClick={() => setInterviewPage(p => Math.min(2, p + 1))}
+                            className={`p-1.5 rounded-lg transition-colors ${interviewPage === 2 ? 'text-outline/30 cursor-not-allowed' : 'text-outline hover:bg-surface-bright'}`}
+                            disabled={interviewPage === 2}
+                            title="Next"
+                        >
+                            <span className="material-symbols-outlined text-sm">chevron_right</span>
+                        </button>
+
+                        {/* + button to create new interview */}
+                        <button
+                            onClick={() => openCreateModal()}
+                            className="ml-4 w-7 h-7 bg-primary rounded-full flex items-center justify-center hover:scale-110 transition-transform shadow-lg"
+                            title="Add new interview"
+                        >
+                            <span className="material-symbols-outlined text-on-primary" style={{ fontSize: '16px' }}>add</span>
+                        </button>
                     </div>
 
-                    {showPast ? (
+                    {interviewPage === 0 ? (
                         /* Past interviews */
                         <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
                             {PAST_INTERVIEWS.map((iv, i) => (
                                 <div key={i} className="relative group overflow-hidden bg-surface-container-high rounded-xl p-4 opacity-70 hover:opacity-100 transition-all duration-300 hover:bg-surface-bright">
                                     <div className="flex justify-between items-start mb-2">
-                                        <div className={`w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center ${iv.iconColor}`}>
-                                            <span className="material-symbols-outlined text-sm">{iv.icon}</span>
-                                        </div>
+                                        <CompanyLogo company={iv.company} />
                                         <span className="text-[0.6875rem] font-label tracking-widest text-outline">COMPLETED</span>
                                     </div>
                                     <h3 className="text-lg font-bold text-on-surface">{iv.company}</h3>
@@ -623,20 +748,16 @@ const DashboardPage = () => {
                             ))}
                         </section>
                     ) : (
-                        /* Upcoming cards + stacked pile */
-                        <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
-
-                            {/* Cards A, B, C — clickable */}
-                            {UPCOMING_CARDS.map((card, i) => (
+                        /* Upcoming cards — page 1 or page 2 */
+                        <section className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-10">
+                            {(interviewPage === 1 ? UPCOMING_CARDS : STACKED_INTERVIEWS).map((card, i) => (
                                 <button
                                     key={i}
                                     className="relative group overflow-hidden bg-surface-container-high rounded-xl p-4 transition-all duration-300 hover:bg-surface-bright text-left cursor-pointer"
                                     onClick={() => setSelectedInterview(card)}
                                 >
                                     <div className="flex justify-between items-start mb-2">
-                                        <div className={`w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center ${card.iconColor}`}>
-                                            <span className="material-symbols-outlined text-sm">{card.icon}</span>
-                                        </div>
+                                        <CompanyLogo company={card.company} />
                                         <span className="text-[0.6875rem] font-label tracking-widest text-outline">COUNTDOWN</span>
                                     </div>
                                     <h3 className="text-lg font-bold text-on-surface">{card.company}</h3>
@@ -650,85 +771,6 @@ const DashboardPage = () => {
                                     </div>
                                 </button>
                             ))}
-
-                            {/* Stacked Deck — D, E, F — fans out on hover */}
-                            <div
-                                className="relative overflow-visible"
-                                style={{ isolation: 'isolate' }}
-                                onMouseEnter={() => setDeckHovered(true)}
-                                onMouseLeave={() => setDeckHovered(false)}
-                            >
-                                {/* Blur backdrop on hover */}
-                                <div
-                                    className="absolute rounded-2xl pointer-events-none transition-opacity duration-300"
-                                    style={{
-                                        inset: '-16px',
-                                        background: 'rgba(0,0,0,0.25)',
-                                        backdropFilter: 'blur(6px)',
-                                        WebkitBackdropFilter: 'blur(6px)',
-                                        opacity: deckHovered ? 1 : 0,
-                                        zIndex: 0,
-                                    }}
-                                />
-
-                                {/* Each card in the deck — back cards rendered first */}
-                                {[...STACKED_INTERVIEWS].reverse().map((card, reverseIdx) => {
-                                    const total = STACKED_INTERVIEWS.length;
-                                    const i = total - 1 - reverseIdx; // 0 = front, 1 = middle, 2 = back
-                                    // Stacked: 0px, 10px, 20px peek; Fanned: 0%, 110%, 220%
-                                    const stackedScale = [1, 0.95, 0.90][i];
-                                    const stackedOpacity = [1, 0.7, 0.5][i];
-                                    const stackedY = `${i * 10}px`;
-                                    const fannedY = `${i * 110}%`;
-
-                                    return (
-                                        <button
-                                            key={`deck-${i}`}
-                                            className={`${i === 0 ? 'relative' : 'absolute top-0 left-0 right-0'} bg-surface-container-high rounded-xl p-4 overflow-hidden text-left cursor-pointer transition-all duration-300 ease-out`}
-                                            style={{
-                                                transform: deckHovered
-                                                    ? `translateY(${fannedY}) scale(1)`
-                                                    : `translateY(${stackedY}) scale(${stackedScale})`,
-                                                opacity: deckHovered ? 1 : stackedOpacity,
-                                                zIndex: deckHovered ? total - i : total - i,
-                                                transitionDelay: `${i * 60}ms`,
-                                                boxShadow: deckHovered
-                                                    ? '0 8px 30px rgba(0,0,0,0.35)'
-                                                    : '0 2px 8px rgba(0,0,0,0.15)',
-                                            }}
-                                            onClick={(e) => { e.stopPropagation(); setSelectedInterview(card); }}
-                                        >
-                                            <div className="flex justify-between items-start mb-2">
-                                                <div className={`w-8 h-8 rounded-lg bg-surface-container-highest flex items-center justify-center ${card.iconColor}`}>
-                                                    <span className="material-symbols-outlined text-sm">{card.icon}</span>
-                                                </div>
-                                                <span className="text-[0.6875rem] font-label tracking-widest text-outline">
-                                                    {i === 0 && !deckHovered ? `+${total} MORE` : 'COUNTDOWN'}
-                                                </span>
-                                            </div>
-                                            <h3 className="text-lg font-bold text-on-surface">{card.company}</h3>
-                                            <p className="text-secondary text-sm mt-0.5">in {card.days} days</p>
-                                            <div className="mt-3 flex items-center text-xs text-outline transition-colors" style={{ color: deckHovered ? 'var(--md-sys-color-primary)' : undefined }}>
-                                                <span>{card.actionLabel}</span>
-                                                <span className="material-symbols-outlined text-xs ml-1">arrow_forward</span>
-                                            </div>
-                                            <div className="absolute -right-4 -bottom-4 opacity-5">
-                                                <span className="material-symbols-outlined text-7xl">timer</span>
-                                            </div>
-                                        </button>
-                                    );
-                                })}
-
-                                {/* '+' button revealed on hover */}
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); openCreateModal(); }}
-                                    className="absolute top-3 right-3 w-7 h-7 bg-primary rounded-full flex items-center justify-center transition-opacity duration-300 hover:scale-110 shadow-lg"
-                                    style={{ zIndex: 20, opacity: deckHovered ? 1 : 0 }}
-                                    title="Add new interview"
-                                >
-                                    <span className="material-symbols-outlined text-on-primary" style={{ fontSize: '16px' }}>add</span>
-                                </button>
-                            </div>
                         </section>
                     )}
 
@@ -773,11 +815,21 @@ const DashboardPage = () => {
                                     const marker = getMarker(cell);
                                     const today = isToday(cell);
                                     const current = cell.type === 'current';
+                                    const allInterviews = [...UPCOMING_CARDS, ...STACKED_INTERVIEWS, ...PAST_INTERVIEWS];
+                                    const handleCellClick = () => {
+                                        if (!current) return;
+                                        if (marker) {
+                                            const match = allInterviews.find(iv => iv.company === marker.company);
+                                            if (match) { setSelectedInterview(match); return; }
+                                        }
+                                        openCreateModal();
+                                    };
                                     return (
                                         <div
                                             key={idx}
+                                            onClick={handleCellClick}
                                             className={[
-                                                'p-3 border border-outline-variant/5 flex flex-col items-center text-sm min-h-[72px] transition-colors',
+                                                'p-2 border border-outline-variant/5 flex flex-col items-center text-sm min-h-[72px] transition-colors',
                                                 current ? 'hover:bg-surface-bright cursor-pointer' : '',
                                                 marker ? marker.bgClass : '',
                                                 today ? 'ring-1 ring-inset ring-primary/50' : '',
@@ -792,7 +844,14 @@ const DashboardPage = () => {
                                             ].join(' ')}>
                                                 {cell.day}
                                             </span>
-                                            {marker && <div className={`mt-1 w-1.5 h-1.5 rounded-full ${marker.dotClass}`} />}
+                                            {marker && (
+                                                <>
+                                                    <div className={`mt-1 w-1.5 h-1.5 rounded-full ${marker.dotClass}`} />
+                                                    <span className={`mt-1 text-[0.5rem] font-semibold leading-none text-center truncate w-full ${marker.textClass}`}>
+                                                        {marker.company}
+                                                    </span>
+                                                </>
+                                            )}
                                         </div>
                                     );
                                 })}
@@ -800,54 +859,8 @@ const DashboardPage = () => {
                         </div>
                     </section>
 
-                    {/* ── Resources ─────────────────────────────────────── */}
-                    <section className="mt-12">
-                        <h4 className="text-lg font-headline font-semibold mb-6">Mastering Your Narrative</h4>
-                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                            <div className="bg-surface-container-high p-4 rounded-xl flex items-center space-x-4 hover:bg-surface-bright cursor-pointer transition-colors">
-                                <div className="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-outline">description</span>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium">STAR Framework</p>
-                                    <p className="text-xs text-outline">Interactive Guide</p>
-                                </div>
-                            </div>
-                            <div className="bg-surface-container-high p-4 rounded-xl flex items-center space-x-4 hover:bg-surface-bright cursor-pointer transition-colors">
-                                <div className="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-outline">record_voice_over</span>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium">Negotiation Lab</p>
-                                    <p className="text-xs text-outline">Roleplay Module</p>
-                                </div>
-                            </div>
-                            <div className="bg-surface-container-high p-4 rounded-xl flex items-center space-x-4 hover:bg-surface-bright cursor-pointer transition-colors">
-                                <div className="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-outline">analytics</span>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium">Salary Insights</p>
-                                    <p className="text-xs text-outline">2024 Tech Data</p>
-                                </div>
-                            </div>
-                            <div className="bg-surface-container-high p-4 rounded-xl flex items-center space-x-4 hover:bg-surface-bright cursor-pointer transition-colors">
-                                <div className="w-12 h-12 bg-surface-container-highest rounded-lg flex items-center justify-center">
-                                    <span className="material-symbols-outlined text-outline">school</span>
-                                </div>
-                                <div>
-                                    <p className="text-sm font-medium">System Design</p>
-                                    <p className="text-xs text-outline">Advanced Prep</p>
-                                </div>
-                            </div>
-                        </div>
-                    </section>
                 </div>
 
-                {/* FAB */}
-                <button className="fixed bottom-8 right-8 w-14 h-14 bg-primary text-on-primary rounded-full shadow-2xl flex items-center justify-center hover:scale-105 transition-transform z-50">
-                    <span className="material-symbols-outlined" style={{ fontVariationSettings: "'FILL' 1" }}>mic</span>
-                </button>
             </main>
         </div>
     );

@@ -35,4 +35,4 @@ async def login(credentials: UserLogin, db=Depends(get_db)):
     # Simple Session ID generation for Hackathon purposes
     # Frontend will save this and return in X-Session-ID header
     session_id = str(user["_id"]) # In a real app we'd map this securely
-    return {"message": "Login successful", "session_id": session_id}
+    return {"message": "Login successful", "session_id": session_id, "username": user["username"]}

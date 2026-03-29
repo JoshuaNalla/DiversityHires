@@ -71,6 +71,35 @@ function HomePage() {
           </div>
         </section>
 
+        {/* Company Logos Strip */}
+        <section className="py-12 px-8 border-y border-outline-variant/10 bg-surface-container-lowest">
+          <div className="max-w-5xl mx-auto">
+            <p className="text-center text-[0.65rem] uppercase tracking-[0.25em] text-outline mb-8">Prep for top companies</p>
+            <div className="flex flex-wrap items-center justify-center gap-8">
+              {[
+                { name: 'Google',    icon: 'bi-google',    color: '#4285F4', bg: '#fff' },
+                { name: 'Amazon',    icon: 'bi-amazon',    color: '#FF9900', bg: '#111' },
+                { name: 'Apple',     icon: 'bi-apple',     color: '#1d1d1f', bg: '#fff' },
+                { name: 'Meta',      icon: 'bi-meta',      color: '#0082FB', bg: '#fff' },
+                { name: 'Microsoft', icon: 'bi-microsoft', color: '#00a4ef', bg: '#fff' },
+                { name: 'Nvidia',    icon: 'bi-nvidia',    color: '#76b900', bg: '#000' },
+                { name: 'Stripe',    icon: 'bi-stripe',    color: '#6772E5', bg: '#fff' },
+                { name: 'Uber',      icon: null, letter: 'U', color: '#fff',    bg: '#000' },
+              ].map(({ name, icon, letter, color, bg }) => (
+                <div key={name} className="flex flex-col items-center gap-2 opacity-50 hover:opacity-100 transition-opacity">
+                  <div className="w-10 h-10 rounded-xl flex items-center justify-center" style={{ background: bg }}>
+                    {icon
+                      ? <i className={`bi ${icon} text-xl`} style={{ color }} />
+                      : <span className="text-sm font-bold" style={{ color }}>{letter}</span>
+                    }
+                  </div>
+                  <span className="text-[0.6rem] uppercase tracking-widest text-outline">{name}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
         {/* AI Interpreter Section */}
         <section id="practice" className="py-32 px-8 bg-surface-container-low">
           <div className="max-w-7xl mx-auto grid lg:grid-cols-2 gap-20 items-center">
@@ -168,6 +197,20 @@ function HomePage() {
                   <div>
                     <h4 className="font-semibold text-on-surface">Target Company & Role</h4>
                     <p className="text-sm text-outline">Specify your dream company and role seniority. Our AI adjusts the difficulty and culture-fit questions accordingly.</p>
+                    <div className="flex items-center gap-2 mt-3">
+                      {[
+                        { icon: 'bi-google',    color: '#4285F4', bg: '#fff' },
+                        { icon: 'bi-amazon',    color: '#FF9900', bg: '#111' },
+                        { icon: 'bi-meta',      color: '#0082FB', bg: '#fff' },
+                        { icon: 'bi-microsoft', color: '#00a4ef', bg: '#fff' },
+                        { icon: 'bi-apple',     color: '#1d1d1f', bg: '#fff' },
+                      ].map(({ icon, color, bg }) => (
+                        <div key={icon} className="w-7 h-7 rounded-lg flex items-center justify-center opacity-70 hover:opacity-100 transition-opacity" style={{ background: bg }}>
+                          <i className={`bi ${icon} text-sm`} style={{ color }} />
+                        </div>
+                      ))}
+                      <span className="text-xs text-outline">+ more</span>
+                    </div>
                   </div>
                 </li>
                 <li className="flex items-start gap-4">
