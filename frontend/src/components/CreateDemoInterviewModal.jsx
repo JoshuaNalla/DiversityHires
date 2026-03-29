@@ -77,7 +77,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
         onClose();
     };
 
-    const labelCls = "block text-[0.6875rem] font-bold tracking-widest text-outline uppercase mb-2";
+    const labelCls = "block text-[0.6875rem] font-bold tracking-widest text-on-surface-variant uppercase mb-2";
 
     return (
         <div className="absolute inset-0 brand-shell rounded-2xl flex flex-col p-8 md:p-12 overflow-y-auto animate-in fade-in zoom-in-95 duration-200 shadow-2xl">
@@ -98,7 +98,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                 <h2 className="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight mb-3">
                     Set Up Your Session
                 </h2>
-                <p className="text-outline text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
+                <p className="text-on-surface-variant text-lg md:text-xl font-medium max-w-2xl leading-relaxed">
                     Configure your environment to simulate the high-stakes pressure of a real technical interview. Precision is key to growth.
                 </p>
             </div>
@@ -110,7 +110,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                 <div>
                     <div className="flex justify-between items-center mb-6">
                         <label className={labelCls}>Interview Duration</label>
-                        <span className="text-xl font-bold text-on-surface">{duration} <span className="text-sm font-medium text-outline uppercase tracking-wider">Minutes</span></span>
+                        <span className="text-xl font-bold text-on-surface">{duration} <span className="text-sm font-medium text-on-surface-variant uppercase tracking-wider">Minutes</span></span>
                     </div>
                     {/* Custom Range Slider using Tailwind accent */}
                     <div className="relative w-full">
@@ -123,7 +123,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                             onChange={(e) => setDuration(Number(e.target.value))}
                             className="w-full h-1.5 bg-surface-container-highest rounded-full appearance-none cursor-pointer accent-primary focus:outline-none"
                         />
-                        <div className="flex justify-between text-[0.6875rem] font-bold tracking-widest text-outline/50 mt-4 px-1">
+                        <div className="flex justify-between text-[0.6875rem] font-bold tracking-widest text-on-surface-variant/70 mt-4 px-1">
                             <span>15 MIN</span>
                             <span>30 MIN</span>
                             <span>45 MIN</span>
@@ -194,13 +194,13 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                                         : `border-outline-variant/20 bg-white/70 hover:border-primary/30 hover:bg-primary/6 ${p.id === 'custom' ? 'opacity-60 cursor-not-allowed' : ''}`
                                     }`}
                                 >
-                                    <span className={`material-symbols-outlined text-2xl mb-4 ${isSelected ? 'text-on-surface' : 'text-outline'}`}>
+                                    <span className={`material-symbols-outlined text-2xl mb-4 ${isSelected ? 'text-on-surface' : 'text-on-surface-variant'}`}>
                                         {p.icon}
                                     </span>
-                                    <span className={`text-sm font-bold mb-1 ${isSelected ? 'text-on-surface' : 'text-outline'}`}>
+                                    <span className={`text-sm font-bold mb-1 ${isSelected ? 'text-on-surface' : 'text-on-surface'}`}>
                                         {p.name}
                                     </span>
-                                    <span className="text-xs text-outline font-medium">
+                                    <span className="text-xs text-on-surface-variant font-medium">
                                         {p.type} {p.id === 'custom' && '(Soon)'}
                                     </span>
                                 </button>
@@ -222,7 +222,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                                     className={`flex-1 py-3 text-sm font-semibold rounded-lg transition-all duration-200 ${
                                         isSelected 
                                         ? 'bg-surface-container-highest text-on-surface shadow-sm border border-outline-variant/20' 
-                                        : 'text-outline hover:text-on-surface'
+                                        : 'text-on-surface-variant hover:text-on-surface'
                                     }`}
                                 >
                                     {level}
@@ -249,8 +249,8 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                             {uploadStatus === 'idle' || !resumeFile ? (
                                 <div className="border-2 border-dashed border-outline-variant/30 rounded-lg p-6 text-center hover:bg-surface-bright transition-colors relative cursor-pointer group">
                                     <input type="file" accept="application/pdf" className="absolute inset-0 w-full h-full opacity-0 cursor-pointer" onChange={handleFileChange} />
-                                    <span className="material-symbols-outlined text-outline text-3xl mb-2 group-hover:text-primary transition-colors">upload_file</span>
-                                    <p className="text-sm text-outline">Drop your latest resume (PDF) here or click to browse.</p>
+                                    <span className="material-symbols-outlined text-on-surface-variant text-3xl mb-2 group-hover:text-primary transition-colors">upload_file</span>
+                                    <p className="text-sm text-on-surface-variant">Drop your latest resume (PDF) here or click to browse.</p>
                                 </div>
                             ) : uploadStatus === 'uploading' ? (
                                 <div className="flex flex-col items-center justify-center p-4">
@@ -270,13 +270,13 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                                             <p className="text-xs text-emerald-400/70">Context ingested successfully.</p>
                                         </div>
                                       </div>
-                                      <button onClick={() => { setResumeFile(null); setUploadStatus('idle'); setResumeSummary(null); setSummary(null); setUploadError(''); }} className="text-xs font-semibold text-outline hover:text-error transition-colors">REPLACE</button>
+                                      <button onClick={() => { setResumeFile(null); setUploadStatus('idle'); setResumeSummary(null); setSummary(null); setUploadError(''); }} className="text-xs font-semibold text-on-surface-variant hover:text-error transition-colors">REPLACE</button>
                                     </div>
                                     {resumeSummary && (
-                                      <div className="text-xs text-slate-200 bg-black/15 rounded-lg p-3 border border-white/5">
-                                        <p className="uppercase tracking-[0.15em] text-slate-400 mb-2">Extracted Resume Context</p>
-                                        <p><span className="font-semibold text-slate-300">Skills:</span> {(resumeSummary.skills || []).slice(0, 6).join(', ') || 'None parsed'}</p>
-                                        <p className="mt-1"><span className="font-semibold text-slate-300">Probe:</span> {(resumeSummary.probingAreas || []).slice(0, 3).join(', ') || 'None parsed'}</p>
+                                      <div className="text-xs text-on-surface bg-primary/8 rounded-lg p-3 border border-primary/12">
+                                        <p className="uppercase tracking-[0.15em] text-on-surface-variant mb-2">Extracted Resume Context</p>
+                                        <p><span className="font-semibold text-[var(--brand-ink)]">Skills:</span> {(resumeSummary.skills || []).slice(0, 6).join(', ') || 'None parsed'}</p>
+                                        <p className="mt-1"><span className="font-semibold text-[var(--brand-ink)]">Probe:</span> {(resumeSummary.probingAreas || []).slice(0, 3).join(', ') || 'None parsed'}</p>
                                       </div>
                                     )}
                                 </div>
@@ -301,7 +301,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                             play_arrow
                         </span>
                     </button>
-                    <p className="text-center text-xs text-outline mt-4 font-medium tracking-wide">
+                    <p className="text-center text-xs text-on-surface-variant mt-4 font-medium tracking-wide">
                         You'll be directed to a secure AI simulation room. Microphone access required.
                     </p>
                 </div>

@@ -219,9 +219,9 @@ export default function InterviewReportPage() {
               <div className="rounded-2xl bg-primary/6 p-4 border border-primary/12">
                 <p className="text-on-surface-variant uppercase tracking-[0.2em] text-xs mb-2">Coaching Advice</p>
                 {report.summary.primaryGap && (
-                  <div className="mb-3 rounded-xl border border-amber-400/20 bg-amber-400/10 p-3">
-                    <p className="text-[0.65rem] uppercase tracking-[0.2em] text-amber-200 mb-1">Priority Fix</p>
-                    <p className="text-sm text-amber-50">{report.summary.primaryGap}</p>
+                  <div className="mb-3 rounded-xl border border-amber-500/30 bg-amber-100/70 p-3">
+                    <p className="text-[0.65rem] uppercase tracking-[0.2em] text-amber-800 mb-1">Priority Fix</p>
+                    <p className="text-sm text-amber-950">{report.summary.primaryGap}</p>
                   </div>
                 )}
                 <div className="space-y-2 text-on-surface">

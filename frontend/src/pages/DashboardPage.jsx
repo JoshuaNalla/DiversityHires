@@ -403,8 +403,8 @@ const DashboardPage = () => {
     const sessionCount = INTERVIEW_MARKERS.filter(m => m.year === calYear && m.month === calMonth).length;
 
     // ── Shared styles ───────────────────────────────────────────────────────
-    const inputCls = "w-full bg-[#1e2035] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40";
-    const labelCls = "block text-xs text-outline mb-1.5 tracking-wide uppercase";
+    const inputCls = "w-full bg-white border border-outline-variant/40 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/60 transition-colors placeholder:text-on-surface-variant/60";
+    const labelCls = "block text-xs text-on-surface-variant mb-1.5 tracking-wide uppercase";
 
     // Sidebar derived widths
     const sidebarW = sidebarOpen ? 'w-64' : 'w-[60px]';
@@ -586,30 +586,30 @@ const DashboardPage = () => {
             {isEditOpen && (
                 <div className="fixed inset-0 z-[65] flex items-center justify-center">
                     <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setIsEditOpen(false)} />
-                    <div className="relative bg-[#131525] border border-outline-variant/20 rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
+                    <div className="relative brand-card rounded-2xl p-6 w-full max-w-md mx-4 shadow-2xl">
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center space-x-2">
                                 <span className="material-symbols-outlined text-primary text-sm">edit</span>
-                                <h3 className="text-base font-semibold text-on-surface">Edit Interview</h3>
+                                <h3 className="text-base font-semibold text-[var(--brand-ink)]">Edit Interview</h3>
                             </div>
-                            <button onClick={() => setIsEditOpen(false)} className="text-outline hover:text-on-surface transition-colors p-1">
+                            <button onClick={() => setIsEditOpen(false)} className="text-on-surface-variant hover:text-on-surface transition-colors p-1">
                                 <span className="material-symbols-outlined text-sm">close</span>
                             </button>
                         </div>
                         <div className="space-y-3">
                             <div>
-                                <label className="block text-xs text-outline mb-1.5 tracking-wide uppercase">Interview Title</label>
-                                <input className="w-full bg-[#1e2035] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40"
+                                <label className="block text-xs text-on-surface-variant mb-1.5 tracking-wide uppercase">Interview Title</label>
+                                <input className="w-full bg-white border border-outline-variant/40 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/60 transition-colors placeholder:text-on-surface-variant/60"
                                     value={editData.title} onChange={e => setEditData(p => ({ ...p, title: e.target.value }))} />
                             </div>
                             <div>
-                                <label className="block text-xs text-outline mb-1.5 tracking-wide uppercase">Company</label>
-                                <input className="w-full bg-[#1e2035] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40"
+                                <label className="block text-xs text-on-surface-variant mb-1.5 tracking-wide uppercase">Company</label>
+                                <input className="w-full bg-white border border-outline-variant/40 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/60 transition-colors placeholder:text-on-surface-variant/60"
                                     value={editData.company} onChange={e => setEditData(p => ({ ...p, company: e.target.value }))} />
                             </div>
                             <div>
-                                <label className="block text-xs text-outline mb-1.5 tracking-wide uppercase">Type</label>
-                                <select className="w-full bg-[#1e2035] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors"
+                                <label className="block text-xs text-on-surface-variant mb-1.5 tracking-wide uppercase">Type</label>
+                                <select className="w-full bg-white border border-outline-variant/40 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/60 transition-colors"
                                     value={editData.type} onChange={e => setEditData(p => ({ ...p, type: e.target.value }))}>
                                     <option>Behavioral</option>
                                     <option>Technical</option>
@@ -619,15 +619,15 @@ const DashboardPage = () => {
                             </div>
                             <div className="grid grid-cols-2 gap-3">
                                 <div>
-                                    <label className="block text-xs text-outline mb-1.5 tracking-wide uppercase">Date</label>
-                                    <input className="w-full bg-[#1e2035] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors"
-                                        type="date" style={{ colorScheme: 'dark' }}
+                                    <label className="block text-xs text-on-surface-variant mb-1.5 tracking-wide uppercase">Date</label>
+                                    <input className="w-full bg-white border border-outline-variant/40 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/60 transition-colors"
+                                        type="date" style={{ colorScheme: 'light' }}
                                         value={editData.date} onChange={e => setEditData(p => ({ ...p, date: e.target.value }))} />
                                 </div>
                                 <div>
-                                    <label className="block text-xs text-outline mb-1.5 tracking-wide uppercase">Time</label>
-                                    <input className="w-full bg-[#1e2035] border border-outline-variant/20 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors"
-                                        type="time" style={{ colorScheme: 'dark' }}
+                                    <label className="block text-xs text-on-surface-variant mb-1.5 tracking-wide uppercase">Time</label>
+                                    <input className="w-full bg-white border border-outline-variant/40 rounded-lg px-4 py-2.5 text-sm text-on-surface focus:outline-none focus:border-primary/60 transition-colors"
+                                        type="time" style={{ colorScheme: 'light' }}
                                         value={editData.time} onChange={e => setEditData(p => ({ ...p, time: e.target.value }))} />
                                 </div>
                             </div>
@@ -649,12 +649,12 @@ const DashboardPage = () => {
                                         alert('Failed to delete interview');
                                     }
                                 }}
-                                className="flex-1 py-2.5 border border-red-500/40 text-red-300 rounded-lg text-sm hover:bg-red-500/10 transition-colors"
+                                className="flex-1 py-2.5 border border-red-500/40 text-red-600 rounded-lg text-sm hover:bg-red-500/10 transition-colors"
                             >
                                 Delete
                             </button>
                             <button onClick={() => setIsEditOpen(false)}
-                                className="flex-1 py-2.5 border border-outline-variant/20 rounded-lg text-sm text-outline hover:bg-surface-bright transition-colors">
+                                className="flex-1 py-2.5 border border-outline-variant/30 rounded-lg text-sm text-on-surface-variant hover:bg-surface-bright transition-colors">
                                 Cancel
                             </button>
                             <button

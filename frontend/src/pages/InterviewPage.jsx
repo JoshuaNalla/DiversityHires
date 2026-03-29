@@ -517,15 +517,15 @@ export default function InterviewPage() {
               <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-white/55">
                 {/* Timer header */}
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-semibold text-slate-400">
+                  <span className="text-xs font-semibold text-on-surface-variant">
                     Session: {mockConfig?.role || 'SWE'} @ {mockConfig?.company || 'our company'}
                   </span>
-                  <span className={`text-xs font-mono px-2 py-1 rounded-md border ${timeLeftMs === 0 ? 'text-red-300 border-red-500/30 bg-red-500/10' : 'text-indigo-300 border-indigo-500/30 bg-indigo-500/10'}`}>
+                  <span className={`text-xs font-mono px-2 py-1 rounded-md border ${timeLeftMs === 0 ? 'text-red-600 border-red-500/30 bg-red-500/10' : 'text-primary border-primary/30 bg-primary/8'}`}>
                     {formatTime(timeLeftMs ?? (mockConfig?.duration || 45) * 60 * 1000)} / {String(mockConfig?.duration || 45).padStart(2,'0')}:00
                   </span>
                 </div>
                 {chatHistory.length === 0 && !isLoading && (
-                  <div className="text-center text-slate-500 mt-10">Starting session...</div>
+                  <div className="text-center text-on-surface-variant mt-10">Starting session...</div>
                 )}
 
                 {chatHistory.map((msg, i) => (
@@ -546,25 +546,25 @@ export default function InterviewPage() {
               <div className="p-4 bg-white/90 border-t border-outline-variant/40 flex flex-col gap-2 shrink-0 z-10">
                 {liveAlerts.length > 0 && (
                   <div className="mb-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
-                    <p className="text-[0.7rem] uppercase tracking-[0.2em] text-amber-200 mb-2">Live Coach Alerts</p>
+                    <p className="text-[0.7rem] uppercase tracking-[0.2em] text-amber-900 mb-2">Live Coach Alerts</p>
                     <div className="space-y-1.5">
                       {liveAlerts.slice(0, 3).map((alert, index) => (
-                        <p key={index} className={`text-xs ${alert.type === 'danger' ? 'text-red-200' : 'text-amber-100'}`}>• {alert.text}</p>
+                        <p key={index} className={`text-xs ${alert.type === 'danger' ? 'text-red-700' : 'text-amber-900'}`}>• {alert.text}</p>
                       ))}
                     </div>
                   </div>
                 )}
                 <div className="flex justify-between items-center px-1 mb-1">
-                  <span className="text-xs font-semibold text-slate-400">Your Response</span>
+                  <span className="text-xs font-semibold text-on-surface-variant">Your Response</span>
                   {(isListening || speechMetrics.wpm > 0) && (
                     <div className="flex gap-4 text-xs font-mono">
-                      <span className="text-indigo-400" title="Words Per Minute">WPM: {speechMetrics.wpm || '--'}</span>
-                      <span className="text-pink-400" title="Filler Words Detected">Fillers: {speechMetrics.fillers}</span>
+                      <span className="text-primary" title="Words Per Minute">WPM: {speechMetrics.wpm || '--'}</span>
+                      <span className="text-emerald-700" title="Filler Words Detected">Fillers: {speechMetrics.fillers}</span>
                     </div>
                   )}
                 </div>
                 {speechErrorMsg && (
-                  <p className="text-xs text-amber-300 px-1">{speechErrorMsg}</p>
+                  <p className="text-xs text-amber-800 px-1">{speechErrorMsg}</p>
                 )}
                 <textarea
                   ref={textareaRef}
