@@ -45,9 +45,13 @@ export function useElevenLabsSTT(apiKey) {
       setTranscript('Connecting to ElevenLabs...');
       setError(null);
 
+      const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
+      const wsHost = `${protocol}//${window.location.host}/api/elevenlabs-ws`;
+
       const connection = Scribe.connect({
-        token: apiKey,
-        modelId: DEFAULT_MODEL_ID,
+        token: "proxy-injected-token", // The actual xi-api-key is injected server-side by the Vite proxy
+        baseUri: wsHost,
+        modelId: "scribe_v1", // Scribe model must be scribe_v1 string for the STT system
         microphone: {
           echoCancellation: true,
           noiseSuppression: true,

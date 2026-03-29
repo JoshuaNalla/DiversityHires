@@ -9,6 +9,10 @@ from mediapipe.tasks.python import vision
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
+import json
+import base64
+import httpx
+import google.generativeai as genai
 
 app = FastAPI()
 
@@ -125,3 +129,122 @@ async def analyze_frame(file: UploadFile = File(...)):
 @app.get("/health")
 def health_check():
     return {"status": "healthy"}
+
+class StartInterviewRequest(BaseModel):
+    summary: dict
+
+class NextQuestionRequest(BaseModel):
+    summary: dict
+    history: list
+
+async def generate_speech(text: str) -> str:
+    voice_id = os.environ.get("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")
+    api_key = os.environ.get("ELEVENLABS_API_KEY", "")
+    
+    if not api_key or api_key == 'your_elevenlabs_api_key_here':
+        print("Missing ElevenLabs API Key, returning dummy audio.")
+        return None
+        
+    url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
+    headers = {
+        "xi-api-key": api_key,
+        "Content-Type": "application/json"
+    }
+    data = {
+        "text": text,
+        "model_id": "eleven_monolingual_v1",
+        "voice_settings": {
+            "stability": 0.5,
+            "similarity_boost": 0.5
+        }
+    }
+    
+    async with httpx.AsyncClient() as client:
+        try:
+            response = await client.post(url, headers=headers, json=data, timeout=30.0)
+            if response.status_code != 200:
+                print(f"ElevenLabs API error: {response.text}")
+                return None
+            return base64.b64encode(response.content).decode('utf-8')
+        except Exception as e:
+            print(f"ElevenLabs Error: {str(e)}")
+            return None
+
+@app.post("/api/upload-resume")
+async def upload_resume(resume: UploadFile = File(...)):
+    if not resume:
+        return {"error": "No resume file uploaded."}
+        
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    if not api_key or api_key == 'your_gemini_api_key_here':
+         return {"error": "GEMINI_API_KEY is missing or invalid."}
+         
+    genai.configure(api_key=api_key)
+    
+    contents = await resume.read()
+    
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    prompt = 'You are an expert technical recruiter analyzing this resume. Extract the candidate\'s core skills, top 3 achievements, and suggest 3 areas to probe during an interview. Return only valid JSON directly, without markdown blocks. Follow this structure: { "skills": [], "achievements": [], "probingAreas": [] }'
+    
+    try:
+        response = model.generate_content([
+            {"mime_type": resume.content_type, "data": contents},
+            prompt
+        ])
+    except Exception as e:
+        print("Gemini Vision PDF parsing error:", str(e))
+        return {"error": "Gemini was unable to read the PDF stream"}
+    
+    raw_text = response.text.strip()
+    if raw_text.startswith("```json"):
+        raw_text = raw_text[7:-3]
+    elif raw_text.startswith("```"):
+        raw_text = raw_text[3:-3]
+        
+    try:
+        summary = json.loads(raw_text.strip())
+        return {"success": True, "summary": summary}
+    except Exception as e:
+        print("Failed to parse resume JSON", e)
+        return {"error": "Failed to parse resume."}
+
+@app.post("/api/start-interview")
+async def start_interview(req: StartInterviewRequest):
+    if not req.summary:
+        return {"error": "Missing resume summary"}
+        
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    genai.configure(api_key=api_key)
+    
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    prompt = f"You are an AI interviewer starting a technical interview.\nBased on this candidate summary: {json.dumps(req.summary)}\nGenerate a brief, welcoming opening statement and ONE initial technical question to ask them about their experience. Keep it conversational."
+    
+    response = model.generate_content(prompt)
+    question_text = response.text
+    
+    audio_base64 = await generate_speech(question_text)
+    
+    return {
+        "success": True,
+        "question": question_text,
+        "audio": f"data:audio/mpeg;base64,{audio_base64}" if audio_base64 else None
+    }
+
+@app.post("/api/next-question")
+async def next_question(req: NextQuestionRequest):
+    api_key = os.environ.get("GEMINI_API_KEY", "")
+    genai.configure(api_key=api_key)
+    
+    model = genai.GenerativeModel('gemini-2.5-flash')
+    prompt = f"You are an AI interviewer.\nCandidate Summary: {json.dumps(req.summary)}\nChat History: {json.dumps(req.history)}\n\nGenerate a thoughtful response to their last answer, and then ask ONE follow-up question. Keep it concise, natural, and conversational."
+    
+    response = model.generate_content(prompt)
+    question_text = response.text
+    
+    audio_base64 = await generate_speech(question_text)
+    
+    return {
+        "success": True,
+        "question": question_text,
+        "audio": f"data:audio/mpeg;base64,{audio_base64}" if audio_base64 else None
+    }

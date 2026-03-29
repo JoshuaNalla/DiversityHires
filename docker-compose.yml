@@ -20,5 +20,8 @@ services:
     volumes:
       # Optional: bind mount code so we can hot reload main.py
       - ./backend:/app
+    env_file:
+      - ./frontend/.env
     environment:
       - PYTHONUNBUFFERED=1
+
