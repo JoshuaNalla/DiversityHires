@@ -26,7 +26,7 @@ const LoginPage = () => {
                 // Save the session ID in local storage for later authenticated requests
                 localStorage.setItem('session_id', data.session_id);
                 // Redirect user to an authenticated dashboard (e.g. index/root)
-                navigate('/');
+                navigate('/dashboard');
             } else {
                 setError(data.detail || 'Login failed. Please check your credentials.');
             }
