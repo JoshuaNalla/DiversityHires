@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import axios from 'axios';
+import BrandLogo from '../components/BrandLogo';
 
 const ProfilePage = () => {
     const navigate = useNavigate();
@@ -32,8 +33,8 @@ const ProfilePage = () => {
 
     if (loading) {
         return (
-            <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-                <div className="w-16 h-16 border-4 border-[#ff2a00]/50 border-t-[#ff2a00] rounded-full animate-spin"></div>
+            <div className="brand-shell min-h-screen flex items-center justify-center">
+                <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin"></div>
             </div>
         );
     }
@@ -46,9 +47,10 @@ const ProfilePage = () => {
     const roles = _roles.length > 0 ? _roles : ["No specific roles listed."];
 
     return (
-        <div className="min-h-screen bg-[#0a0a0f] text-on-surface font-sans selection:bg-primary/30">
+        <div className="brand-shell min-h-screen text-on-surface font-sans selection:bg-primary/30">
             {/* Context/Nav Bar */}
-            <div className="w-full h-16 bg-[#101226]/80 backdrop-blur-md flex items-center px-8 sticky top-0 z-50 border-b border-outline-variant/10">
+            <div className="w-full h-20 bg-white/80 backdrop-blur-md flex items-center justify-between px-8 sticky top-0 z-50 border-b border-outline-variant/30">
+                <BrandLogo size="sm" showTagline />
                 <button 
                     onClick={() => navigate('/dashboard')}
                     className="flex items-center space-x-2 text-outline hover:text-primary transition-colors"

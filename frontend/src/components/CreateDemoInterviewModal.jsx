@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { useStore } from '../store/useStore';
+import BrandLogo from './BrandLogo';
 
 const PERSONAS = [
     { id: 'ali', name: 'Ali', type: 'The Stress Tester', icon: 'gavel', color: 'border-red-500/50', activeBg: 'bg-red-500/10' },
@@ -79,7 +80,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
     const labelCls = "block text-[0.6875rem] font-bold tracking-widest text-outline uppercase mb-2";
 
     return (
-        <div className="absolute inset-0 bg-surface-container-high rounded-2xl flex flex-col p-8 md:p-12 overflow-y-auto animate-in fade-in zoom-in-95 duration-200 shadow-2xl">
+        <div className="absolute inset-0 brand-shell rounded-2xl flex flex-col p-8 md:p-12 overflow-y-auto animate-in fade-in zoom-in-95 duration-200 shadow-2xl">
             {/* Close Button */}
             <button
                 onClick={onClose}
@@ -91,6 +92,9 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
 
             {/* Header */}
             <div className="mb-10 w-full max-w-3xl mx-auto">
+                <div className="mb-6">
+                    <BrandLogo size="sm" showTagline />
+                </div>
                 <h2 className="text-4xl md:text-5xl font-extrabold text-on-surface tracking-tight mb-3">
                     Set Up Your Session
                 </h2>
@@ -138,7 +142,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                                 placeholder="Target Role (e.g., Software Engineer)" 
                                 value={role}
                                 onChange={(e) => setRole(e.target.value)}
-                                className="w-full bg-[#1e2035] border border-outline-variant/20 rounded-xl px-4 py-3.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40"
+                                className="w-full bg-white/80 border border-outline-variant/40 rounded-xl px-4 py-3.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40"
                             />
                         </div>
                         <div className="relative">
@@ -147,7 +151,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                                 placeholder="Company (e.g., Google)" 
                                 value={company}
                                 onChange={(e) => setCompany(e.target.value)}
-                                className="w-full bg-[#1e2035] border border-outline-variant/20 rounded-xl px-4 py-3.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40"
+                                className="w-full bg-white/80 border border-outline-variant/40 rounded-xl px-4 py-3.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40"
                             />
                         </div>
                     </div>
@@ -157,7 +161,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                             placeholder="Link to job posting (optional)" 
                             value={jobLink}
                             onChange={(e) => setJobLink(e.target.value)}
-                            className="w-full bg-[#1e2035] border border-outline-variant/20 rounded-xl px-4 py-3.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40"
+                            className="w-full bg-white/80 border border-outline-variant/40 rounded-xl px-4 py-3.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40"
                         />
                         <span className="material-symbols-outlined absolute top-3.5 right-4 text-outline/40 text-lg pointer-events-none">link</span>
                     </div>
@@ -167,7 +171,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                             value={description}
                             onChange={(e) => setDescription(e.target.value)}
                             rows={3}
-                            className="w-full bg-[#1e2035] border border-outline-variant/20 rounded-xl px-4 py-3.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40 resize-none"
+                            className="w-full bg-white/80 border border-outline-variant/40 rounded-xl px-4 py-3.5 text-sm text-on-surface focus:outline-none focus:border-primary/50 transition-colors placeholder:text-outline/40 resize-none"
                         />
                         <span className="material-symbols-outlined absolute top-4 right-4 text-outline/40 text-lg pointer-events-none">edit</span>
                     </div>
@@ -187,7 +191,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                                     className={`relative flex flex-col items-start text-left p-5 rounded-2xl border transition-all duration-200 ${
                                         isSelected 
                                         ? `${p.color} ${p.activeBg} shadow-[0_0_20px_rgba(0,0,0,0.2)] scale-[1.02]` 
-                                        : `border-outline-variant/10 bg-[#1e2035] hover:border-outline-variant/30 hover:bg-[#252840] ${p.id === 'custom' ? 'opacity-60 cursor-not-allowed' : ''}`
+                                        : `border-outline-variant/20 bg-white/70 hover:border-primary/30 hover:bg-primary/6 ${p.id === 'custom' ? 'opacity-60 cursor-not-allowed' : ''}`
                                     }`}
                                 >
                                     <span className={`material-symbols-outlined text-2xl mb-4 ${isSelected ? 'text-on-surface' : 'text-outline'}`}>
@@ -208,7 +212,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                 {/* Question Difficulty */}
                 <div>
                     <label className={labelCls}>Question Difficulty</label>
-                    <div className="flex w-full bg-[#1e2035] rounded-xl p-1.5 border border-outline-variant/10">
+                    <div className="flex w-full bg-white/70 rounded-xl p-1.5 border border-outline-variant/20">
                         {['Entry Level', 'Mid-Level', 'Senior/Executive'].map(level => {
                             const isSelected = difficulty === level;
                             return (
@@ -229,7 +233,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                 </div>
 
                 {/* Resume Upload Integration */}
-                <div className="bg-[#1e2035] border border-outline-variant/20 rounded-xl p-5">
+                <div className="bg-white/75 border border-outline-variant/25 rounded-xl p-5">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center space-x-3">
                             <label className="relative inline-flex items-center cursor-pointer">
@@ -252,7 +256,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                                 <div className="flex flex-col items-center justify-center p-4">
                                     <div className="w-8 h-8 rounded-full border-2 border-primary border-t-transparent animate-spin mb-2"></div>
                                     <p className="text-sm text-primary font-medium tracking-wide">Synthesizing vectors...</p>
-                                    <div className="w-full bg-[#131525] rounded-full h-1 mt-2 overflow-hidden relative">
+                                    <div className="w-full bg-primary/10 rounded-full h-1 mt-2 overflow-hidden relative">
                                         <div className="absolute top-0 left-0 h-full bg-primary bg-gradient-to-r from-primary/50 to-primary animate-pulse w-full"></div>
                                     </div>
                                 </div>
@@ -290,7 +294,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                 <div className="pt-4">
                     <button 
                         onClick={handleStartDemo}
-                        className="w-full py-5 bg-primary-container text-on-primary-container hover:bg-[#d2c2cf] hover:text-[#302730] transition-colors rounded-xl font-bold text-lg flex justify-between items-center px-10 border border-primary/20 hover:border-primary/40 group"
+                        className="brand-button-primary w-full py-5 transition-colors rounded-2xl font-bold text-lg flex justify-between items-center px-10 group"
                     >
                         <span>Start Demo Interview</span>
                         <span className="material-symbols-outlined transform group-hover:translate-x-1 transition-transform">

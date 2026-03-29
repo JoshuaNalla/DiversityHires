@@ -5,6 +5,7 @@ import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import FaceEmotionReader from '../components/FaceEmotionReader';
 import { saveInterviewReport } from '../lib/interviewReports';
+import BrandLogo from '../components/BrandLogo';
 
 // Global singleton for audio to ensure only one plays at a time
 let globalAudio = null;
@@ -67,8 +68,8 @@ const ChatBubble = ({ message, index, chatHistory }) => {
   return (
     <div className={`flex w-full ${isAI ? 'justify-start' : 'justify-end'} mb-4`}>
       <div className={`max-w-[85%] rounded-2xl p-4 shadow-md ${isAI
-          ? 'bg-[#313349] border border-[#4b454a] text-[#e0e0fd] rounded-tl-none'
-          : 'bg-indigo-600 text-white rounded-tr-none'
+          ? 'bg-white border border-outline-variant/50 text-on-surface rounded-tl-none'
+          : 'bg-primary text-on-primary rounded-tr-none'
         }`}>
         <p className="text-sm leading-relaxed whitespace-pre-wrap">{message.text}</p>
 
@@ -76,7 +77,7 @@ const ChatBubble = ({ message, index, chatHistory }) => {
           <div className="mt-3 flex justify-end">
             <button
               onClick={handleTogglePlay}
-              className={`p-1.5 rounded-full transition-colors flex items-center justify-center ${isPlaying ? 'bg-indigo-500/20 text-indigo-400' : 'hover:bg-[#4b454a] text-indigo-300'}`}
+              className={`p-1.5 rounded-full transition-colors flex items-center justify-center ${isPlaying ? 'bg-primary/20 text-primary' : 'hover:bg-primary/10 text-primary'}`}
               title={isPlaying ? "Pause Audio" : "Replay Audio"}
             >
               {isPlaying ? <Square size={14} className="fill-current" /> : <Volume2 size={16} />}
@@ -415,13 +416,16 @@ export default function InterviewPage() {
   // Phase 2: Resume Parsed - User triggers Hardware Check Mode
   if (!isHardwareCheck) {
     return (
-      <div className="min-h-screen bg-[#101226] flex items-center justify-center p-6 text-[#e0e0fd]">
-        <div className="bg-[#1c1e33] p-8 rounded-2xl shadow-2xl border border-[#313349] max-w-lg w-full text-center space-y-6">
-          <div className="w-16 h-16 bg-indigo-500/20 text-indigo-400 rounded-full flex items-center justify-center mx-auto mb-2 shadow-[0_0_15px_rgba(99,102,241,0.3)]">
+      <div className="brand-shell min-h-screen flex items-center justify-center p-6 text-on-background">
+        <div className="brand-card p-8 rounded-[2rem] max-w-lg w-full text-center space-y-6">
+          <div className="flex justify-center">
+            <BrandLogo size="sm" showTagline stacked className="items-center" />
+          </div>
+          <div className="w-16 h-16 bg-primary/12 text-primary rounded-full flex items-center justify-center mx-auto mb-2 shadow-[0_0_15px_rgba(107,170,117,0.18)]">
             <Camera size={32} />
           </div>
-          <h2 className="text-3xl font-bold text-white">Identity Check</h2>
-          <p className="text-[#cdc4ca]">
+          <h2 className="text-3xl font-bold text-[var(--brand-ink)]">Identity Check</h2>
+          <p className="text-on-surface-variant">
             Gemini has initialized your environment for the {mockConfig?.role || 'SWE'} role at {mockConfig?.company || 'our company'}. <br /><br />
             Before we begin, we need to activate OmniSense and test your microphone.
           </p>
@@ -430,7 +434,7 @@ export default function InterviewPage() {
               startInterview(); // Marks UI Phase 3 officially active
               setIsHardwareCheck(true);
             }}
-            className="w-full flex items-center justify-center gap-2 py-4 bg-indigo-600 hover:bg-indigo-500 rounded-lg font-bold transition-all shadow-lg text-white"
+            className="brand-button-primary w-full flex items-center justify-center gap-2 py-4 rounded-full font-bold transition-all shadow-lg"
           >
             Enable Hardware & Proceed
           </button>
@@ -441,10 +445,10 @@ export default function InterviewPage() {
 
   // Phase 3: Active Side-by-Side Interview Layout (Awaiting Camera Auth -> API)
   return (
-    <div className="h-screen w-full flex bg-[#0a0c20] overflow-hidden relative">
+    <div className="h-screen w-full flex bg-surface-container-low overflow-hidden relative">
       {isHardwareReady && (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 z-50">
-          <div className={`text-sm font-mono px-4 py-2 rounded-full border shadow-xl ${timeLeftMs === 0 ? 'text-red-300 border-red-500/30 bg-red-500/10' : 'text-indigo-200 border-indigo-500/30 bg-[#101226]/95'}`}>
+          <div className={`text-sm font-mono px-4 py-2 rounded-full border shadow-xl ${timeLeftMs === 0 ? 'text-red-600 border-red-500/30 bg-red-500/10' : 'text-primary border-primary/25 bg-white/90'}`}>
             {formatTime(timeLeftMs ?? (mockConfig?.duration || 45) * 60 * 1000)} remaining
           </div>
         </div>
@@ -454,7 +458,7 @@ export default function InterviewPage() {
       {isHardwareReady && (
         <button 
           onClick={() => setIsAnalyzerOpen(!isAnalyzerOpen)}
-          className="absolute top-4 right-4 z-50 bg-[#1c1e33] border border-[#313349] hover:bg-[#4b454a] px-3 py-2 rounded-lg text-slate-300 shadow-xl flex items-center gap-2 transition-all"
+          className="absolute top-4 right-4 z-50 bg-white/90 border border-outline-variant/40 hover:bg-primary/5 px-3 py-2 rounded-full text-on-surface shadow-xl flex items-center gap-2 transition-all"
         >
           {isAnalyzerOpen ? <EyeOff size={16} /> : <Eye size={16} />} 
           <span className="text-sm font-medium">{isAnalyzerOpen ? "Hide Tracker" : "Show Tracker"}</span>
@@ -462,12 +466,12 @@ export default function InterviewPage() {
       )}
 
       {/* LEFT: Collapsable Chat Sidebar */}
-      <div className={`relative flex flex-col transition-all duration-300 border-r border-[#313349] bg-[#1c1e33] z-20 shadow-2xl ${isSidebarOpen ? (isAnalyzerOpen ? 'w-[450px] lg:w-[500px]' : 'flex-1') : 'w-0 border-r-0'}`}>
+      <div className={`relative flex flex-col transition-all duration-300 border-r border-outline-variant/50 bg-white/88 backdrop-blur-xl z-20 shadow-2xl ${isSidebarOpen ? (isAnalyzerOpen ? 'w-[450px] lg:w-[500px]' : 'flex-1') : 'w-0 border-r-0'}`}>
         
         {/* Toggle button stitched to the right boundary of the sidebar */}
         <button
           onClick={() => setIsSidebarOpen(!isSidebarOpen)}
-          className={`absolute -right-8 top-4 z-50 bg-[#1c1e33] p-1.5 border border-l-0 border-[#313349] hover:bg-[#4b454a] transition-colors text-slate-300 rounded-r-md shadow-md ${!isAnalyzerOpen && isSidebarOpen ? 'hidden' : ''}`}
+          className={`absolute -right-8 top-4 z-50 bg-white/90 p-1.5 border border-l-0 border-outline-variant/40 hover:bg-primary/5 transition-colors text-on-surface rounded-r-md shadow-md ${!isAnalyzerOpen && isSidebarOpen ? 'hidden' : ''}`}
           title="Toggle Chat Sidebar"
         >
           {isSidebarOpen ? <ChevronLeft size={16} /> : <ChevronRight size={16} />}
@@ -475,8 +479,8 @@ export default function InterviewPage() {
 
         {/* Only render contents if sidebar is slightly open structurally */}
         <div className={`flex flex-col h-full w-full overflow-hidden ${!isSidebarOpen && 'invisible'}`}>
-          <div className="p-4 border-b border-[#313349] bg-[#101226] flex items-center justify-between shadow-sm z-10 shrink-0">
-            <h3 className="font-bold text-indigo-400">Interviewer AI</h3>
+          <div className="p-4 border-b border-outline-variant/40 bg-white/90 flex items-center justify-between shadow-sm z-10 shrink-0">
+            <BrandLogo size="sm" />
             <div className="flex gap-2">
                <button 
                  onClick={() => {
@@ -484,14 +488,14 @@ export default function InterviewPage() {
                    if (isListening) toggleListen();
                    setIsPaused(!isPaused);
                  }}
-                 className="flex items-center gap-1 text-xs bg-[#313349] hover:bg-[#4b454a] border border-[#4b454a] px-3 py-1.5 rounded-md text-slate-300 transition-colors"
+                 className="flex items-center gap-1 text-xs bg-primary/8 hover:bg-primary/14 border border-primary/12 px-3 py-1.5 rounded-full text-on-surface transition-colors"
                >
                  {isPaused ? <Play size={12} /> : <Pause size={12} />}
                  {isPaused ? "Resume" : "Pause"}
                </button>
                <button 
                  onClick={() => setIsEndModalOpen(true)}
-                 className="flex items-center gap-1 text-xs bg-red-600/80 hover:bg-red-500 border border-red-500/50 px-3 py-1.5 rounded-md text-white transition-colors"
+                 className="flex items-center gap-1 text-xs bg-red-600/90 hover:bg-red-500 border border-red-500/50 px-3 py-1.5 rounded-full text-white transition-colors"
                >
                  <PhoneOff size={12} /> End
                </button>
@@ -500,17 +504,17 @@ export default function InterviewPage() {
 
           {!isHardwareReady ? (
             // Awaiting Hardware Loop UI
-            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-[#1c1e33]/50">
+            <div className="flex-1 flex flex-col items-center justify-center p-8 text-center bg-white/40">
               <Camera className="w-12 h-12 text-indigo-400 mb-4 animate-pulse opacity-50" />
-              <h3 className="text-xl text-white font-bold mb-3">Hardware Lock</h3>
-              <p className="text-slate-400 text-sm leading-relaxed">
+              <h3 className="text-xl text-[var(--brand-ink)] font-bold mb-3">Hardware Lock</h3>
+              <p className="text-on-surface-variant text-sm leading-relaxed">
                 Please click 'Allow' in your browser permissions dialog to enable your camera and microphone.
               </p>
             </div>
           ) : (
             <>
               {/* Chat Feed */}
-              <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-[#1c1e33]/50">
+              <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-white/55">
                 {/* Timer header */}
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-semibold text-slate-400">
@@ -530,7 +534,7 @@ export default function InterviewPage() {
 
                 {isLoading && (
                   <div className="flex w-full justify-start mb-4">
-                    <div className="bg-[#313349] p-4 rounded-2xl rounded-tl-none border border-[#4b454a] shadow-md flex items-center gap-2 text-slate-300">
+                    <div className="bg-white p-4 rounded-2xl rounded-tl-none border border-outline-variant/50 shadow-md flex items-center gap-2 text-on-surface">
                       <Loader2 className="w-5 h-5 animate-spin text-indigo-400" /> Processing...
                     </div>
                   </div>
@@ -539,7 +543,7 @@ export default function InterviewPage() {
               </div>
 
               {/* Input Box */}
-              <div className="p-4 bg-[#101226] border-t border-[#313349] flex flex-col gap-2 shrink-0 z-10">
+              <div className="p-4 bg-white/90 border-t border-outline-variant/40 flex flex-col gap-2 shrink-0 z-10">
                 {liveAlerts.length > 0 && (
                   <div className="mb-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
                     <p className="text-[0.7rem] uppercase tracking-[0.2em] text-amber-200 mb-2">Live Coach Alerts</p>
@@ -576,13 +580,13 @@ export default function InterviewPage() {
                     }
                   }}
                   placeholder="Write or dictate response..."
-                  className="w-full bg-[#313349] border border-[#4b454a] rounded-xl p-3 text-sm text-[#e0e0fd] focus:outline-none focus:border-indigo-500 resize-none min-h-[80px]"
+                  className="w-full bg-white border border-outline-variant/50 rounded-xl p-3 text-sm text-on-surface focus:outline-none focus:border-primary resize-none min-h-[80px]"
                 />
                 <div className="flex justify-between items-center mt-2">
                   <button
                     onClick={toggleListen}
                     disabled={isPaused}
-                    className={`p-2.5 rounded-full transition-colors ${isListening ? 'bg-red-500/20 text-red-400 border border-red-500/50' : 'bg-[#313349] text-slate-400 hover:bg-[#4b454a]'} disabled:opacity-50 disabled:cursor-not-allowed`}
+                    className={`p-2.5 rounded-full transition-colors ${isListening ? 'bg-red-500/20 text-red-500 border border-red-500/50' : 'bg-primary/10 text-primary hover:bg-primary/15'} disabled:opacity-50 disabled:cursor-not-allowed`}
                     title="Toggle Microphone"
                   >
                     {isListening ? <MicOff size={20} /> : <Mic size={20} />}
@@ -591,7 +595,7 @@ export default function InterviewPage() {
                   <button
                     onClick={handleAnswerSubmit}
                     disabled={!transcript.trim() || isLoading || isPaused}
-                    className="px-6 py-2 bg-indigo-600 hover:bg-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed text-white rounded-full font-medium shadow-lg transition-all flex items-center gap-2"
+                    className="brand-button-primary px-6 py-2 disabled:opacity-50 disabled:cursor-not-allowed rounded-full font-medium shadow-lg transition-all flex items-center gap-2"
                   >
                     <Send size={16} /> Submit
                   </button>
@@ -603,7 +607,7 @@ export default function InterviewPage() {
       </div>
 
       {/* RIGHT: Video and Emotion Hub */}
-      <div className={`transition-all duration-500 overflow-hidden relative bg-[#0a0c20] flex flex-col ${isAnalyzerOpen ? 'flex-1' : 'w-0'}`}>
+      <div className={`transition-all duration-500 overflow-hidden relative bg-surface-container-low flex flex-col ${isAnalyzerOpen ? 'flex-1' : 'w-0'}`}>
         <div className="flex-1 p-6 relative w-full h-full min-w-[500px]">
           <FaceEmotionReader
             onReady={handleHardwareReady}
@@ -619,15 +623,15 @@ export default function InterviewPage() {
       {isEndModalOpen && (
         <div className="absolute inset-0 z-50 flex items-center justify-center">
           <div className="absolute inset-0 bg-black/60" onClick={() => setIsEndModalOpen(false)} />
-          <div className="relative bg-[#1c1e33] border border-[#313349] rounded-2xl shadow-2xl w-full max-w-md p-6">
-            <h4 className="text-lg font-bold text-white mb-2">End Interview</h4>
-            <p className="text-sm text-slate-300 mb-4">
+          <div className="relative brand-card rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <h4 className="text-lg font-bold text-[var(--brand-ink)] mb-2">End Interview</h4>
+            <p className="text-sm text-on-surface-variant mb-4">
               Choose how to finish this session.
             </p>
             <div className="space-y-3">
               <button
                 onClick={() => finalizeInterview('manual_end')}
-                className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold"
+                className="brand-button-primary w-full py-2.5 rounded-full text-sm font-semibold"
               >
                 End interview and open final report
               </button>
@@ -646,7 +650,7 @@ export default function InterviewPage() {
                   setIsEndModalOpen(false);
                   navigate('/dashboard');
                 }}
-                className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold"
+                className="w-full py-2.5 rounded-full bg-secondary text-on-secondary text-sm font-semibold hover:brightness-105"
               >
                 Save session and restart next time
               </button>
@@ -664,7 +668,7 @@ export default function InterviewPage() {
                   setIsEndModalOpen(false);
                   navigate('/dashboard');
                 }}
-                className="w-full py-2.5 rounded-lg bg-[#313349] hover:bg-[#4b454a] text-slate-200 text-sm font-semibold border border-[#4b454a]"
+                className="w-full py-2.5 rounded-full bg-white hover:bg-surface-container-high text-on-surface text-sm font-semibold border border-outline-variant/50"
               >
                 Scrap interview (don’t save)
               </button>

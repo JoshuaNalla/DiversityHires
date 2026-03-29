@@ -1,28 +1,23 @@
 import React from 'react';
 import { AppBar, Toolbar, Typography, Button, Box } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
+import BrandLogo from './BrandLogo';
 
 function Navbar() {
   const navigate = useNavigate();
 
   return (
-    <AppBar position="static" sx={{ backgroundColor: '#000', borderBottom: '2px solid #1E3A8A', boxShadow: 'none' }}>
+    <AppBar position="static" sx={{ backgroundColor: 'rgba(255,255,255,0.88)', borderBottom: '1px solid rgba(107,170,117,0.16)', boxShadow: 'none', backdropFilter: 'blur(16px)' }}>
       <Toolbar sx={{ justifyContent: 'space-between' }}>
-        {/* Placeholder Logo / Name */}
-        <Typography 
-          variant="h5" 
-          component="div" 
-          sx={{ fontWeight: '900', color: '#60A5FA', cursor: 'pointer', letterSpacing: '1px' }}
-          onClick={() => navigate('/')}
-        >
-          Placeholder
-        </Typography>
+        <Box onClick={() => navigate('/')} sx={{ cursor: 'pointer' }}>
+          <BrandLogo size="sm" showTagline />
+        </Box>
 
         {/* Auth Buttons */}
         <Box sx={{ display: 'flex', gap: 2 }}>
           <Button 
             color="inherit" 
-            sx={{ fontWeight: 'bold', textTransform: 'none', fontSize: '1rem', color: '#D1D5DB', '&:hover': { color: '#FFF' } }} 
+            sx={{ fontWeight: 'bold', textTransform: 'none', fontSize: '1rem', color: '#5C685B', '&:hover': { color: '#6BAA75' } }} 
             onClick={() => navigate('/login')}
           >
             Log in
@@ -30,15 +25,15 @@ function Navbar() {
           <Button 
             variant="contained" 
             sx={{ 
-                backgroundColor: '#3B82F6', 
-                color: '#fff', 
+                background: 'linear-gradient(135deg, #6BAA75, #84DD63)', 
+                color: '#152110', 
                 fontWeight: 'bold',
                 textTransform: 'none',
                 fontSize: '1rem',
-                borderRadius: '8px',
+                borderRadius: '999px',
                 px: 3,
                 '&:hover': {
-                    backgroundColor: '#2563EB',
+                    filter: 'brightness(1.04)',
                 }
             }}
             onClick={() => navigate('/signup')}

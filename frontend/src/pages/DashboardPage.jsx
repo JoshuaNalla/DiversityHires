@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import CreateDemoInterviewModal from '../components/CreateDemoInterviewModal';
 import { getInterviewReports } from '../lib/interviewReports';
+import BrandLogo from '../components/BrandLogo';
 
 const MONTH_NAMES = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -795,19 +796,18 @@ const DashboardPage = () => {
             {/* ══════════════════════════════════════════════════════════════
                 SIDEBAR  (collapsible)
             ══════════════════════════════════════════════════════════════ */}
-            <aside className={`fixed left-0 top-0 h-full flex flex-col py-6 z-50 bg-[#101226] transition-all duration-300 ease-in-out overflow-hidden ${sidebarW}`}>
+            <aside className={`fixed left-0 top-0 h-full flex flex-col py-6 z-50 bg-white/88 backdrop-blur-xl border-r border-outline-variant/60 transition-all duration-300 ease-in-out overflow-hidden ${sidebarW}`}>
 
                 {/* Hamburger + Logo */}
                 <div className={`flex items-start mb-10 ${sidebarOpen ? 'px-6 justify-between' : 'px-0 justify-center'}`}>
                     {sidebarOpen && (
                         <div className="px-2">
-                            <h1 className="text-lg font-semibold tracking-tight text-[#d2c2cf] whitespace-nowrap">The Silent Coach</h1>
-                            <p className="text-[0.6875rem] uppercase tracking-[0.05rem] text-outline mt-1 whitespace-nowrap">AI Interview Prep</p>
+                            <BrandLogo size="sm" showTagline stacked />
                         </div>
                     )}
                     <button
                         onClick={() => setSidebarOpen(o => !o)}
-                        className="text-[#968e94] hover:text-[#d2c2cf] transition-colors flex-shrink-0 p-1"
+                        className="text-outline hover:text-primary transition-colors flex-shrink-0 p-1"
                         title={sidebarOpen ? 'Collapse sidebar' : 'Expand sidebar'}
                     >
                         <span className="material-symbols-outlined">{sidebarOpen ? 'menu_open' : 'menu'}</span>
@@ -818,27 +818,27 @@ const DashboardPage = () => {
                 <nav className="flex-1 space-y-1 px-2">
                     <button
                         onClick={() => setInterviewPage(1)}
-                        className={`w-full flex items-center text-[#d2c2cf] bg-[#313349] rounded-lg py-3 transition-all duration-150 ease-in-out scale-95 ${sidebarOpen ? 'space-x-3 px-4 mx-2' : 'justify-center px-0 mx-1'}`}
+                        className={`w-full flex items-center text-[var(--brand-ink)] bg-primary/12 border border-primary/20 rounded-xl py-3 transition-all duration-150 ease-in-out scale-95 ${sidebarOpen ? 'space-x-3 px-4 mx-2' : 'justify-center px-0 mx-1'}`}
                     >
                         <span className="material-symbols-outlined flex-shrink-0">home</span>
                         {sidebarOpen && <span className="font-medium text-sm whitespace-nowrap">Home</span>}
                     </button>
                     <button
                         onClick={() => setInterviewPage(0)}
-                        className={`w-full flex items-center text-[#968e94] hover:text-[#e0e0fd] hover:bg-[#26283e] py-3 transition-colors rounded-lg ${sidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'}`}
+                        className={`w-full flex items-center text-outline hover:text-primary hover:bg-primary/8 py-3 transition-colors rounded-xl ${sidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'}`}
                     >
                         <span className="material-symbols-outlined flex-shrink-0">history</span>
                         {sidebarOpen && <span className="font-medium text-sm whitespace-nowrap">Past Interviews</span>}
                     </button>
                     <Link
-                        className={`flex items-center text-[#968e94] hover:text-[#e0e0fd] hover:bg-[#26283e] py-3 transition-colors rounded-lg ${sidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'}`}
+                        className={`flex items-center text-outline hover:text-primary hover:bg-primary/8 py-3 transition-colors rounded-xl ${sidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'}`}
                         to="#"
                     >
                         <span className="material-symbols-outlined flex-shrink-0">leaderboard</span>
                         {sidebarOpen && <span className="font-medium text-sm whitespace-nowrap">Progress</span>}
                     </Link>
                     <Link
-                        className={`flex items-center text-[#968e94] hover:text-[#e0e0fd] hover:bg-[#26283e] py-3 transition-colors rounded-lg ${sidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'}`}
+                        className={`flex items-center text-outline hover:text-primary hover:bg-primary/8 py-3 transition-colors rounded-xl ${sidebarOpen ? 'space-x-3 px-4' : 'justify-center px-0'}`}
                         to="#"
                     >
                         <span className="material-symbols-outlined flex-shrink-0">library_books</span>
@@ -849,14 +849,14 @@ const DashboardPage = () => {
                 {/* CTA card — hidden when collapsed */}
                 {sidebarOpen && (
                     <div className="mt-auto px-6">
-                        <div className="p-4 rounded-xl bg-surface-container-high border border-outline-variant/10">
-                            <p className="text-xs text-outline mb-2 whitespace-nowrap">READY TO PRACTICE?</p>
+                        <div className="p-4 rounded-2xl bg-primary/10 border border-primary/15">
+                            <p className="text-xs text-on-surface-variant mb-2 whitespace-nowrap tracking-[0.18em] uppercase">Ready To Practice?</p>
                             <button
                                 onClick={() => {
                                     setNewInterview({ title: '', date: '', time: '', company: '', type: 'Behavioral' });
                                     setShowDemoSetup(true);
                                 }}
-                                className="w-full py-2.5 bg-primary text-on-primary rounded-lg font-semibold text-sm hover:opacity-90 transition-opacity whitespace-nowrap">
+                                className="brand-button-primary w-full py-2.5 rounded-full font-semibold text-sm hover:brightness-105 transition-opacity whitespace-nowrap">
                                 Start Mock Session
                             </button>
                         </div>
@@ -870,7 +870,7 @@ const DashboardPage = () => {
             <main className={`min-h-screen relative flex flex-col overflow-y-auto transition-all duration-300 ease-in-out ${mainML}`}>
 
                 {/* ── TopAppBar ──────────────────────────────────────────── */}
-                <header className="sticky top-0 right-0 w-full h-16 bg-[#101226]/60 backdrop-blur-xl flex items-center px-8 z-40 relative">
+                <header className="sticky top-0 right-0 w-full h-16 bg-white/70 backdrop-blur-xl border-b border-outline-variant/40 flex items-center px-8 z-40 relative">
                     {/* Centered greeting */}
                     <h2 className="absolute left-0 right-0 text-2xl font-bold tracking-wide font-headline text-center pointer-events-none">
                         <span
@@ -884,7 +884,7 @@ const DashboardPage = () => {
                     {/* Spacer */}
                     <div className="flex-1"></div>
                     <div className="flex items-center space-x-6">
-                        <button className="text-[#e0e0fd] opacity-80 hover:opacity-100 transition-opacity">
+                        <button className="text-[var(--brand-ink)] opacity-80 hover:opacity-100 transition-opacity">
                             <span className="material-symbols-outlined">notifications</span>
                         </button>
 

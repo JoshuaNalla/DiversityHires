@@ -4,6 +4,7 @@ import ArrowBackIosNewIcon from '@mui/icons-material/ArrowBackIosNew';
 import ArrowForwardIosIcon from '@mui/icons-material/ArrowForwardIos';
 import LoginModal from '../components/LoginModal';
 import SignupModal from '../components/SignupModal';
+import BrandLogo from '../components/BrandLogo';
 
 function HomePage() {
   const [isLoginOpen, setIsLoginOpen] = useState(false);
@@ -27,22 +28,24 @@ function HomePage() {
   };
 
   return (
-    <div className="bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container min-h-screen font-body overflow-x-hidden">
+    <div className="brand-shell bg-background text-on-surface selection:bg-primary-container selection:text-on-primary-container min-h-screen font-body overflow-x-hidden">
 
       {/* TopNavBar */}
-      <nav className="fixed top-0 w-full z-50 bg-[#101226]/80 backdrop-blur-xl border-b border-outline-variant/10">
+      <nav className="fixed top-0 w-full z-50 bg-white/80 backdrop-blur-xl border-b border-outline-variant/70">
         <div className="flex justify-between items-center max-w-7xl mx-auto px-8 h-20">
-          <div className="text-xl font-semibold tracking-tighter text-[#e0e0fd] cursor-pointer" onClick={() => window.location.href = '/'}>Ethereal Prep</div>
+          <div className="cursor-pointer" onClick={() => window.location.href = '/'}>
+            <BrandLogo size="sm" showTagline />
+          </div>
           <div className="hidden md:flex items-center gap-8">
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#practice">Practice</a>
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#resume">Resume</a>
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#personas">Personas</a>
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#pricing">Pricing</a>
-            <a className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors" href="#about">About</a>
+            <a className="font-['Inter'] text-sm tracking-wide text-on-surface-variant hover:text-primary transition-colors" href="#practice">Practice</a>
+            <a className="font-['Inter'] text-sm tracking-wide text-on-surface-variant hover:text-primary transition-colors" href="#resume">Resume</a>
+            <a className="font-['Inter'] text-sm tracking-wide text-on-surface-variant hover:text-primary transition-colors" href="#personas">Personas</a>
+            <a className="font-['Inter'] text-sm tracking-wide text-on-surface-variant hover:text-primary transition-colors" href="#pricing">Pricing</a>
+            <a className="font-['Inter'] text-sm tracking-wide text-on-surface-variant hover:text-primary transition-colors" href="#about">About</a>
           </div>
           <div className="flex items-center gap-4">
-            <button className="font-['Inter'] text-sm tracking-wide text-[#968e94] hover:text-[#e0e0fd] transition-colors px-4 py-2" onClick={() => setIsLoginOpen(true)}>Log In</button>
-            <button className="bg-primary text-on-primary px-6 py-2 rounded-lg font-medium text-sm transition-transform scale-95 active:scale-90" onClick={() => setIsSignupOpen(true)}>Sign Up</button>
+            <button className="font-['Inter'] text-sm tracking-wide text-on-surface-variant hover:text-primary transition-colors px-4 py-2" onClick={() => setIsLoginOpen(true)}>Log In</button>
+            <button className="brand-button-primary px-6 py-2 rounded-full font-semibold text-sm transition-transform scale-95 active:scale-90" onClick={() => setIsSignupOpen(true)}>Sign Up</button>
           </div>
         </div>
       </nav>
@@ -55,18 +58,18 @@ function HomePage() {
             <div className="absolute top-1/4 right-1/4 w-[400px] h-[400px] bg-secondary/5 rounded-full blur-[100px]"></div>
           </div>
           <div className="relative z-10 max-w-4xl text-center">
-            <span className="inline-block px-4 py-1.5 mb-6 rounded-full border border-outline-variant/20 bg-surface-container-low text-secondary text-[10px] uppercase tracking-[0.2em] font-medium">
-              Powered by OpenFace & Gemini
+            <span className="inline-block px-4 py-1.5 mb-6 rounded-full brand-chip text-[10px] uppercase tracking-[0.2em] font-medium">
+              Preppr AI Interview Studio
             </span>
             <h1 className="text-5xl md:text-7xl font-extrabold tracking-tight mb-8 text-on-background leading-[1.1]">
-              Advance your <br /><span className="text-primary">interview prep</span>
+              Prepare with a <br /><span className="brand-gradient-text" style={{ fontFamily: 'var(--font-headline)' }}>sharper edge</span>
             </h1>
             <p className="text-lg md:text-xl text-outline mb-10 max-w-2xl mx-auto leading-relaxed">
-              Experience a sanctuary of focused preparation. Leverage deep AI insights to master your micro-expressions and refine your professional narrative.
+              preppr turns mock interviews into a polished training environment with resume-aware questioning, live presence signals, and coaching that sounds like a real hiring team.
             </p>
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
-              <button className="w-full sm:w-auto px-10 py-4 bg-primary text-on-primary rounded-lg font-semibold text-lg hover:brightness-110 transition-all shadow-xl shadow-primary/10" onClick={() => setIsSignupOpen(true)}>Get Started</button>
-              <button className="w-full sm:w-auto px-10 py-4 border border-outline-variant/30 text-on-surface rounded-lg font-medium text-lg hover:bg-surface-container-low transition-all">Watch Demo</button>
+              <button className="brand-button-primary w-full sm:w-auto px-10 py-4 rounded-full font-semibold text-lg hover:brightness-105 transition-all" onClick={() => setIsSignupOpen(true)}>Get Started</button>
+              <button className="brand-button-secondary w-full sm:w-auto px-10 py-4 rounded-full font-medium text-lg hover:bg-white transition-all">Watch Demo</button>
             </div>
           </div>
         </section>
@@ -261,8 +264,8 @@ function HomePage() {
                     onClick={() => setActiveIndex(index)}
                     sx={{
                       position: 'absolute',
-                      backgroundColor: '#1c1e33', // surface-container from generic config
-                      border: offset === 0 ? '2px solid #d2c2cf' : '1px solid #4b454a', // primary vs outline-variant
+                      backgroundColor: '#ffffff',
+                      border: offset === 0 ? '2px solid #6BAA75' : '1px solid #C9D7C6',
                       borderRadius: '16px',
                       width: '300px',
                       height: '420px',
@@ -274,19 +277,19 @@ function HomePage() {
                       zIndex: 10 - Math.abs(offset),
                       cursor: offset === 0 ? 'default' : 'pointer',
                       pointerEvents: 'auto',
-                      boxShadow: offset === 0 ? '0 20px 40px -10px rgba(0,0,0,0.5)' : 'none'
+                      boxShadow: offset === 0 ? '0 24px 55px -24px rgba(59, 86, 45, 0.24)' : 'none'
                     }}
                   >
                     <Box sx={{ display: 'flex', justifyContent: 'center', pt: 4, pb: 2 }}>
                       <Avatar sx={{ width: 100, height: 100, backgroundColor: char.color, color: char.avatarColor }} />
                     </Box>
 
-                    <Box sx={{ height: '1px', backgroundColor: '#4b454a', width: '100%', mb: 2 }} />
+                    <Box sx={{ height: '1px', backgroundColor: '#D9E6D4', width: '100%', mb: 2 }} />
 
                     <CardContent sx={{ textAlign: 'center', p: 3, pt: 1, overflowY: 'auto' }}>
-                      <Typography variant="h5" sx={{ fontWeight: '900', color: '#e0e0fd', mb: 0.5, fontFamily: 'Inter' }}>{char.name}</Typography>
+                      <Typography variant="h5" sx={{ fontWeight: '900', color: '#203226', mb: 0.5, fontFamily: 'Inter' }}>{char.name}</Typography>
                       <Typography variant="subtitle2" sx={{ color: char.avatarColor, fontWeight: 'bold', mb: 2, letterSpacing: '0.1em', fontFamily: 'Inter' }}>{char.type}</Typography>
-                      <Typography variant="body2" sx={{ color: '#968e94', lineHeight: 1.6, fontFamily: 'Inter' }}>
+                      <Typography variant="body2" sx={{ color: '#5C685B', lineHeight: 1.6, fontFamily: 'Inter' }}>
                         {char.desc}
                       </Typography>
                     </CardContent>
@@ -298,13 +301,13 @@ function HomePage() {
             <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: 4, mt: 4 }}>
               <IconButton
                 onClick={() => scroll('left')}
-                sx={{ color: '#d2c2cf', border: '1px solid #4b454a', '&:hover': { backgroundColor: 'rgba(210, 194, 207, 0.1)' } }}
+                sx={{ color: '#33533A', border: '1px solid #C9D7C6', '&:hover': { backgroundColor: 'rgba(107, 170, 117, 0.08)' } }}
               >
                 <ArrowBackIosNewIcon />
               </IconButton>
               <IconButton
                 onClick={() => scroll('right')}
-                sx={{ color: '#d2c2cf', border: '1px solid #4b454a', '&:hover': { backgroundColor: 'rgba(210, 194, 207, 0.1)' } }}
+                sx={{ color: '#33533A', border: '1px solid #C9D7C6', '&:hover': { backgroundColor: 'rgba(107, 170, 117, 0.08)' } }}
               >
                 <ArrowForwardIosIcon />
               </IconButton>
@@ -390,11 +393,11 @@ function HomePage() {
       </main>
 
       {/* Footer */}
-      <footer id="about" className="w-full py-12 border-t border-outline-variant/20 bg-background">
+      <footer id="about" className="w-full py-12 border-t border-outline-variant/30 bg-white/70 backdrop-blur-md">
         <div className="flex flex-col md:flex-row justify-between items-center max-w-7xl mx-auto px-8 gap-6">
           <div className="flex flex-col gap-2 items-center md:items-start">
-            <div className="text-lg font-bold text-on-background">Ethereal Prep</div>
-            <p className="font-['Inter'] text-[10px] uppercase tracking-[0.05rem] text-outline">© 2024 Ethereal Prep. The Silent Coach for your career journey.</p>
+            <BrandLogo size="sm" />
+            <p className="font-['Inter'] text-[10px] uppercase tracking-[0.1rem] text-outline">© 2026 preppr. Professional interview practice with live coaching.</p>
           </div>
           <div className="flex gap-8">
             <a className="font-['Inter'] text-[10px] uppercase tracking-[0.05rem] text-outline hover:text-secondary transition-colors" href="#">Privacy Policy</a>
