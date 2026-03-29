@@ -1,11 +1,7 @@
 import { useEffect, useRef, useState, useCallback } from 'react';
-import { Camera, Square, Activity, Eye, MessageSquareText, TrendingUp } from 'lucide-react';
-import { useElevenLabsSTT } from '../useElevenLabsSTT';
+import { Camera, Square, Activity, Eye, TrendingUp } from 'lucide-react';
 import '../index.css';
 
-// You will provide the ElevenLabs API Key via environment variable or input later
-const rawApiKey = import.meta.env.VITE_ELEVENLABS_API_KEY || "";
-const ELEVENLABS_API_KEY = rawApiKey.trim().replace(/^["']|["']$/g, '');
 const CONFIDENCE_HISTORY_LIMIT = 30;
 const SIGNAL_CONFIG = [
   { key: 'confidence', label: 'Confidence', color: '#22d3ee' },
@@ -157,8 +153,6 @@ export default function FaceEmotionReader() {
   
   const [metrics, setMetrics] = useState(null);
   const [signalHistory, setSignalHistory] = useState([]);
-  
-  const { transcript, isRecordingSTT, errorSTT, startSTT, stopSTT } = useElevenLabsSTT(ELEVENLABS_API_KEY);
 
   // Start webcam and mic
   const startMedia = async () => {
@@ -173,9 +167,6 @@ export default function FaceEmotionReader() {
       setIsRecording(true);
       setErrorMsg("");
       setSignalHistory([]);
-      
-      // Start STT explicitly
-      await startSTT();
     } catch (err) {
       setErrorMsg("Failed to access camera and microphone.");
       console.error(err);
@@ -188,7 +179,6 @@ export default function FaceEmotionReader() {
     }
     setIsRecording(false);
     setSignalHistory([]);
-    stopSTT();
   };
 
   const captureAndAnalyze = useCallback(async () => {
@@ -296,11 +286,27 @@ export default function FaceEmotionReader() {
       {errorMsg && <div className="error-banner">{errorMsg}</div>}
 
       <main className="dashboard-grid">
-        <section className="panel transcript-panel">
-          <h3><MessageSquareText size={18} /> ElevenLabs Speech-to-Text</h3>
-          {errorSTT && <p style={{color:'red', fontSize:'0.8rem'}}>{errorSTT}</p>}
-          <div className="transcription-box">
-             {transcript || (isRecordingSTT ? "Listening..." : "Waiting for activation...")}
+        <section className="panel transcript-panel relative overflow-hidden flex flex-col items-center justify-center border-dashed border-indigo-500/30">
+          <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 z-0"></div>
+          
+          <div className="relative z-10 flex flex-col items-center text-center p-6 space-y-5">
+            <div className="w-[72px] h-[72px] rounded-2xl bg-slate-800/60 border border-slate-700/60 flex items-center justify-center shadow-2xl relative group transition-transform duration-500 hover:scale-110 hover:border-indigo-500/50">
+              <div className="absolute inset-0 bg-indigo-500/20 blur-xl rounded-full animate-pulse group-hover:bg-indigo-500/40 transition-colors duration-500"></div>
+              <Activity className="w-8 h-8 text-indigo-400 drop-shadow-[0_0_10px_rgba(99,102,241,0.5)]" />
+            </div>
+            
+            <div className="space-y-3">
+              <h3 className="text-xl font-bold bg-gradient-to-br from-indigo-300 via-purple-300 to-fuchsia-300 bg-clip-text text-transparent m-0 flex justify-center pb-1 drop-shadow-sm">
+                Expansion Slot
+              </h3>
+              <p className="text-sm text-slate-400 font-medium leading-relaxed max-w-[220px]">
+                This architecture node is reserved for advanced agent telemetry and deep learning integrations.
+              </p>
+            </div>
+
+            <div className="mt-2 px-6 py-2 rounded-full border border-indigo-500/20 bg-indigo-500/10 text-indigo-300 text-xs font-bold uppercase tracking-widest shadow-[inset_0_1px_0_rgba(255,255,255,0.1)] opacity-70 cursor-not-allowed">
+               Standby Mode
+            </div>
           </div>
         </section>
 
