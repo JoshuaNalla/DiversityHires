@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import CreateDemoInterviewModal from '../components/CreateDemoInterviewModal';
 
 const MONTH_NAMES = [
     'January', 'February', 'March', 'April', 'May', 'June',
@@ -75,6 +76,8 @@ const DashboardPage = () => {
     const [showPast, setShowPast] = useState(false);
     const [selectedInterview, setSelectedInterview] = useState(null);   // detail popup
     const [isModalOpen, setIsModalOpen] = useState(false);  // create popup
+    const [isDemoInterview, setIsDemoInterview] = useState(false);
+    const [showDemoSetup, setShowDemoSetup] = useState(false);
     const [newInterview,      setNewInterview]      = useState({ title: '', date: '', time: '', company: '', type: 'Behavioral' });
     const [deckHovered,       setDeckHovered]       = useState(false);
 
@@ -156,6 +159,7 @@ const DashboardPage = () => {
 
     const openCreateModal = (date = '') => {
         setNewInterview({ title: '', date, time: '', company: '', type: 'Behavioral' });
+        setIsDemoInterview(false);
         setIsModalOpen(true);
     };
 
@@ -270,6 +274,18 @@ const DashboardPage = () => {
             )}
 
             {/* ══════════════════════════════════════════════════════════════
+                CREATE DEMO SETUP MODAL
+            ══════════════════════════════════════════════════════════════ */}
+            {showDemoSetup && (
+                <div className="fixed inset-0 z-[60] flex items-center justify-center p-4 md:p-8">
+                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" onClick={() => setShowDemoSetup(false)} />
+                    <div className="relative w-full max-w-5xl h-full shadow-2xl">
+                        <CreateDemoInterviewModal onClose={() => setShowDemoSetup(false)} />
+                    </div>
+                </div>
+            )}
+
+            {/* ══════════════════════════════════════════════════════════════
                 CREATE INTERVIEW MODAL
             ══════════════════════════════════════════════════════════════ */}
             {isModalOpen && (
@@ -324,13 +340,34 @@ const DashboardPage = () => {
                                     <option>HR</option>
                                 </select>
                             </div>
+                            
+                            {/* AI Demo Toggle */}
+                            <div className="flex items-center justify-between bg-primary/10 border border-primary/20 p-4 rounded-xl mt-4 text-left">
+                                <div className="flex items-center space-x-3">
+                                    <label className="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" className="sr-only peer" checked={isDemoInterview} onChange={(e) => setIsDemoInterview(e.target.checked)} />
+                                        <div className="w-10 h-5 bg-surface-bright rounded-full peer peer-checked:bg-primary after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-full"></div>
+                                    </label>
+                                    <span className="text-sm font-semibold text-primary">Demo Interview (AI)</span>
+                                </div>
+                                <div className="group relative focus:outline-none flex items-center">
+                                    <span className="material-symbols-outlined text-primary/70 text-base cursor-help">info</span>
+                                    <div className="absolute right-0 bottom-full mb-2 w-60 bg-surface-container-highest border border-outline-variant/10 text-outline text-xs p-3 rounded-lg opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-10 shadow-xl">
+                                        A demo interview schedules an interactive session with our AI service. Unchecking it serves purely as a calendar reminder.
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                         <div className="flex space-x-3 mt-8">
                             <button onClick={() => setIsModalOpen(false)}
                                 className="flex-1 py-2.5 border border-outline-variant/20 rounded-lg text-sm text-outline hover:bg-surface-bright transition-colors">
                                 Cancel
                             </button>
-                            <button onClick={() => setIsModalOpen(false)}
+                            <button 
+                                onClick={() => {
+                                    setIsModalOpen(false);
+                                    if (isDemoInterview) setShowDemoSetup(true);
+                                }}
                                 className="flex-1 py-2.5 bg-primary text-on-primary rounded-lg text-sm font-semibold hover:opacity-90 transition-opacity">
                                 Save Interview
                             </button>
