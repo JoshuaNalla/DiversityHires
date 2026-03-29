@@ -68,6 +68,10 @@ function buildQuestionMarkers(chatHistory = [], startedAt, endedAt) {
   });
 }
 
+function countPatternMatches(text, pattern) {
+  return (text.match(pattern) || []).length;
+}
+
 function analyzeChat(chatHistory = []) {
   const candidateResponses = chatHistory.filter((entry) => entry.role === 'candidate');
   const responseText = candidateResponses.map((entry) => entry.text || '').join(' ').toLowerCase();
@@ -78,6 +82,30 @@ function analyzeChat(chatHistory = []) {
 
   const starPattern = /\b(situation|task|action|result)\b/i;
   const concretePattern = /\b(shipped|built|improved|increased|reduced|launched|designed|led|delivered)\b/i;
+  const metricsMentions = countPatternMatches(
+    responseText,
+    /\b\d+(?:\.\d+)?%|\b\d+(?:\.\d+)?x\b|\b\d+(?:,\d{3})+\b|\b\d+\s*(users|customers|clients|ms|seconds|minutes|hours|days|weeks|months|years)\b/gi,
+  );
+  const ownershipMentions = countPatternMatches(
+    responseText,
+    /\b(i led|i built|i owned|i designed|i drove|i shipped|i implemented|i migrated|i launched|i improved|i reduced)\b/gi,
+  );
+  const tradeoffMentions = countPatternMatches(
+    responseText,
+    /\b(tradeoff|constraint|latency|scalability|reliability|consistency|rollback|incident|debug|debugging|root cause|bottleneck|optimization)\b/gi,
+  );
+  const reflectionMentions = countPatternMatches(
+    responseText,
+    /\b(i learned|learned that|would do differently|in hindsight|next time|mistake|hardest part|challenge)\b/gi,
+  );
+  const fillerMentions = countPatternMatches(
+    responseText,
+    /\b(um|uh|like|you know|kind of|sort of|basically|literally)\b/gi,
+  );
+  const vagueClaimMentions = countPatternMatches(
+    responseText,
+    /\b(hardworking|passionate|team player|quick learner|detail oriented|good communicator|self starter|works well under pressure)\b/gi,
+  );
 
   return {
     averageResponseLength,
@@ -85,26 +113,42 @@ function analyzeChat(chatHistory = []) {
     usesStarStructure: starPattern.test(responseText),
     usesConcreteWins: concretePattern.test(responseText),
     responseCount: candidateResponses.length,
+    metricsMentions,
+    ownershipMentions,
+    tradeoffMentions,
+    reflectionMentions,
+    fillerMentions,
+    vagueClaimMentions,
   };
 }
 
-function buildSummary(averages, chatHistory = []) {
+function buildSummary(averages, chatHistory = [], mockConfig = {}) {
   const chatInsights = analyzeChat(chatHistory);
+  const roleLabel = mockConfig?.role || 'this role';
   const composureBase = Math.round(
     (averages.confidence + averages.engagement + averages.positivity + averages.happiness + (100 - averages.stress)) / 5
+  );
+  const contentBoost = Math.min(
+    15,
+    (chatInsights.usesConcreteWins ? 4 : 0) +
+      (chatInsights.usesStarStructure ? 3 : 0) +
+      (chatInsights.metricsMentions > 0 ? 3 : 0) +
+      (chatInsights.ownershipMentions > 0 ? 2 : 0) +
+      (chatInsights.tradeoffMentions > 0 ? 2 : 0) +
+      (chatInsights.reflectionMentions > 0 ? 1 : 0),
   );
   const composure = Math.min(
     100,
     composureBase +
-      6 +
-      (chatInsights.usesConcreteWins ? 4 : 0) +
-      (chatInsights.usesStarStructure ? 3 : 0)
+      8 +
+      contentBoost -
+      (chatInsights.mentionsCrudeHumor ? 4 : 0)
   );
 
   let rating = 'Needs Work';
-  if (composure >= 80) rating = 'Elite';
-  else if (composure >= 68) rating = 'Strong';
-  else if (composure >= 54) rating = 'Promising';
+  if (composure >= 78) rating = 'Elite';
+  else if (composure >= 64) rating = 'Strong';
+  else if (composure >= 50) rating = 'Promising';
 
   const strengths = [];
   if (averages.confidence >= 70) strengths.push('steady confidence');
@@ -113,6 +157,10 @@ function buildSummary(averages, chatHistory = []) {
   if (averages.happiness >= 70) strengths.push('warm expression');
   if (chatInsights.usesConcreteWins) strengths.push('concrete examples');
   if (chatInsights.usesStarStructure) strengths.push('structured storytelling');
+  if (chatInsights.metricsMentions > 0) strengths.push('quantified impact');
+  if (chatInsights.ownershipMentions > 0) strengths.push('clear ownership');
+  if (chatInsights.tradeoffMentions > 0) strengths.push('technical tradeoff depth');
+  if (chatInsights.reflectionMentions > 0) strengths.push('self-awareness');
 
   const risks = [];
   if (averages.stress >= 55) risks.push('visible stress');
@@ -120,33 +168,45 @@ function buildSummary(averages, chatHistory = []) {
   if (averages.confidence < 55) risks.push('shaky confidence');
   if (chatInsights.mentionsCrudeHumor) risks.push('over-casual phrasing');
   if (chatInsights.averageResponseLength > 0 && chatInsights.averageResponseLength < 18) risks.push('answers that end too early');
+  if (chatInsights.metricsMentions === 0) risks.push('thin evidence of impact');
+  if (chatInsights.ownershipMentions === 0) risks.push('unclear ownership');
+  if (chatInsights.tradeoffMentions === 0) risks.push('missing decision tradeoffs');
 
   const advice = [];
   if (averages.confidence < 60) advice.push('Slow down the first sentence of each answer and commit to a stronger opening claim.');
   if (averages.engagement < 60) advice.push('Maintain eye contact with the camera between phrases so your energy does not drop off.');
-  if (averages.positivity < 60) advice.push('Add one concrete win or positive outcome when describing your experience.');
+  if (averages.positivity < 60) advice.push(`Add one positive outcome or business result when describing your work so your answers for ${roleLabel} sound more compelling.`);
   if (averages.happiness < 55) advice.push('Relax your face between questions and reset with a small smile before answering.');
   if (averages.stress > 55) advice.push('Pause for one breath before speaking so nervous tension does not show up in your delivery.');
   if (chatInsights.mentionsCrudeHumor) advice.push('Swap casual or edgy humor for polished language so your tone stays interview-safe.');
   if (!chatInsights.usesConcreteWins) advice.push('Anchor more answers with shipped work, measurable outcomes, or ownership moments from your background.');
-  if (!chatInsights.usesStarStructure) advice.push('Use a clearer Situation → Action → Result rhythm so your answers land more cleanly.');
-  if (chatInsights.averageResponseLength > 0 && chatInsights.averageResponseLength < 18) advice.push('Stretch short answers by adding one constraint, one action, and one result before you stop.');
+  if (chatInsights.metricsMentions === 0) advice.push(`Several answers described responsibility without proving impact. For ${roleLabel}, add a metric, scope, or before-and-after result whenever you can.`);
+  if (chatInsights.ownershipMentions === 0) advice.push('Your answers lean a little too collective. Add one sentence that clearly states what you personally owned, decided, or delivered.');
+  if (chatInsights.tradeoffMentions === 0) advice.push('Your technical answers will sound stronger if you name the tradeoff you faced and why you chose that path over another option.');
+  if (chatInsights.reflectionMentions === 0 && chatInsights.responseCount > 1) advice.push('Include one lesson learned or one thing you would do differently so your answers show judgment, not just activity.');
+  if (!chatInsights.usesStarStructure) advice.push('Use a clearer Situation -> Action -> Result rhythm so your answers land more cleanly.');
+  if (chatInsights.averageResponseLength > 0 && chatInsights.averageResponseLength < 18) advice.push('Stretch short answers by adding context, your action, and the measurable result before you stop.');
+  if (chatInsights.fillerMentions >= 3) advice.push('Trim filler words in the first 10 seconds of each answer so your opening sounds more intentional.');
+  if (chatInsights.vagueClaimMentions >= 2) advice.push('Replace generic traits like "hardworking" or "team player" with proof from a project, a metric, or a difficult decision you handled.');
 
   if (!advice.length) {
-    advice.push('Keep your current delivery style, and focus on sharpening answer structure rather than body language.');
-    advice.push('You are ready to push into harder follow-up questions and timed practice rounds.');
+    advice.push(`Your fundamentals are strong. The next step for ${roleLabel} is to keep the same calm delivery while pushing into harder follow-up questions and sharper tradeoff discussion.`);
+    advice.push('You are ready for more adversarial or time-pressured rounds instead of basic practice prompts.');
   }
+
+  const primaryGap = advice[0] || 'Keep sharpening your strongest examples.';
 
   return {
     overallScore: composure,
     overallRating: rating,
     snapshot: strengths.length
-      ? `Strongest signals: ${strengths.slice(0, 2).join(', ')}.`
+      ? `Best moments combined ${strengths.slice(0, 2).join(' and ')}.`
       : 'Signal profile was mixed across the session.',
     coachingNote: risks.length
-      ? `Watch for ${risks.slice(0, 2).join(' and ')} in your next round.`
-      : 'Body language stayed balanced and interview-ready throughout the session.',
-    advice,
+      ? `Your next scoring jump comes from fixing ${risks.slice(0, 2).join(' and ')}.`
+      : `Body language stayed balanced, so most improvement now comes from sharper content and tougher examples.`,
+    advice: advice.slice(0, 6),
+    primaryGap,
     chatInsights,
   };
 }
@@ -183,7 +243,7 @@ export function saveInterviewReport({
     return acc;
   }, {});
 
-  const summary = buildSummary(averages, chatHistory);
+  const summary = buildSummary(averages, chatHistory, mockConfig);
   const questionMarkers = buildQuestionMarkers(chatHistory, startedAt || createdAt, createdAt);
   const transcriptPreview = chatHistory
     .filter((entry) => entry.role === 'candidate')

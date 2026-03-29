@@ -354,6 +354,7 @@ export default function InterviewPage() {
       const sessionId = localStorage.getItem('session_id');
       const response = await axios.post('http://localhost:8000/api/interview/next-question', {
         summary: resumeSummary || mockConfig?.resumeSummary || null,
+        mock_config: mockConfig || {},
         // Send history with the newest user answer
         history: [...chatHistory, { role: 'candidate', text: answer }]
       }, {

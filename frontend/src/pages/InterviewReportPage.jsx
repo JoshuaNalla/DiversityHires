@@ -214,6 +214,12 @@ export default function InterviewReportPage() {
               </div>
               <div className="rounded-2xl bg-white/5 p-4">
                 <p className="text-slate-500 uppercase tracking-[0.2em] text-xs mb-2">Coaching Advice</p>
+                {report.summary.primaryGap && (
+                  <div className="mb-3 rounded-xl border border-amber-400/20 bg-amber-400/10 p-3">
+                    <p className="text-[0.65rem] uppercase tracking-[0.2em] text-amber-200 mb-1">Priority Fix</p>
+                    <p className="text-sm text-amber-50">{report.summary.primaryGap}</p>
+                  </div>
+                )}
                 <div className="space-y-2 text-slate-200">
                   {(report.summary.advice || []).map((tip, index) => (
                     <p key={index}>• {tip}</p>
@@ -224,8 +230,11 @@ export default function InterviewReportPage() {
                 <p className="text-slate-500 uppercase tracking-[0.2em] text-xs mb-2">Chat Read</p>
                 <div className="space-y-2 text-slate-200">
                   <p>Average answer length: {report.summary.chatInsights?.averageResponseLength || 0} words</p>
-                  <p>Concrete wins referenced: {report.summary.chatInsights?.usesConcreteWins ? 'Yes' : 'Not enough'}</p>
+                  <p>Quantified impact cues: {(report.summary.chatInsights?.metricsMentions || 0) > 0 ? `${report.summary.chatInsights.metricsMentions} found` : 'Rare or missing'}</p>
+                  <p>Ownership language: {(report.summary.chatInsights?.ownershipMentions || 0) > 0 ? 'Clear enough' : 'Too hidden in team language'}</p>
+                  <p>Tradeoff reasoning: {(report.summary.chatInsights?.tradeoffMentions || 0) > 0 ? 'Present' : 'Needs more depth'}</p>
                   <p>Structured storytelling cues: {report.summary.chatInsights?.usesStarStructure ? 'Present' : 'Missing'}</p>
+                  <p>Reflection or lessons learned: {(report.summary.chatInsights?.reflectionMentions || 0) > 0 ? 'Present' : 'Could be stronger'}</p>
                   <p>Tone safety: {report.summary.chatInsights?.mentionsCrudeHumor ? 'Needs cleanup' : 'Professional'}</p>
                 </div>
               </div>

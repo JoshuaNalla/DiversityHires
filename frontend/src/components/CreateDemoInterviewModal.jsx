@@ -27,6 +27,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
     const [resumeFile, setResumeFile] = useState(null);
     const [uploadStatus, setUploadStatus] = useState(''); // 'idle', 'uploading', 'success', 'error'
     const [resumeSummary, setResumeSummary] = useState(null);
+    const [uploadError, setUploadError] = useState('');
     
     const setMockConfig = useStore(state => state.setMockConfig);
     const setSummary = useStore(state => state.setSummary);
@@ -36,6 +37,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
         if (!file) return;
         setResumeFile(file);
         setUploadStatus('uploading');
+        setUploadError('');
         
         try {
             const formData = new FormData();
@@ -52,10 +54,12 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                 setSummary(res.data.summary || null);
             } else {
                 setUploadStatus('error');
+                setUploadError(res.data.error || 'Resume analysis did not complete.');
             }
         } catch (err) {
             console.error(err);
             setUploadStatus('error');
+            setUploadError(err.response?.data?.error || 'Failed to parse resume. Please try a text-based PDF.');
         }
     };
 
@@ -262,7 +266,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                                             <p className="text-xs text-emerald-400/70">Context ingested successfully.</p>
                                         </div>
                                       </div>
-                                      <button onClick={() => { setResumeFile(null); setUploadStatus('idle'); setResumeSummary(null); setSummary(null); }} className="text-xs font-semibold text-outline hover:text-error transition-colors">REPLACE</button>
+                                      <button onClick={() => { setResumeFile(null); setUploadStatus('idle'); setResumeSummary(null); setSummary(null); setUploadError(''); }} className="text-xs font-semibold text-outline hover:text-error transition-colors">REPLACE</button>
                                     </div>
                                     {resumeSummary && (
                                       <div className="text-xs text-slate-200 bg-black/15 rounded-lg p-3 border border-white/5">
@@ -275,7 +279,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                             ) : (
                                 <div className="flex items-center p-4 bg-red-500/10 border border-red-500/20 rounded-lg">
                                     <span className="material-symbols-outlined text-red-500 mr-2">error</span>
-                                    <p className="text-sm text-red-500">Failed to parse resume. Please try again.</p>
+                                    <p className="text-sm text-red-500">{uploadError || 'Failed to parse resume. Please try again.'}</p>
                                 </div>
                             )}
                         </div>

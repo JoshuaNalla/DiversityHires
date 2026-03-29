@@ -10,3 +10,4 @@ httpx
 mediapipe
 opencv-python
 pandas
+pypdf
