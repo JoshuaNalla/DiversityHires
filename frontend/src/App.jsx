@@ -4,6 +4,7 @@ import HomePage from './pages/HomePage';
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import DashboardPage from './pages/DashboardPage';
+import InterviewPage from './pages/InterviewPage';
 
 function App() {
   return (
@@ -18,6 +19,7 @@ function App() {
 
         {/* Auth Required Routes */}
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/interview" element={<InterviewPage />} />
       </Routes>
     </BrowserRouter>
   );

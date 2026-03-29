@@ -50,7 +50,10 @@ const DashboardPage = () => {
                     <p className="text-[#F5EAEB]/70 text-sm leading-relaxed mb-6">
                         Jump into a live webcam session with OpenFace tracking and Gemini-driven personas.
                     </p>
-                    <button className="w-full py-2.5 bg-[#A08E98] hover:bg-[#8C7C85] text-white text-sm font-medium rounded-md transition-colors">
+                    <button 
+                        onClick={() => navigate('/interview')}
+                        className="w-full py-2.5 bg-[#A08E98] hover:bg-[#8C7C85] text-white text-sm font-medium rounded-md transition-colors"
+                    >
                         Begin Session
                     </button>
                 </div>

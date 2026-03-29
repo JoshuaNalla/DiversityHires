@@ -7,3 +7,6 @@ python-multipart
 google-generativeai
 websockets
 httpx
+mediapipe
+opencv-python
+pandas
