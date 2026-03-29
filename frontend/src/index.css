@@ -60,6 +60,10 @@
     background-color: var(--color-background, #101226);
     color: var(--color-on-background, #e0e0fd);
   }
+  
+  button {
+    cursor: pointer;
+  }
 }
 
 @layer components {
