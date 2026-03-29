@@ -234,7 +234,12 @@ async def upload_resume(resume: UploadFile = File(...)):
     genai.configure(api_key=api_key)
     contents = await resume.read()
     model = genai.GenerativeModel('gemini-2.5-flash')
-    prompt = 'You are an expert technical recruiter analyzing this resume. Extract the candidate\'s core skills, top 3 achievements, and suggest 3 areas to probe during an interview. Return only valid JSON directly, without markdown blocks. Follow this structure: { "skills": [], "achievements": [], "probingAreas": [] }'
+    prompt = (
+        "You are an expert technical recruiter analyzing this resume. "
+        "Extract the candidate's core skills, top achievements, notable tools/technologies, seniority signals, and the most important areas to probe in an interview. "
+        "Return only valid JSON directly, without markdown blocks. "
+        'Use this exact structure: { "skills": [], "achievements": [], "probingAreas": [], "tools": [], "senioritySignals": [], "candidateProfile": "" }'
+    )
     
     try:
         response = model.generate_content([
@@ -271,15 +276,22 @@ async def start_interview(req: StartInterviewRequest, current_user=Depends(get_c
     company = cfg.get("company", "our company")
     diff = cfg.get("difficulty", "Mid-Level")
     
-    name = current_user.get("username", "Guest") # Fallback since session uses mock User ID for now
-    
+    resume_context = req.summary or {}
+
     prompt = f"""You are specifically roleplaying as '{persona_type}'. You are conducting a technical interview for a {diff} {role} position at {company}.
     
     CRITICAL INSTRUCTIONS:
     1. Act perfectly in character based on '{persona_type}' (e.g. Strict & Aggressive, Warm & Mentoring, or Formal HR).
-    2. Acknowledge and utilize their resume context implicitly if provided: {json.dumps(req.summary) if req.summary else 'No specific resume provided, assume generalized background.'}
+    2. The candidate's resume context is below. Use it actively when deciding what to ask, just like a real interviewer would.
+       Resume Skills: {json.dumps(resume_context.get("skills", []))}
+       Resume Achievements: {json.dumps(resume_context.get("achievements", []))}
+       Resume Probing Areas: {json.dumps(resume_context.get("probingAreas", []))}
+       Resume Tools: {json.dumps(resume_context.get("tools", []))}
+       Resume Seniority Signals: {json.dumps(resume_context.get("senioritySignals", []))}
+       Candidate Profile Summary: {resume_context.get("candidateProfile", "No specific resume provided.")}
     3. Spend exactly the first 1-2 dialogue turns solely focusing on standard behavioral icebreaker questions (e.g. 'Tell me about yourself' or 'How has your day been?').
-    4. Gradually transition into highly precise technical and domain-specific questions matching the {role} job parameters later.
+    4. After the icebreaker, transition into highly precise technical and domain-specific questions that clearly relate to the candidate's listed background, claimed tools, and achievements.
+    5. If the resume shows a claimed skill or project, pressure-test it with realistic follow-up questions instead of asking generic questions.
     
     Respond completely natively as the interviewer directly to the candidate, starting immediately. Generate your brief welcoming opening statement AND ONE easy initial icebreaker question right now."""
     
@@ -303,11 +315,30 @@ async def next_question(req: NextQuestionRequest):
     api_key = os.environ.get("GEMINI_API_KEY", "")
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel('gemini-2.5-flash')
-    prompt = f"You are an AI interviewer.\nCandidate Summary: {json.dumps(req.summary)}\nChat History: {json.dumps(req.history)}\n\nGenerate a thoughtful response to their last answer, and then ask ONE follow-up question. Keep it concise, natural, and conversational."
-    
-    response = model.generate_content(prompt)
-    question_text = response.text
-    audio_base64 = await generate_speech(question_text)
+    prompt = f"""You are an AI interviewer.
+Candidate Summary: {json.dumps(req.summary)}
+Chat History: {json.dumps(req.history)}
+
+Instructions:
+1. Use the candidate summary as if you had read their resume before the interview.
+2. Tailor your follow-up to the candidate's claimed skills, achievements, tools, and probing areas whenever possible.
+3. If they mention a project or skill from the summary, drill into specifics like tradeoffs, ownership, architecture, metrics, or debugging.
+4. Ask exactly one follow-up question.
+5. Keep it concise, natural, and conversational.
+"""
+
+    try:
+        response = model.generate_content(prompt)
+        question_text = response.text
+    except Exception as e:
+        print(f"Gemini next-question error: {str(e)}")
+        question_text = "Thanks, that helps. Let's keep going. Can you walk me through a concrete example and focus on the result?"
+
+    try:
+        audio_base64 = await generate_speech(question_text)
+    except Exception as e:
+        print(f"ElevenLabs next-question audio error: {str(e)}")
+        audio_base64 = None
     
     return {
         "success": True,

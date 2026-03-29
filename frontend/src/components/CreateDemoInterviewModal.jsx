@@ -26,9 +26,10 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
     const [useResume, setUseResume] = useState(false);
     const [resumeFile, setResumeFile] = useState(null);
     const [uploadStatus, setUploadStatus] = useState(''); // 'idle', 'uploading', 'success', 'error'
-    const [resumeSummary, setResumeSummary] = useState('');
+    const [resumeSummary, setResumeSummary] = useState(null);
     
     const setMockConfig = useStore(state => state.setMockConfig);
+    const setSummary = useStore(state => state.setSummary);
 
     const handleFileChange = async (e) => {
         const file = e.target.files[0];
@@ -38,7 +39,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
         
         try {
             const formData = new FormData();
-            formData.append('file', file);
+            formData.append('resume', file);
             
             const sid = localStorage.getItem('session_id') || "mock_id";
             const res = await axios.post('http://localhost:8000/api/interview/resume_upload', formData, {
@@ -47,7 +48,8 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
             
             if (res.data.success) {
                 setUploadStatus('success');
-                setResumeSummary(res.data.resume_summary || '');
+                setResumeSummary(res.data.summary || null);
+                setSummary(res.data.summary || null);
             } else {
                 setUploadStatus('error');
             }
@@ -64,6 +66,7 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
         }
         console.log("Starting Demo with configuration:", { duration, role, company, jobLink, selectedPersona, difficulty, useResume });
         const config = { duration, role, company, jobLink, description, selectedPersona, difficulty, useResume, resumeSummary };
+        setSummary(useResume ? resumeSummary : null);
         setMockConfig(config);
         navigate('/interview');
         onClose();
@@ -250,15 +253,24 @@ export default function CreateDemoInterviewModal({ onClose, initialData }) {
                                     </div>
                                 </div>
                             ) : uploadStatus === 'success' ? (
-                                <div className="flex items-center justify-between p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg">
-                                    <div className="flex items-center space-x-3">
+                                <div className="p-4 bg-emerald-500/10 border border-emerald-500/20 rounded-lg space-y-3">
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center space-x-3">
                                         <span className="material-symbols-outlined text-emerald-400">check_circle</span>
                                         <div>
                                             <p className="text-sm text-emerald-400 font-semibold">{resumeFile.name}</p>
                                             <p className="text-xs text-emerald-400/70">Context ingested successfully.</p>
                                         </div>
+                                      </div>
+                                      <button onClick={() => { setResumeFile(null); setUploadStatus('idle'); setResumeSummary(null); setSummary(null); }} className="text-xs font-semibold text-outline hover:text-error transition-colors">REPLACE</button>
                                     </div>
-                                    <button onClick={() => { setResumeFile(null); setUploadStatus('idle'); }} className="text-xs font-semibold text-outline hover:text-error transition-colors">REPLACE</button>
+                                    {resumeSummary && (
+                                      <div className="text-xs text-slate-200 bg-black/15 rounded-lg p-3 border border-white/5">
+                                        <p className="uppercase tracking-[0.15em] text-slate-400 mb-2">Extracted Resume Context</p>
+                                        <p><span className="font-semibold text-slate-300">Skills:</span> {(resumeSummary.skills || []).slice(0, 6).join(', ') || 'None parsed'}</p>
+                                        <p className="mt-1"><span className="font-semibold text-slate-300">Probe:</span> {(resumeSummary.probingAreas || []).slice(0, 3).join(', ') || 'None parsed'}</p>
+                                      </div>
+                                    )}
                                 </div>
                             ) : (
                                 <div className="flex items-center p-4 bg-red-500/10 border border-red-500/20 rounded-lg">

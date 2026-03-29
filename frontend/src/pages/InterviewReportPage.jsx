@@ -29,6 +29,14 @@ function buildMetricPath(history, metricKey, width, height) {
     .join(' ');
 }
 
+function getStarState(score) {
+  return {
+    left: score >= 55,
+    right: score >= 72,
+    center: score >= 88,
+  };
+}
+
 export default function InterviewReportPage() {
   const { reportId } = useParams();
   const navigate = useNavigate();
@@ -50,6 +58,8 @@ export default function InterviewReportPage() {
       </div>
     );
   }
+
+  const stars = getStarState(report.summary.overallScore);
 
   return (
     <div className="min-h-screen bg-[#0f1122] text-[#ecebff] px-6 py-8 md:px-10">
@@ -76,10 +86,10 @@ export default function InterviewReportPage() {
         <div className="grid grid-cols-1 xl:grid-cols-[1.5fr,0.9fr] gap-6 mb-6">
           <section className="rounded-[2rem] bg-[#1a1d34] border border-white/5 p-8 shadow-2xl">
             <p className="text-xs uppercase tracking-[0.3em] text-slate-500 mb-6">Overall Tier Rating</p>
-            <div className="flex items-center gap-5 text-[#e8d3de] mb-6 text-6xl">
-              <span>★</span>
-              <span className="text-8xl">★</span>
-              <span className="opacity-20">★</span>
+            <div className="flex items-center gap-5 text-[#f6d776] mb-6 text-6xl">
+              <span className={stars.left ? '' : 'opacity-20'}>★</span>
+              <span className={`text-8xl ${stars.center ? '' : 'opacity-20'}`}>★</span>
+              <span className={stars.right ? '' : 'opacity-20'}>★</span>
             </div>
             <h2 className="text-5xl font-bold tracking-tight mb-3">{report.summary.overallRating.toUpperCase()} GRADE</h2>
             <p className="text-slate-300 max-w-2xl">{report.summary.snapshot}</p>
@@ -208,6 +218,15 @@ export default function InterviewReportPage() {
                   {(report.summary.advice || []).map((tip, index) => (
                     <p key={index}>• {tip}</p>
                   ))}
+                </div>
+              </div>
+              <div className="rounded-2xl bg-white/5 p-4">
+                <p className="text-slate-500 uppercase tracking-[0.2em] text-xs mb-2">Chat Read</p>
+                <div className="space-y-2 text-slate-200">
+                  <p>Average answer length: {report.summary.chatInsights?.averageResponseLength || 0} words</p>
+                  <p>Concrete wins referenced: {report.summary.chatInsights?.usesConcreteWins ? 'Yes' : 'Not enough'}</p>
+                  <p>Structured storytelling cues: {report.summary.chatInsights?.usesStarStructure ? 'Present' : 'Missing'}</p>
+                  <p>Tone safety: {report.summary.chatInsights?.mentionsCrudeHumor ? 'Needs cleanup' : 'Professional'}</p>
                 </div>
               </div>
             </div>

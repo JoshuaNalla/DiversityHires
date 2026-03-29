@@ -8,6 +8,7 @@ import { saveInterviewReport } from '../lib/interviewReports';
 
 // Global singleton for audio to ensure only one plays at a time
 let globalAudio = null;
+const RISKY_LANGUAGE_PATTERN = /\b(lmao|lol|rofl|wtf|damn|hell yeah|bro|crap|stupid|sucks|idiot|dumb|freaking|frickin|pissed|sexy|badass)\b/i;
 
 function formatTime(ms) {
   const totalSecs = Math.max(0, Math.floor(ms / 1000));
@@ -105,6 +106,7 @@ export default function InterviewPage() {
   const [timeLeftMs, setTimeLeftMs] = useState(null);
   const [isTimerInitialized, setIsTimerInitialized] = useState(false);
   const [speechErrorMsg, setSpeechErrorMsg] = useState('');
+  const [analyticsState, setAnalyticsState] = useState({ metrics: null, signalHistory: [], signalAverages: {} });
 
   // UX State
   const [isHardwareCheck, setIsHardwareCheck] = useState(false);
@@ -130,6 +132,15 @@ export default function InterviewPage() {
   // Voice Metrics
   const [speechMetrics, setSpeechMetrics] = useState({ wpm: 0, fillers: 0 });
   const recordingStartTimeRef = useRef(null);
+
+  const latestSignalSnapshot = analyticsState.signalHistory.at(-1) || null;
+  const liveAlerts = [];
+
+  if (speechMetrics.wpm >= 185) liveAlerts.push({ type: 'warning', text: 'Your speaking pace is spiking. Slow down so your answer stays crisp.' });
+  if (speechMetrics.wpm > 0 && speechMetrics.wpm <= 85) liveAlerts.push({ type: 'warning', text: 'Your pace is dipping. Try to keep momentum in the answer.' });
+  if ((latestSignalSnapshot?.stress || 0) >= 68) liveAlerts.push({ type: 'warning', text: 'Stress levels are rising. Pause for one breath before the next sentence.' });
+  if ((latestSignalSnapshot?.engagement || 100) <= 42) liveAlerts.push({ type: 'warning', text: 'You look a little distracted. Reconnect with the camera and finish the thought directly.' });
+  if (RISKY_LANGUAGE_PATTERN.test(transcript)) liveAlerts.push({ type: 'danger', text: 'Your wording is drifting into crude or overly casual humor. Clean the phrasing up before submitting.' });
 
   // Auto-scroll chat
   useEffect(() => {
@@ -209,7 +220,7 @@ export default function InterviewPage() {
     try {
       const sessionId = localStorage.getItem('session_id');
       const response = await axios.post('http://localhost:8000/api/interview/start-interview', {
-        summary: resumeSummary || null,
+        summary: resumeSummary || mockConfig?.resumeSummary || null,
         mock_config: mockConfig || {}
       }, {
         headers: sessionId ? { 'X-Session-ID': sessionId } : {}
@@ -342,7 +353,7 @@ export default function InterviewPage() {
     try {
       const sessionId = localStorage.getItem('session_id');
       const response = await axios.post('http://localhost:8000/api/interview/next-question', {
-        summary: resumeSummary,
+        summary: resumeSummary || mockConfig?.resumeSummary || null,
         // Send history with the newest user answer
         history: [...chatHistory, { role: 'candidate', text: answer }]
       }, {
@@ -352,12 +363,7 @@ export default function InterviewPage() {
     } catch (error) {
       console.error("API Error", error);
       const detail = error?.response?.data?.detail || error?.response?.data?.error || error?.message;
-      alert(`Connection sequence interrupted: ${detail}. Removing last input.`);
-      // Graceful Rollback: Update Zustand store to remove the failed user item via direct access if needed
-      useStore.setState((state) => ({
-        chatHistory: state.chatHistory.slice(0, -1)
-      }));
-      setTranscript(answer); // Return to input box
+      setQuestionPhase(`Connection hiccup on my side, but let's continue. Re-answer that with one concrete example and outcome while I reconnect. (${detail})`, null);
     } finally {
       setIsLoading(false);
     }
@@ -391,19 +397,16 @@ export default function InterviewPage() {
       endedAt: new Date().toISOString(),
       endingReason,
     });
-
-    await persistSessionOnEnd({ action: 'COMPLETE', chatHistory, mockConfig });
-
-    useStore.setState({
-      resumeSummary: null,
-      isInterviewActive: false,
-      chatHistory: [],
-      currentQuestion: '',
-      currentAudioUrl: null
-    });
-
     setIsEndModalOpen(false);
-    navigate(`/reports/${report.id}`);
+
+    try {
+      sessionStorage.setItem('silent-coach-last-report-id', report.id);
+    } catch (error) {
+      console.error('Failed to persist latest report id', error);
+    }
+
+    void persistSessionOnEnd({ action: 'COMPLETE', chatHistory, mockConfig });
+    window.location.assign(`/reports/${report.id}`);
   };
 
 
@@ -536,6 +539,16 @@ export default function InterviewPage() {
 
               {/* Input Box */}
               <div className="p-4 bg-[#101226] border-t border-[#313349] flex flex-col gap-2 shrink-0 z-10">
+                {liveAlerts.length > 0 && (
+                  <div className="mb-2 rounded-xl border border-amber-500/30 bg-amber-500/10 p-3">
+                    <p className="text-[0.7rem] uppercase tracking-[0.2em] text-amber-200 mb-2">Live Coach Alerts</p>
+                    <div className="space-y-1.5">
+                      {liveAlerts.slice(0, 3).map((alert, index) => (
+                        <p key={index} className={`text-xs ${alert.type === 'danger' ? 'text-red-200' : 'text-amber-100'}`}>• {alert.text}</p>
+                      ))}
+                    </div>
+                  </div>
+                )}
                 <div className="flex justify-between items-center px-1 mb-1">
                   <span className="text-xs font-semibold text-slate-400">Your Response</span>
                   {(isListening || speechMetrics.wpm > 0) && (
@@ -595,6 +608,7 @@ export default function InterviewPage() {
             onReady={handleHardwareReady}
             onAnalyticsChange={(snapshot) => {
               analyticsSnapshotRef.current = snapshot;
+              setAnalyticsState(snapshot);
             }}
           />
         </div>

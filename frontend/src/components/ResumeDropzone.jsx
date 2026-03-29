@@ -44,7 +44,7 @@ export default function ResumeDropzone() {
     formData.append('resume', file);
 
     try {
-      const response = await axios.post('http://localhost:8000/api/interview/upload-resume', formData, {
+      const response = await axios.post('http://localhost:8000/api/interview/resume_upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
