@@ -2,6 +2,7 @@ import { create } from 'zustand';
 
 export const useStore = create((set) => ({
   resumeSummary: null,
+  mockConfig: null,
   isAnalyzing: false,
   error: null,
   
@@ -13,6 +14,7 @@ export const useStore = create((set) => ({
   isRecording: false,
 
   setSummary: (summary) => set({ resumeSummary: summary }),
+  setMockConfig: (config) => set({ mockConfig: config }),
   setIsAnalyzing: (status) => set({ isAnalyzing: status }),
   setError: (error) => set({ error }),
 

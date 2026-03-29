@@ -11,12 +11,15 @@ from mediapipe.tasks import python
 from mediapipe.tasks.python import vision
 from fastapi import APIRouter, WebSocket, WebSocketDisconnect, Depends, UploadFile, File
 from pydantic import BaseModel
-from typing import List, Dict
+from typing import List, Dict, Optional
+from datetime import datetime
 
 from services.gemini import generate_interviewer_response, generate_performance_report
 from services.elevenlabs import stream_elevenlabs_tts
 from services.openclaw import send_growth_plan_email
 from database.mongodb import get_db
+from auth.security import get_current_user
+from entities.models import InterviewSession
 
 router = APIRouter(prefix="/api/interview", tags=["interview"])
 
@@ -85,15 +88,24 @@ def extract_mediapipe_metrics(detection_result) -> dict:
 
 # --- Pydantic Models for Teammate2 Integration ---
 class StartInterviewRequest(BaseModel):
-    summary: dict
+    summary: Optional[dict] = None
+    mock_config: Optional[dict] = None
 
 class NextQuestionRequest(BaseModel):
-    summary: dict
+    summary: Optional[dict] = None
+    mock_config: Optional[dict] = None
     history: list
 
 # --- Helper for Static TTS (ElevenLabs REST for React chat bubbles) ---
-async def generate_speech(text: str) -> str:
-    voice_id = os.environ.get("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")
+async def generate_speech(text: str, persona: str = "ali") -> str:
+    # Placeholder routing to be replaced by custom Voice IDs in the future (.env)
+    voice_map = {
+        "ali": os.environ.get("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM"),
+        "martin": os.environ.get("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM"),
+        "sara": os.environ.get("ELEVENLABS_VOICE_ID", "21m00Tcm4TlvDq8ikWAM")
+    }
+    voice_id = voice_map.get(persona.lower(), voice_map["ali"])
+    
     api_key = os.environ.get("ELEVENLABS_API_KEY", "")
     
     if not api_key or api_key == 'your_elevenlabs_api_key_here':
@@ -125,6 +137,72 @@ async def generate_speech(text: str) -> str:
             print(f"ElevenLabs Error: {str(e)}")
             return None
 
+# --- NEW Dashboard Endpoints ---
+@router.get("/sessions")
+async def get_sessions(current_user=Depends(get_current_user)):
+    db = get_db()
+    if db is None:
+        return {"error": "Database not initialized"}
+    
+    cursor = db.interview_sessions.find({"user_id": current_user["user_id"]}).sort("created_at", -1)
+    sessions = await cursor.to_list(length=50)
+    for s in sessions:
+        s["_id"] = str(s["_id"])
+    return {"success": True, "sessions": sessions}
+
+@router.post("/schedule")
+async def schedule_interview(session_data: dict, current_user=Depends(get_current_user)):
+    db = get_db()
+    if db is None:
+        return {"error": "Database not initialized"}
+        
+    session = InterviewSession(user_id=current_user["user_id"], **session_data)
+    result = await db.interview_sessions.insert_one(session.dict(by_alias=True, exclude={"id"}))
+    return {"success": True, "id": str(result.inserted_id)}
+
+@router.put("/schedule/{session_id}")
+async def update_scheduled_interview(session_id: str, updates: dict, current_user=Depends(get_current_user)):
+    db = get_db()
+    if db is None:
+        return {"error": "Database not initialized"}
+        
+    from bson.objectid import ObjectId
+    try:
+        obj_id = ObjectId(session_id)
+    except:
+        return {"error": "Invalid session ID format"}
+        
+    # Prevent overwriting critical system fields
+    safe_updates = { k: v for k, v in updates.items() if k not in ["_id", "id", "user_id", "created_at"] }
+        
+    result = await db.interview_sessions.update_one(
+        {"_id": obj_id, "user_id": current_user["user_id"]},
+        {"$set": safe_updates}
+    )
+    if result.matched_count == 0:
+        return {"error": "Session not found or not authorized."}
+    return {"success": True}
+
+@router.delete("/schedule/{session_id}")
+async def delete_scheduled_interview(session_id: str, current_user=Depends(get_current_user)):
+    db = get_db()
+    if db is None:
+        return {"error": "Database not initialized"}
+        
+    from bson.objectid import ObjectId
+    try:
+        obj_id = ObjectId(session_id)
+    except:
+        return {"error": "Invalid session ID format"}
+    
+    result = await db.interview_sessions.delete_one(
+        {"_id": obj_id, "user_id": current_user["user_id"]}
+    )
+    if result.deleted_count == 0:
+        return {"error": "Session not found or not authorized."}
+    return {"success": True}
+
+
 # --- NEW T2 Endpoints Mapped Under /api/interview ---
 
 @router.post("/analyze-frame")
@@ -143,7 +221,7 @@ async def analyze_frame(file: UploadFile = File(...)):
     results = extract_mediapipe_metrics(detection_result)
     return results
 
-@router.post("/upload-resume")
+@router.post("/resume_upload")
 async def upload_resume(resume: UploadFile = File(...)):
     import google.generativeai as genai
     if not resume:
@@ -181,19 +259,37 @@ async def upload_resume(resume: UploadFile = File(...)):
         return {"error": "Failed to parse resume."}
 
 @router.post("/start-interview")
-async def start_interview(req: StartInterviewRequest):
+async def start_interview(req: StartInterviewRequest, current_user=Depends(get_current_user)):
     import google.generativeai as genai
-    if not req.summary:
-        return {"error": "Missing resume summary"}
-        
     api_key = os.environ.get("GEMINI_API_KEY", "")
     genai.configure(api_key=api_key)
     model = genai.GenerativeModel('gemini-2.5-flash')
-    prompt = f"You are an AI interviewer starting a technical interview.\nBased on this candidate summary: {json.dumps(req.summary)}\nGenerate a brief, welcoming opening statement and ONE initial technical question to ask them about their experience. Keep it conversational."
     
-    response = model.generate_content(prompt)
-    question_text = response.text
-    audio_base64 = await generate_speech(question_text)
+    cfg = req.mock_config or {}
+    persona_type = cfg.get("selectedPersona", "ali").capitalize()
+    role = cfg.get("role", "Candidate")
+    company = cfg.get("company", "our company")
+    diff = cfg.get("difficulty", "Mid-Level")
+    
+    name = current_user.get("username", "Guest") # Fallback since session uses mock User ID for now
+    
+    prompt = f"""You are specifically roleplaying as '{persona_type}'. You are conducting a technical interview for a {diff} {role} position at {company}.
+    
+    CRITICAL INSTRUCTIONS:
+    1. Act perfectly in character based on '{persona_type}' (e.g. Strict & Aggressive, Warm & Mentoring, or Formal HR).
+    2. Acknowledge and utilize their resume context implicitly if provided: {json.dumps(req.summary) if req.summary else 'No specific resume provided, assume generalized background.'}
+    3. Spend exactly the first 1-2 dialogue turns solely focusing on standard behavioral icebreaker questions (e.g. 'Tell me about yourself' or 'How has your day been?').
+    4. Gradually transition into highly precise technical and domain-specific questions matching the {role} job parameters later.
+    
+    Respond completely natively as the interviewer directly to the candidate, starting immediately. Generate your brief welcoming opening statement AND ONE easy initial icebreaker question right now."""
+    
+    try:
+        response = model.generate_content(prompt)
+        question_text = response.text
+    except Exception as e:
+        question_text = "Hello! Let's get started. Could you tell me about yourself?"
+        
+    audio_base64 = await generate_speech(question_text, persona=persona_type)
     
     return {
         "success": True,

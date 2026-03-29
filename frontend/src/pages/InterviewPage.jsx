@@ -4,10 +4,16 @@ import { Mic, MicOff, Send, Play, Loader2, Volume2, Square, ChevronLeft, Chevron
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import FaceEmotionReader from '../components/FaceEmotionReader';
-import ResumeDropzone from '../components/ResumeDropzone';
 
 // Global singleton for audio to ensure only one plays at a time
 let globalAudio = null;
+
+function formatTime(ms) {
+  const totalSecs = Math.max(0, Math.floor(ms / 1000));
+  const mins = Math.floor(totalSecs / 60);
+  const secs = totalSecs % 60;
+  return `${String(mins).padStart(2, '0')}:${String(secs).padStart(2, '0')}`;
+}
 
 const ChatBubble = ({ message, index, chatHistory }) => {
   const isAI = message.role === 'interviewer';
@@ -83,6 +89,7 @@ const ChatBubble = ({ message, index, chatHistory }) => {
 export default function InterviewPage() {
   const {
     resumeSummary,
+    mockConfig,
     isInterviewActive,
     startInterview,
     chatHistory,
@@ -91,8 +98,10 @@ export default function InterviewPage() {
   } = useStore();
 
   const [isLoading, setIsLoading] = useState(false);
+  const [isEndModalOpen, setIsEndModalOpen] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [transcript, setTranscript] = useState('');
+  const [timeLeftMs, setTimeLeftMs] = useState(0);
 
   // UX State
   const [isHardwareCheck, setIsHardwareCheck] = useState(false);
@@ -107,6 +116,8 @@ export default function InterviewPage() {
   const chatEndRef = useRef(null);
   const textareaRef = useRef(null); // Reference for auto-scrolling text area
   const hasStartedAPI = useRef(false);
+  const timerIntervalRef = useRef(null);
+  const timerEndAtRef = useRef(null);
 
   // Voice Metrics
   const [speechMetrics, setSpeechMetrics] = useState({ wpm: 0, fillers: 0 });
@@ -146,6 +157,10 @@ export default function InterviewPage() {
       if (recognitionRef.current) {
         try { recognitionRef.current.stop(); } catch(e) {}
       }
+      if (timerIntervalRef.current) {
+        clearInterval(timerIntervalRef.current);
+        timerIntervalRef.current = null;
+      }
     };
   }, []);
 
@@ -154,6 +169,15 @@ export default function InterviewPage() {
     if (isHardwareReady && !hasStartedAPI.current) {
       hasStartedAPI.current = true;
       executeStartAPI();
+      // Initialize countdown timer based on mockConfig.duration (minutes)
+      const durationMins = mockConfig?.duration || 45;
+      const endAt = Date.now() + durationMins * 60 * 1000;
+      timerEndAtRef.current = endAt;
+      setTimeLeftMs(endAt - Date.now());
+      timerIntervalRef.current = setInterval(() => {
+        const remaining = (timerEndAtRef.current || Date.now()) - Date.now();
+        setTimeLeftMs(Math.max(0, remaining));
+      }, 1000);
     }
   }, [isHardwareReady]);
 
@@ -163,7 +187,8 @@ export default function InterviewPage() {
     setIsLoading(true);
     try {
       const response = await axios.post('http://localhost:8000/api/interview/start-interview', {
-        summary: resumeSummary
+        summary: resumeSummary || null,
+        mock_config: mockConfig || {}
       });
       setQuestionPhase(response.data.question, response.data.audio);
     } catch (error) {
@@ -264,14 +289,7 @@ export default function InterviewPage() {
     }
   };
 
-  // Phase 1: Upload Resume
-  if (!resumeSummary) {
-    return (
-      <div className="min-h-screen bg-[#101226] flex items-center justify-center p-6">
-        <ResumeDropzone />
-      </div>
-    );
-  }
+
 
   // Phase 2: Resume Parsed - User triggers Hardware Check Mode
   if (!isHardwareCheck) {
@@ -283,7 +301,7 @@ export default function InterviewPage() {
           </div>
           <h2 className="text-3xl font-bold text-white">Identity Check</h2>
           <p className="text-[#cdc4ca]">
-            Gemini has extracted {resumeSummary.skills?.length || 0} core skills from your background. <br /><br />
+            Gemini has initialized your environment for the {mockConfig?.role || 'SWE'} role at {mockConfig?.company || 'our company'}. <br /><br />
             Before we begin, we need to activate OmniSense and test your microphone.
           </p>
           <button
@@ -344,21 +362,7 @@ export default function InterviewPage() {
                  {isPaused ? "Resume" : "Pause"}
                </button>
                <button 
-                 onClick={() => {
-                   if (window.confirm("Are you sure you want to end the interview? All progress will be lost.")) {
-                     if (globalAudio) globalAudio.pause();
-                     if (isListening) toggleListen();
-                     
-                     useStore.setState({ 
-                        resumeSummary: null,
-                        isInterviewActive: false,
-                        chatHistory: [],
-                        currentQuestion: '',
-                        currentAudioUrl: null
-                     });
-                     navigate('/dashboard');
-                   }
-                 }}
+                 onClick={() => setIsEndModalOpen(true)}
                  className="flex items-center gap-1 text-xs bg-red-600/80 hover:bg-red-500 border border-red-500/50 px-3 py-1.5 rounded-md text-white transition-colors"
                >
                  <PhoneOff size={12} /> End
@@ -379,6 +383,15 @@ export default function InterviewPage() {
             <>
               {/* Chat Feed */}
               <div className="flex-1 overflow-y-auto p-4 custom-scrollbar bg-[#1c1e33]/50">
+                {/* Timer header */}
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-semibold text-slate-400">
+                    Session: {mockConfig?.role || 'SWE'} @ {mockConfig?.company || 'our company'}
+                  </span>
+                  <span className={`text-xs font-mono px-2 py-1 rounded-md border ${timeLeftMs === 0 ? 'text-red-300 border-red-500/30 bg-red-500/10' : 'text-indigo-300 border-indigo-500/30 bg-indigo-500/10'}`}>
+                    {formatTime(timeLeftMs)} / {String(mockConfig?.duration || 45).padStart(2,'0')}:00
+                  </span>
+                </div>
                 {chatHistory.length === 0 && !isLoading && (
                   <div className="text-center text-slate-500 mt-10">Starting session...</div>
                 )}
@@ -455,6 +468,126 @@ export default function InterviewPage() {
         </div>
       </div>
 
+      {/* End Interview Modal */}
+      {isEndModalOpen && (
+        <div className="absolute inset-0 z-50 flex items-center justify-center">
+          <div className="absolute inset-0 bg-black/60" onClick={() => setIsEndModalOpen(false)} />
+          <div className="relative bg-[#1c1e33] border border-[#313349] rounded-2xl shadow-2xl w-full max-w-md p-6">
+            <h4 className="text-lg font-bold text-white mb-2">End Interview</h4>
+            <p className="text-sm text-slate-300 mb-4">
+              Choose how to finish this session.
+            </p>
+            <div className="space-y-3">
+              <button
+                onClick={async () => {
+                  if (globalAudio) globalAudio.pause();
+                  if (isListening) toggleListen();
+                  await persistSessionOnEnd({ action: 'COMPLETE', chatHistory, mockConfig });
+                  useStore.setState({
+                    resumeSummary: null,
+                    isInterviewActive: false,
+                    chatHistory: [],
+                    currentQuestion: '',
+                    currentAudioUrl: null
+                  });
+                  setIsEndModalOpen(false);
+                  navigate('/dashboard');
+                }}
+                className="w-full py-2.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-sm font-semibold"
+              >
+                End gracefully and save to Previous Interviews
+              </button>
+              <button
+                onClick={async () => {
+                  if (globalAudio) globalAudio.pause();
+                  if (isListening) toggleListen();
+                  await persistSessionOnEnd({ action: 'SAVE_RESTART', chatHistory, mockConfig });
+                  useStore.setState({
+                    resumeSummary: null,
+                    isInterviewActive: false,
+                    chatHistory: [],
+                    currentQuestion: '',
+                    currentAudioUrl: null
+                  });
+                  setIsEndModalOpen(false);
+                  navigate('/dashboard');
+                }}
+                className="w-full py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-white text-sm font-semibold"
+              >
+                Save session and restart next time
+              </button>
+              <button
+                onClick={() => {
+                  if (globalAudio) globalAudio.pause();
+                  if (isListening) toggleListen();
+                  useStore.setState({
+                    resumeSummary: null,
+                    isInterviewActive: false,
+                    chatHistory: [],
+                    currentQuestion: '',
+                    currentAudioUrl: null
+                  });
+                  setIsEndModalOpen(false);
+                  navigate('/dashboard');
+                }}
+                className="w-full py-2.5 rounded-lg bg-[#313349] hover:bg-[#4b454a] text-slate-200 text-sm font-semibold border border-[#4b454a]"
+              >
+                Scrap interview (don’t save)
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
     </div>
   );
 }
+
+// Helper to persist a session to backend with desired status
+async function persistSessionOnEnd({ action, chatHistory, mockConfig }) {
+  // action: 'SCRAP' | 'COMPLETE' | 'SAVE_RESTART'
+  if (action === 'SCRAP') return true;
+  const sid = localStorage.getItem('session_id') || '';
+  const headers = sid ? { 'X-Session-ID': sid } : {};
+  const nowIso = new Date().toISOString();
+  const base = {
+    is_mock: true,
+    company: mockConfig?.company || '',
+    role: mockConfig?.role || '',
+    type: 'Behavioral',
+    duration_mins: mockConfig?.duration || 45,
+    persona: mockConfig?.selectedPersona || 'ali',
+    difficulty: mockConfig?.difficulty || 'Mid-Level',
+    job_description: mockConfig?.description || '',
+    resume_summary: mockConfig?.resumeSummary || null,
+    created_at: nowIso
+  };
+  const mapTranscript = (hist) => {
+    return (hist || []).map(item => ({
+      speaker: item.role === 'interviewer' ? 'AI' : 'User',
+      text: item.text,
+      timestamp: new Date().toISOString()
+    }));
+  };
+  try {
+    if (action === 'COMPLETE') {
+      await axios.post('http://localhost:8000/api/interview/schedule', {
+        ...base,
+        status: 'COMPLETED',
+        transcript: mapTranscript(chatHistory)
+      }, { headers });
+    } else if (action === 'SAVE_RESTART') {
+      await axios.post('http://localhost:8000/api/interview/schedule', {
+        ...base,
+        status: 'SCHEDULED',
+        scheduled_datetime: nowIso,
+        transcript: mapTranscript(chatHistory)
+      }, { headers });
+    }
+    return true;
+  } catch (e) {
+    console.error('Failed to save session', e);
+    return false;
+  }
+}
+

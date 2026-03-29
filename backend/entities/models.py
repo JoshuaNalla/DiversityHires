@@ -39,7 +39,23 @@ class InterviewTranscriptEntry(BaseModel):
 class InterviewSession(BaseModel):
     id: Optional[str] = Field(alias="_id", default=None)
     user_id: str
-    status: str = "active" # active, completed
+    status: str = "SCHEDULED" # SCHEDULED, ACTIVE, COMPLETED
+    is_mock: bool = False
+    
+    # Scheduling Details
+    company: str = ""
+    role: str = ""
+    type: str = "Behavioral"
+    scheduled_datetime: Optional[datetime] = None
+    
+    # AI Config
+    duration_mins: int = 45
+    persona: str = "ali"
+    difficulty: str = "Mid-Level"
+    job_description: str = ""
+    resume_summary: Optional[Dict[str, Any]] = None
+    
+    # Live Transcript
     transcript: List[InterviewTranscriptEntry] = []
     created_at: datetime = Field(default_factory=datetime.utcnow)
 
